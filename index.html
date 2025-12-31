@@ -163,87 +163,83 @@
 /* --- END OF RARE STICKER EFFECT --- */
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
-    <div id="game-container" class="container mx-auto p-4 md:p-8 mt-8 rounded-xl shadow-2xl game-container relative">
+<div id="welcome-screen" class="screen flex flex-col items-center justify-start text-center px-4 md:px-8 pb-8 pt-8 min-h-[60vh] relative">
 
-        <button id="theme-toggle" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors z-10">
-            <svg class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-        </button>
-            
-<div id="welcome-screen" class="screen flex flex-col items-center justify-center text-center p-8 min-h-[60vh] relative">
-    
-    <div class="absolute top-4 left-4 flex flex-col gap-2 z-10">
-        <div class="bg-white/90 dark:bg-gray-800/90 backdrop-blur shadow-md border border-gray-200 dark:border-gray-700 rounded-xl p-3 flex items-center gap-3 transform hover:scale-105 transition-transform cursor-default">
-            
-            <div class="relative">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+    <div class="w-full max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border border-white/40 p-4 rounded-3xl shadow-lg mb-12">
+        
+        <div class="flex items-center gap-4 w-full md:w-auto">
+            <div class="relative group">
+                <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-lg border-2 border-white dark:border-gray-700 transform transition group-hover:scale-110">
                     <span id="main-level-display">1</span>
                 </div>
-                <div class="absolute -bottom-1 -right-1 bg-yellow-400 text-[8px] font-bold px-1 rounded-sm text-yellow-900 border border-white">LVL</div>
+                <div class="absolute -bottom-2 -right-2 bg-yellow-400 text-yellow-900 text-[10px] font-bold px-2 py-0.5 rounded-full border border-white shadow-sm">LVL</div>
             </div>
 
-            <div class="flex flex-col w-24">
-                <div class="flex justify-between text-[10px] font-bold text-gray-500 uppercase mb-0.5">
-                    <span>XP</span>
-                    <span><span id="main-xp-current">0</span>/100</span>
+            <div class="flex flex-col items-start flex-grow">
+                <div class="flex justify-between w-full text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wider">
+                    <span>Experience</span>
+                    <span id="main-xp-current-display"><span id="main-xp-current">0</span> / 100 XP</span>
                 </div>
-<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
-    <div id="main-xp-bar" class="bg-gradient-to-r from-indigo-500 to-purple-600 h-full transition-all duration-1000 ease-out rounded-full" style="width: 0%"></div>
-</div>
-            </div>
-
-            <div class="h-8 w-px bg-gray-300 dark:bg-gray-600 mx-1"></div>
-
-            <div class="text-center">
-                <span class="block text-lg">💰</span>
-                <span id="main-token-display" class="block text-xs font-bold text-gray-700 dark:text-gray-300">0</span>
+                <div class="w-48 h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden shadow-inner border border-black/5">
+                    <div id="main-xp-bar" class="bg-gradient-to-r from-blue-400 to-indigo-500 h-full rounded-full transition-all duration-500 relative" style="width: 0%">
+                        <div class="absolute top-0 left-0 w-full h-full bg-white/20 animate-pulse"></div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="mb-8 animate-bounce"><span class="text-6xl">🚀</span></div>
-    <h1 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 dark:from-blue-400 dark:to-purple-400 mb-6 drop-shadow-sm">ELA LEGENDS</h1>
-    
-    <div class="bg-white/60 dark:bg-black/40 backdrop-blur-md py-3 px-8 rounded-full shadow-sm mb-10 border border-white/20">
-        <p class="text-xl md:text-2xl text-slate-900 dark:text-white font-bold">Master reading, writing, and logic to defeat the Glitch.</p>
-    </div>
-    
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mb-8">
-        <button id="start-calibration-button" class="button bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-blue-400/20">
-            <span class="text-3xl block mb-2">🧙‍♂️</span>Calibration Quest
-        </button>
 
-        <button onclick="startSurvival()" class="button bg-gradient-to-br from-red-600 to-orange-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 relative overflow-hidden">
-    <div class="absolute top-0 right-0 p-1 bg-black/20 rounded-bl-lg text-xs font-mono">HARDCORE</div>
-    <span class="text-3xl block mb-2">💀</span>The Gauntlet
+<div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/40 px-4 py-2 rounded-xl border border-yellow-200 dark:border-yellow-700/50 shadow-sm">
+                <span class="text-xl">🪙</span> 
+                <div class="flex flex-col items-start leading-none">
+                    <span id="main-token-display" class="font-bold text-yellow-800 dark:text-yellow-100 text-lg">0</span>
+                    <span class="text-[10px] font-bold text-yellow-600 dark:text-yellow-400 uppercase">Tokens</span>
+                </div>
+            </div>
+
+            <button id="theme-toggle-header" onclick="document.documentElement.classList.toggle('dark')" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <h1 class="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 mb-2 drop-shadow-sm tracking-tight">ELA LEGENDS</h1>
+        
+        <div class="bg-white/60 dark:bg-black/40 backdrop-blur-md py-3 px-8 rounded-full shadow-sm mb-10 border border-white/20">
+            <p class="text-xl md:text-2xl text-slate-900 dark:text-white font-bold">Master reading, writing, and logic to defeat the Glitch.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mb-8">
+            <button id="start-calibration-button" class="button bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-blue-400/20">
+                <span class="text-3xl block mb-2">🧙‍♂️</span>Calibration Quest
+            </button>
+            <button onclick="startSurvival()" class="button bg-gradient-to-br from-red-600 to-orange-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-1 bg-black/20 rounded-bl-lg text-xs font-mono">HARDCORE</div>
+                <span class="text-3xl block mb-2">💀</span>The Gauntlet
+            </button>
+            <button id="missions-button" class="button bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-emerald-400/20">
+                <span class="text-3xl block mb-2">📜</span>Daily Missions
+            </button>
+            <button id="shop-button" class="button bg-gradient-to-br from-amber-400 to-orange-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-amber-400/20">
+                <span class="text-3xl block mb-2">🛍️</span>The Shop
+            </button>
+            <button id="progress-button" class="button bg-gradient-to-br from-violet-500 to-purple-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-violet-400/20">
+                <span class="text-3xl block mb-2">📒</span>My Sticker Book
+            </button>
+            <button onclick="generateReport()" class="button bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-slate-500/20">
+                <span class="text-3xl block mb-2">🖨️</span>Teacher Report
+            </button>
+<button id="archive-button" onclick="openArchive()" class="col-span-1 md:col-span-2 button bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 flex flex-col md:flex-row items-center justify-center gap-4 relative overflow-hidden group">
+                 <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                 <span class="text-4xl animate-pulse">⚠️</span> 
+                 <span>Glitch Archive (Fix Mistakes & Study)</span>
+            </button>
+<button id="reset-button" onclick="resetGame()" class="mt-8 text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors bg-white/50 px-4 py-2 rounded-lg">
+    Reset Save Data
 </button>
 
-        <button id="missions-button" class="button bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-emerald-400/20">
-            <span class="text-3xl block mb-2">📜</span>Daily Missions
-        </button>
-        <button id="shop-button" class="button bg-gradient-to-br from-amber-400 to-orange-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-amber-400/20">
-            <span class="text-3xl block mb-2">🛍️</span>The Shop
-        </button>
-        <button id="progress-button" class="button bg-gradient-to-br from-violet-500 to-purple-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-violet-400/20">
-            <span class="text-3xl block mb-2">📒</span>My Sticker Book
-        </button>
-        
-        
-        <button id="archive-button" onclick="openArchive()" class="col-span-1 md:col-span-2 button bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 flex flex-col md:flex-row items-center justify-center gap-4 relative overflow-hidden group">
-             <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-             <span class="text-4xl animate-pulse">⚠️</span> 
-             <span>Glitch Archive (Fix Mistakes & Study)</span>
-        </button>
-    </div>
-    
-    <button id="export-report-btn" class="mt-8 mb-4 button bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg flex items-center">
-        🖨️ Generate Teacher Report
-    </button>
-    
-    <button id="reset-button" class="text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors bg-white/50 px-4 py-2 rounded-lg">Reset Save Data</button>
-</div>
-
-<div id="calibration-screen" class="screen hidden p-4 md:p-8 relative">
+    </div> <div id="calibration-screen" class="screen hidden p-4 md:p-8 relative">
             <button class="home-button absolute top-4 left-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors z-50">
                 <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-10v10a1 1 0 001 1h3M12 20v-5m0 0H8m4 0h4"></path></svg>
             </button>
@@ -1177,10 +1173,6 @@ const allMissions = [
     { id: 'm-gram2', title: 'Active vs Passive', description: 'Grammar: Voice', difficulty: 6, passageId: 'gram-voice-1', minLevel: 2 },
     { id: 'm-sat1', title: 'Ghost Army', description: 'Grammar: Punctuation', difficulty: 6, passageId: 'sat-gram-1', minLevel: 2 },
 
-// --- NEW LEVEL 3 CONTENT ---
-    { id: 'm-punc', title: 'The Interruption', description: 'Grammar: Ellipses & Dashes', difficulty: 5, passageId: 'punc-dash-1', minLevel: 3 },
-    { id: 'm-spell', title: 'The Lab Report', description: 'Spelling: Effect vs Affect', difficulty: 6, passageId: 'spell-eff-1', minLevel: 3 },
-    
     // --- NEW LEVEL 3 CONTENT ---
     { id: 'm-punc', title: 'The Interruption', description: 'Grammar: Ellipses & Dashes', difficulty: 5, passageId: 'punc-dash-1', minLevel: 3 },
     { id: 'm-spell', title: 'The Lab Report', description: 'Spelling: Effect vs Affect', difficulty: 6, passageId: 'spell-eff-1', minLevel: 3 },
@@ -1188,8 +1180,6 @@ const allMissions = [
     // --- NEW LEVEL 4 CONTENT ---
     { id: 'm-pov', title: 'Highway Debate', description: 'Info: Author\'s POV', difficulty: 7, passageId: 'pov-1', minLevel: 4 },
 
-    // --- NEW LEVEL 4 CONTENT ---
-    { id: 'm-pov', title: 'Highway Debate', description: 'Info: Author\'s POV', difficulty: 7, passageId: 'pov-1', minLevel: 4 },
     // --- LEVEL 3: LITERARY ANALYSIS ---
     { id: 'm-lit1', title: 'The Irony of Fate', description: 'Reading: Irony Types', difficulty: 7, passageId: 'lit-irony-1', minLevel: 3 },
     { id: 'm-lit2', title: 'House of Suspense', description: 'Reading: Creating Tension', difficulty: 6, passageId: 'lit-suspense-1', minLevel: 3 },
@@ -2200,12 +2190,36 @@ function updateUI() {
             if(saved) gameState.user = JSON.parse(saved); 
         }
 
-        function resetGame() {
-            localStorage.removeItem('elaGameProgress');
-            gameState.user = { xp: 0, level: 1, elaLevel: 0, tokens: 0, badges: [], history: [], purchasedItems: [] };
-            updateUI();
-            navigate('welcome-screen');
-        }
+function resetGame() {
+    // 1. Confirm with the user
+    const confirmed = confirm("Are you sure? This deletes ALL progress, stickers, and levels!");
+    if (!confirmed) return;
+
+    // 2. Clear the physical storage immediately
+    localStorage.removeItem('elaGameProgress');
+
+    // 3. Reset the internal gameState.user object to match your init state
+    gameState.user = {
+        xp: 0,
+        level: 1,
+        elaLevel: 0,
+        tokens: 0,
+        badges: [],
+        history: [],
+        purchasedItems: [],
+        stickers: [],        // Important for the Sticker Book [cite: 103, 556]
+        missedQuestions: [], // Important for the Glitch Archive [cite: 458, 639]
+        standardsReport: {}  // Important for Teacher Reports [cite: 455, 576]
+    };
+
+    // 4. Update the visual elements on the screen
+    updateUI(); 
+
+    // 5. Force the page to go back to the home screen
+    navigate('welcome-screen');
+
+    alert("Game data has been successfully wiped.");
+}
 
         function triggerConfetti() { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 90 }); }
 
@@ -2632,7 +2646,7 @@ document.getElementById('progress-button').addEventListener('click', () => {
         }
 
 // --- NEW: SURVIVAL MODE (THE GAUNTLET) ---
-        function startSurvival() {
+function startSurvival() {
             // 1. Gather ALL questions into one giant pool
             const allItems = itemBank.flatMap(zone => zone.items.map(item => ({ ...item, passage: zone.passage, sources: zone.sources })));
             // 2. Shuffle them
@@ -2644,6 +2658,7 @@ document.getElementById('progress-button').addEventListener('click', () => {
             
             // 3. Start
             navigate('game-play-screen');
+            startTimer(); // <--- FIX: This starts the clock!
             renderSurvivalQuestion();
         }
 
@@ -2662,14 +2677,17 @@ function renderSurvivalQuestion() {
             missionScoreDisplay.innerHTML = `${gameState.missionScore} <span class="text-xs">Streak</span>`;
             missionTotalQuestions.innerHTML = "∞";
 
-            // --- CORRECTED: Passage Rendering with Read Aloud ---
-            // Fix: Changed 'missionItem.items[0].id' to 'currentItem.id' to prevent crash
+            // --- FIXED: READ ALOUD & PASSAGE RENDERING ---
+            // 1. Use 'currentItem.id', NOT 'missionItem' (which causes the crash)
             const speakerBtn = `<button onclick="speakText('${currentItem.id}')" class="mb-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center gap-1">🔊 Read Aloud</button>`;
             
-            // Handle Text Source (Survival items store passage directly)
+            // 2. Handle Text Source (Survival items store passage directly or in sources)
             let textSource = currentItem.sources ? currentItem.sources[0].text : currentItem.passage;
+            
+            // 3. Create hidden text for the reader
             const ttsContent = `<div id="tts-content-${currentItem.id}" class="hidden">${textSource.replace(/<[^>]*>/g, '')}</div>`;
 
+            // 4. Build the Visual HTML
             let passageHTML = "";
             if (currentItem.sources) {
                 passageHTML = `<div class="p-4 bg-gray-50 dark:bg-gray-900 rounded border mb-2 text-sm">${currentItem.sources[0].text.substring(0, 200)}... <br><i>(Read full text in Study Mode)</i></div>`;
@@ -2677,6 +2695,7 @@ function renderSurvivalQuestion() {
                 passageHTML = `<div class="prose dark:prose-invert max-w-none">${currentItem.passage}</div>`;
             }
             
+            // 5. Combine it all
             gamePassage.innerHTML = `
                 ${speakerBtn}
                 ${ttsContent}
@@ -2706,7 +2725,7 @@ function renderSurvivalQuestion() {
             btnContainer.innerHTML = `<button onclick="checkSurvivalAnswer('${currentItem.id}')" class="button bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">Submit (Risk It!)</button>`;
         }
 
-        async function checkSurvivalAnswer(itemId) {
+async function checkSurvivalAnswer(itemId) {
             const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
             const selected = document.querySelector('input[name="survival-q"]:checked');
             
@@ -2721,6 +2740,7 @@ function renderSurvivalQuestion() {
                 renderSurvivalQuestion();
             } else {
                 // GAME OVER
+                stopTimer(); // <--- FIX: Stop the clock
                 playSound('incorrect');
                 await showModal('💀 GAME OVER', `You survived ${gameState.missionScore} rounds.<br>The correct answer was: <b>${currentItem.correct_answer}</b>`, 'error');
                 
@@ -2733,13 +2753,22 @@ function renderSurvivalQuestion() {
         }
 
         // --- ACCESSIBILITY: TEXT TO SPEECH ---
-        function speakText(id) {
-            const text = document.getElementById(`tts-content-${id}`).innerText;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9; // Slightly slower for students
-            window.speechSynthesis.cancel(); // Stop previous
-            window.speechSynthesis.speak(utterance);
-        }
+function speakText(id) {
+    // 1. Try to find the specific text element
+    const textEl = document.getElementById(`tts-content-${id}`);
+    
+    // 2. Safety Check: If text doesn't exist, stop to prevent crash
+    if (!textEl) {
+        console.error("Text not found for ID:", id);
+        return;
+    }
+
+    // 3. Speak
+    const utterance = new SpeechSynthesisUtterance(textEl.innerText);
+    utterance.rate = 0.9; 
+    window.speechSynthesis.cancel(); // Stop any current speech
+    window.speechSynthesis.speak(utterance);
+}
 
 // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
