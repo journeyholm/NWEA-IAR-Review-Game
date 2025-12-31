@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <style>
+<style>
         /* --- ANIMATED BACKGROUND --- */
         body {
             font-family: 'Outfit', sans-serif;
@@ -16,6 +16,8 @@
             background-size: 400% 400%;
             animation: gradient 15s ease infinite;
             min-height: 100vh;
+            /* FIX: Prevents double-tap zoom and improves mobile feel */
+            touch-action: manipulation; 
         }
         .dark body {
             background: linear-gradient(-45deg, #1a1a2e, #16213e, #0f3460, #533483);
@@ -34,133 +36,38 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
-        .dark .game-container {
-            background: rgba(17, 24, 39, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+
+        /* FIX: Ensure question area is visible on small screens */
+        #game-questions-area {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- JUICY BUTTONS --- */
         .button {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             border: none;
-        }
-        .button:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            filter: brightness(1.1);
-        }
-        .button:active {
-            transform: translateY(-1px);
-        }
-
-        /* --- FIXED: HOME BUTTON & HEADER TEXT --- */
-        .home-button { 
-top: 1.5rem !important;
-            left: 1.5rem !important; /* Moved right */
-            background: white; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-            z-index: 50;
-        }
-        .dark .home-button { 
-            background: #374151; 
-            color: white; 
-        }
-
-        /* This specifically fixes the "The Shop" text visibility and overlap */
-/* FORCE DARK HEADERS FOR READABILITY */
-        #shop-screen h2, 
-        #missions-screen h2, 
-        #progress-screen h2, 
-        #review-screen h2,
-        #calibration-screen h2, 
-        #game-play-screen h2,
-        #boss-round-screen h2 {
-            padding-left: 4rem; /* Space for the home button */
-            color: #111827 !important; /* Force dark text */
-            text-shadow: 0px 1px 2px rgba(255,255,255,0.8); /* subtle light shadow to pop against background */
+            /* Prevents blue highlight on mobile tap */
+            -webkit-tap-highlight-color: transparent;
         }
         
-        /* White text for Dark Mode */
-        .dark #shop-screen h2, 
-        .dark #missions-screen h2, 
-        .dark #progress-screen h2, 
-        .dark #review-screen h2,
-        .dark #calibration-screen h2, 
-        .dark #game-play-screen h2,
+        /* Fixed Headers for Readability */
+        #shop-screen h2, #missions-screen h2, #progress-screen h2, #review-screen h2,
+        #calibration-screen h2, #game-play-screen h2, #boss-round-screen h2 {
+            padding-left: 1rem;
+            color: #111827 !important;
+        }
+        
+        .dark #shop-screen h2, .dark #missions-screen h2, .dark #progress-screen h2, 
+        .dark #review-screen h2, .dark #calibration-screen h2, .dark #game-play-screen h2, 
         .dark #boss-round-screen h2 {
             color: #ffffff !important;
-            text-shadow: none;
         }
 
-        /* --- UTILS --- */
-        .ribbon { background-color: #ef4444; top: -10px; right: -10px; transform: rotate(45deg); padding: 0 2rem; color: white; font-weight: bold; }
-        .screen { animation: fadeSlideUp 0.5s ease-out; }
-        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Hot Text & Boss Styles */
-        .hot-text-word { display: inline-block; margin: 0 3px; padding: 2px 6px; border-radius: 6px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
-        .hot-text-word:hover { background-color: rgba(59, 130, 246, 0.1); }
-        .hot-text-word.selected { background-color: #3b82f6; color: white; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.4); transform: scale(1.05); }
-        .hot-text-word.correct { background-color: #10b981; color: white; }
-        .hot-text-word.incorrect { background-color: #ef4444; color: white; }
-        
-        .boss-error { border-bottom: 3px solid #ef4444; cursor: pointer; font-weight: 600; color: #ef4444; }
-        .boss-error:hover { background-color: #fee2e2; color: #b91c1c; }
-        .boss-fixed { color: #059669; font-weight: bold; border-bottom: 2px solid #059669; background-color: #d1fae5; padding: 0 4px; border-radius: 4px; }
-    /* --- START OF RARE STICKER EFFECT --- */
-
-/* --- NEW STICKER RARITY SYSTEM --- */
-        .sticker-item { position: relative; overflow: hidden; transition: transform 0.2s; }
-        .sticker-item:hover { transform: scale(1.15) rotate(3deg); z-index: 50; }
-
-        /* RARE: Silver Shine */
-        .rarity-rare { border: 3px solid #b0c4de; background: linear-gradient(135deg, #fff, #f0f8ff); }
-        .rarity-rare::after {
-            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: linear-gradient(to right, transparent, rgba(255,255,255,0.8), transparent);
-            transform: rotate(45deg); animation: shine-sweep 3s infinite; pointer-events: none;
-        }
-
-        /* EPIC: Purple Pulse */
-        .rarity-epic { border: 3px solid #9b59b6; background: #f3e5f5; box-shadow: 0 0 10px #9b59b6; animation: pulse-purple 2s infinite; }
-        
-        /* LEGENDARY: Gold Glow & Float */
-        .rarity-legendary { 
-            border: 4px solid #ffd700; background: radial-gradient(circle, #fffae0, #ffd700); 
-            box-shadow: 0 0 20px #ffd700; animation: legendary-float 3s ease-in-out infinite; 
-        }
-
-        @keyframes shine-sweep { 0% { left: -100%; top: -100%; } 100% { left: 100%; top: 100%; } }
-        @keyframes pulse-purple { 0% { box-shadow: 0 0 5px #9b59b6; } 50% { box-shadow: 0 0 20px #9b59b6; } 100% { box-shadow: 0 0 5px #9b59b6; } }
-        @keyframes legendary-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-
-/* This creates the moving shine */
-.rare::after {
-  content: "";
-  position: absolute;
-  top: 0; 
-  left: 0;
-  width: 200%; 
-  height: 200%;
-  background: linear-gradient(
-    135deg, 
-    rgba(255,255,255,0) 30%, 
-    rgba(255,255,255,0.6) 50%, 
-    rgba(255,255,255,0) 70%
-  );
-  animation: shine-effect 3s infinite linear;
-  pointer-events: none;
-}
-
-/* The animation settings */
-@keyframes shine-effect {
-  0% { transform: translate(-50%, -50%); }
-  100% { transform: translate(10%, 10%); }
-}
-
-/* --- END OF RARE STICKER EFFECT --- */
+        .hot-text-word { display: inline-block; margin: 0 2px; padding: 2px 4px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; }
+        .hot-text-word.selected { background-color: #3b82f6; color: white; }
     </style>
 </head>
 
@@ -582,628 +489,367 @@ const skillLessons = {
 // 🚀 MASTER CONTENT DATABASE (NWEA + SAT + STORY)
 // ======================================================
 
+// ======================================================
+// 🚀 THE MEGA MASTER ITEM BANK: 800% CONTENT BOOST
+// ======================================================
+
 const itemBank = [
-    // --- NEW CALIBRATION ITEMS (Now the logic will find these) ---
-{
-    type: 'calibration', genre: 'diagnostic',
-    passage: "The proliferation of digital interfaces has fundamentally altered human attention spans. While some argue that this 'hyper-connectivity' fosters multitasking, studies suggest it actually degrades deep-cognitive processing.",
-    items: [{
-        id: 'cal-1', type: 'MC', standard: 'RI.8.1', difficulty: 5,
-        stem: 'Which statement best summarizes the central idea regarding digital interfaces?',
-        options: ['They help humans learn to multitask better.', 'They are essential for modern cognitive development.', 'They may negatively impact the ability to think deeply.', 'They have had no measurable effect on attention.'],
-        correct_answer: 'They may negatively impact the ability to think deeply.',
-        rationale: 'The text states it "degrades deep-cognitive processing," supporting the idea of negative impact.'
-    }]
-},
-
-// --- NEW IAR RESEARCH SIMULATION (Multi-Source) ---
-{
-    type: 'mission', genre: 'iar_sim',
-    sources: [
-        { 
-            title: 'Source A: Science Report', 
-            text: "<b>The Geothermal Pulse</b><br>Geothermal energy harnesses heat from the Earth's core. It is reliable and produces minimal carbon emissions. However, the high initial cost of drilling remains a significant barrier to widespread adoption." 
-        },
-        { 
-            title: 'Source B: Economic Blog', 
-            text: "<b>The Green Wall</b><br>Investors are hesitant about geothermal projects. Unlike solar or wind, which have seen a 70% drop in costs, geothermal drilling technology has remained stagnant in price for a decade." 
-        }
-    ],
-    items: [
-        {
-            id: 'iar-geo-1', type: 'MC', standard: 'RI.8.9', difficulty: 8,
-            stem: 'Which claim in Source A is specifically supported by the data in Source B?',
-            options: ['Geothermal is a reliable energy source.', 'Geothermal produces minimal emissions.', 'High drilling costs are a barrier to adoption.', 'Drilling technology has remained stagnant.'],
-            correct_answer: 'High drilling costs are a barrier to adoption.',
-            rationale: 'Source A mentions cost is a "barrier," and Source B explains why: drilling costs haven\'t dropped like solar/wind.'
-        }
-    ]
-},
-
-// --- NEW ACADEMIC VOCABULARY (NWEA Style) ---
-{
-    type: 'mission', genre: 'vocab_academic',
-    passage: "The politician's **equivocal** response to the question left the audience wondering where he actually stood on the tax increase. He managed to speak for five minutes without taking a definitive side.",
-    items: [
-        {
-            id: 'voc-acad-high-1', type: 'MC', standard: 'L.8.4.a', difficulty: 7,
-            stem: 'Based on the context, what does the word "equivocal" most likely mean?',
-            options: ['Direct and honest.', 'Intentionally vague or ambiguous.', 'Aggressive and loud.', 'Highly technical.'],
-            correct_answer: 'Intentionally vague or ambiguous.',
-            rationale: 'The text says the response left people "wondering where he stood" and he didn\'t take a "definitive side," indicating vagueness.'
-        }
-    ]
-},
-    // ------------------------------------------------------
-    // ZONE 1: VOCABULARY VALLEY (Roots, Affixes, Analogies)
-    // ------------------------------------------------------
+    // --- SECTION 1: CALIBRATION QUEST (DIAGNOSTICS) ---
     {
-        type: 'mission', genre: 'vocab_roots',
-        passage: "The **benevolent** king granted a pardon to the prisoner, a gesture that surprised his **malevolent** advisor. The advisor had hoped for a harsh punishment to instill fear in the kingdom.",
-        items: [
-            {
-                id: 'voc-roots-1', type: 'MC', standard: 'L.8.4.b', difficulty: 4,
-                stem: 'Based on the root "bene" and "mal", what is the relationship between "benevolent" and "malevolent"?',
-                options: ['They are synonyms.', 'They are antonyms.', 'They both mean "evil".', 'They both mean "kingly".'],
-                correct_answer: 'They are antonyms.',
-                hint: '"Bene" means good (benefit). "Mal" means bad (malfunction).',
-                rationale: 'Roots: Bene (good) vs Mal (bad) makes these words opposites (Antonyms).',
-                feedback: { 'They are synonyms.': 'Incorrect. Prefixes usually determine direction. Good vs. Bad are opposites.' }
-            },
-            {
-                id: 'voc-roots-2', type: 'MC', standard: 'L.8.4.b', difficulty: 5,
-                stem: 'Which other word contains the same root as "benevolent"?',
-                options: ['Beneficial', 'Beneath', 'Bendable', 'Bench'],
-                correct_answer: 'Beneficial',
-                hint: 'Look for a word that relates to doing something "good" or helpful.',
-                rationale: 'Etymology: "Beneficial" comes from the same root *bene* (well/good).',
-                feedback: { 'Beneath': 'Incorrect. This is a positional word, unrelated to the Latin root *bene*.' }
-            }
-        ]
+        type: 'calibration', id: 'cal-intro',
+        passage: "The Industrial Revolution was a period of scientific and commercial innovation that changed the world. However, it also led to overcrowded cities and poor working conditions for many.",
+        items: [{
+            id: 'cal-1', type: 'MC', standard: 'RI.8.1', difficulty: 3,
+            stem: 'Which statement is best supported by the passage?',
+            options: ['The Industrial Revolution only had positive effects.', 'Innovation came at a social cost.', 'Scientific progress stopped during this era.', 'Cities became less populated.'],
+            correct_answer: 'Innovation came at a social cost.',
+            rationale: 'The passage mentions "poor working conditions," indicating a social cost.'
+        }]
     },
     {
-        type: 'mission', genre: 'vocab_analogy',
-        passage: "Scientists categorize living things to understand relationships. Just as a **stanza** is part of a **poem**, a **chapter** is part of a **novel**.",
-        items: [
-            {
-                id: 'voc-analogy-1', type: 'MC', standard: 'L.8.5.b', difficulty: 6,
-                stem: 'Complete the analogy: **Microscope** is to **Biologist** as **Telescope** is to __________.',
-                options: ['Star', 'Astronomer', 'Lens', 'Laboratory'],
-                correct_answer: 'Astronomer',
-                hint: 'Tool : User relationship. Who uses a telescope?',
-                rationale: 'Relationship: A biologist uses a microscope to see small things; an astronomer uses a telescope to see far things.',
-                feedback: { 'Star': 'Incorrect. A star is what they LOOK at, not who uses the tool.' }
-            }
-        ]
+        type: 'calibration', id: 'cal-mid',
+        passage: "Maya felt a sense of <b>melancholy</b> as she watched the last leaves of autumn fall. The vibrant greens of summer were now just a memory, replaced by a grey, biting wind.",
+        items: [{
+            id: 'cal-2', type: 'MC', standard: 'L.8.4.a', difficulty: 5,
+            stem: 'What is the most likely meaning of "melancholy" as used in the text?',
+            options: ['Extreme excitement', 'A quiet sadness', 'Physical exhaustion', 'Sudden anger'],
+            correct_answer: 'A quiet sadness',
+            rationale: 'Contextual clues like "grey winds" and fading memories suggest sadness.'
+        }]
+    },
+    {
+        type: 'calibration', id: 'cal-high',
+        passage: "Proponents of renewable energy argue that infrastructure costs are offset by environmental health. Conversely, critics maintain that the grid is not yet equipped to handle variable wind and solar power.",
+        items: [{
+            id: 'cal-3', type: 'MC', standard: 'RI.8.8', difficulty: 8,
+            stem: 'How does the author structure the argument in this passage?',
+            options: ['By providing a solution to a technical problem.', 'By comparing two conflicting viewpoints.', 'By using a chronological history.', 'By dismissing the concerns of critics.'],
+            correct_answer: 'By comparing two conflicting viewpoints.',
+            rationale: 'The use of "Proponents argue" vs "Conversely, critics maintain" shows comparison.'
+        }]
     },
 
-    // ------------------------------------------------------
-    // ZONE 2: GRAMMAR GARRISON (Verb Moods, Active/Passive)
-    // ------------------------------------------------------
+    // --- SECTION 2: TIER 1 - ROOKIE (DIFFICULTY 1-3) ---
     {
-        type: 'mission', genre: 'grammar_moods',
-        passage: "<b>Sentence A:</b> If I were you, I would study for the test.<br><b>Sentence B:</b> Go to your room immediately!<br><b>Sentence C:</b> The Earth revolves around the sun.",
-        items: [
-            {
-                id: 'gram-mood-1', type: 'MC', standard: 'L.8.1.c', difficulty: 7,
-                stem: 'Which verb mood is used in Sentence A ("If I were you...")?',
-                options: ['Indicative', 'Imperative', 'Subjunctive', 'Interrogative'],
-                correct_answer: 'Subjunctive',
-                hint: 'It describes a hypothetical situation (something contrary to fact).',
-                rationale: 'Verb Moods: The Subjunctive mood is used for wishes, suggestions, or hypotheticals ("If I were...").',
-                feedback: { 'Imperative': 'Incorrect. Imperative is for commands (like Sentence B).' }
-            },
-            {
-                id: 'gram-mood-2', type: 'MC', standard: 'L.8.1.c', difficulty: 5,
-                stem: 'Which sentence is written in the Imperative mood?',
-                options: ['Sentence A', 'Sentence B', 'Sentence C', 'None of them'],
-                correct_answer: 'Sentence B',
-                hint: 'Imperative means a command or request.',
-                rationale: 'Verb Moods: "Go to your room" is a direct command, which is Imperative.',
-                feedback: { 'Sentence C': 'Incorrect. Sentence C states a fact, so it is Indicative.' }
-            }
-        ]
+        type: 'mission', genre: 'info_history',
+        passage: "The Pony Express delivered mail between the Atlantic and Pacific coasts in about 10 days using horse-mounted riders.",
+        items: [{
+            id: 'rok-hist-1', type: 'MC', standard: 'RI.8.1', difficulty: 2,
+            stem: 'What was the primary achievement of the Pony Express?',
+            options: ['Cheapest mail service.', 'Reduced travel time for mail.', 'Riders owned their horses.', 'Delivered only to the Pacific.'],
+            correct_answer: 'Reduced travel time for mail.',
+            rationale: 'It cut delivery time to 10 days.'
+        }]
     },
     {
-        type: 'mission', genre: 'grammar_voice',
-        passage: "<b>Version 1:</b> The winning goal was scored by the rookie player in the final seconds.<br><b>Version 2:</b> The rookie player scored the winning goal in the final seconds.",
-        items: [
-            {
-                id: 'gram-voice-1', type: 'MC', standard: 'L.8.3.a', difficulty: 6,
-                stem: 'What is the main difference between Version 1 and Version 2?',
-                options: ['Version 1 is Active; Version 2 is Passive.', 'Version 1 is Passive; Version 2 is Active.', 'Version 1 uses incorrect grammar.', 'Version 2 uses more descriptive adjectives.'],
-                correct_answer: 'Version 1 is Passive; Version 2 is Active.',
-                hint: 'In Version 1, is the subject DOING the action, or having the action done TO it?',
-                rationale: 'Voice: Version 1 ("was scored by") is Passive. Version 2 ("scored") is Active and stronger.',
-                feedback: { 'Version 1 is Active; Version 2 is Passive.': 'Incorrect. You have them swapped.' }
-            }
-        ]
-    },
-    // --- KEPT: SAT Grammar (Good for 8th Grade Challenge) ---
-    {
-        type: 'mission', genre: 'sat_grammar',
-        passage: "The 'Ghost Army' was a United States Army tactical deception unit during World War II. officially known as the 23rd Headquarters Special Troops, the unit was unique.",
-        items: [
-            {
-                id: 'sat-gram-1', type: 'MC', standard: 'SAT.Convention.1', difficulty: 6,
-                stem: 'Which choice completes the text so that it conforms to the conventions of Standard English?',
-                options: ['II officially', 'II. Officially', 'II, officially', 'II; officially'],
-                correct_answer: 'II. Officially',
-                hint: 'Check for independent clauses. "The Ghost Army was..." is a complete sentence.',
-                rationale: 'Sentence Boundaries: The first sentence is a complete thought. We need a period to separate it from the next sentence.',
-                feedback: { 'II, officially': 'Incorrect. This creates a comma splice.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 3: FICTION FORTRESS (Irony, Theme, POV)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'lit_irony',
-        passage: "Mr. Graves was the most feared dentist in town. He had a collection of sharp, terrifying tools and never smiled. Ironically, his own teeth were crooked and yellow, and he was terrified of letting anyone else work on them.",
-        items: [
-            {
-                id: 'lit-irony-1', type: 'MC', standard: 'RL.8.6', difficulty: 7,
-                stem: 'Which type of irony is present in this passage?',
-                options: ['Verbal Irony', 'Situational Irony', 'Dramatic Irony', 'Socratic Irony'],
-                correct_answer: 'Situational Irony',
-                hint: 'Is the outcome different from what you would expect for a dentist?',
-                rationale: 'Irony: It is situational irony because you expect a dentist to have perfect teeth and not fear dentistry.',
-                feedback: { 'Verbal Irony': 'Incorrect. No one said anything sarcastic.' }
-            }
-        ]
+        type: 'mission', genre: 'grammar_basics',
+        passage: "She <b>walked</b> to the store, <b>buys</b> a loaf of bread, and <b>returned</b> home.",
+        items: [{
+            id: 'rok-gram-1', type: 'MC', standard: 'L.8.1', difficulty: 3,
+            stem: 'Which word breaks the consistent verb tense?',
+            options: ['walked', 'buys', 'returned', 'store'],
+            correct_answer: 'buys',
+            rationale: 'Buys is present tense; others are past tense.'
+        }]
     },
     {
-        type: 'mission', genre: 'lit_suspense',
-        passage: "The floorboards creaked. Maya froze. She knew she was alone in the house, yet the sound came distinctly from the hallway. *Thump. Drag. Thump.* It was getting closer.",
-        items: [
-            {
-                id: 'lit-suspense-1', type: 'MC', standard: 'RL.8.6', difficulty: 6,
-                stem: 'How does the author primarily create suspense in this excerpt?',
-                options: ['By describing the setting in detail.', 'By using sensory details and pacing.', 'By revealing the monster immediately.', 'By using dialogue.'],
-                correct_answer: 'By using sensory details and pacing.',
-                hint: 'Look at the sound words (*Thump*) and the short sentences.',
-                rationale: 'Craft & Structure: Short sentences ("Maya froze") and sound effects ("Thump") slow the pace and build tension.',
-                feedback: { 'By revealing the monster immediately.': 'Incorrect. We don\'t know what it is yet; that IS the suspense.' }
-            }
-        ]
+        type: 'mission', genre: 'lit_poetry',
+        passage: "The fog comes / on little cat feet. / It sits looking / over harbor and city.",
+        items: [{
+            id: 'rok-poet-1', type: 'MC', standard: 'RL.8.4', difficulty: 2,
+            stem: 'What is the fog being compared to?',
+            options: ['A silent haunch', 'A harbor', 'A cat', 'A storm'],
+            correct_answer: 'A cat',
+            rationale: 'The metaphor "cat feet" draws a direct comparison.'
+        }]
     },
-    // --- KEPT: The Classics (Good for Complexity) ---
     {
-        type: 'mission', genre: 'literature', 
-        passage: "The thousand injuries of Fortunato I had borne as I best could, but when he ventured upon insult I vowed revenge. You, who so well know the nature of my soul, will not suppose, however, that I gave utterance to a threat.",
-        items: [
-            {
-                id: 'mission-2a', type: 'MC', standard: 'RL.9.3', difficulty: 6,
-                stem: 'What does the narrator\'s reaction to the "insult" reveal about his character?',
-                options: ['He is forgiving and patient.', 'He is impulsive and loud.', 'He is calculating and cold.', 'He is confused and hurt.'],
-                correct_answer: 'He is calculating and cold.',
-                hint: 'He vows revenge but explicitly says he did NOT utter a threat.',
-                rationale: 'Characterization: He plans revenge silently ("vowed revenge" but no "threat"), showing he is calculating.',
-                feedback: { 'He is impulsive and loud.': 'Incorrect. An impulsive person would have threatened him immediately.' }
-            }
-        ]
+        type: 'mission', genre: 'info_science',
+        passage: "Pollination is the act of transferring pollen grains to create offspring for the next generation.",
+        items: [{
+            id: 'rok-sci-2', type: 'MC', standard: 'RI.8.2', difficulty: 3,
+            stem: 'What is the central idea?',
+            options: ['Bees are necessary.', 'Pollination is key for plant reproduction.', 'Plants avoid offspring.', 'Anthers are large.'],
+            correct_answer: 'Pollination is key for plant reproduction.',
+            rationale: 'The text links pollination directly to creating the next generation.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'lit_fable',
+        passage: "The tortoise moved slowly but surely, never stopping to rest, while the hare took a nap mid-race.",
+        items: [{
+            id: 'rok-lit-3', type: 'MC', standard: 'RL.8.2', difficulty: 2,
+            stem: 'What is the most likely theme of this story?',
+            options: ['Speed is everything.', 'Persistence leads to success.', 'Sleeping is healthy.', 'Racing is dangerous.'],
+            correct_answer: 'Persistence leads to success.',
+            rationale: 'The tortoise wins because he is steady and persistent.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'info_nature',
+        passage: "Deserts receive very little rainfall, yet many animals like the fennec fox have adapted to survive in extreme heat.",
+        items: [{
+            id: 'rok-sci-3', type: 'MC', standard: 'RI.8.1', difficulty: 3,
+            stem: 'What does the text imply about fennec foxes?',
+            options: ['They hate rain.', 'They have traits that help them in hot weather.', 'They are the only desert animals.', 'They prefer cold climates.'],
+            correct_answer: 'They have traits that help them in hot weather.',
+            rationale: 'The text states they "adapted to survive in extreme heat."'
+        }]
+    },
+    {
+        type: 'mission', genre: 'grammar_punctuation',
+        passage: "The student's books were scattered across the floor.",
+        items: [{
+            id: 'rok-gram-2', type: 'MC', standard: 'L.8.2', difficulty: 2,
+            stem: 'Why is an apostrophe used in the word "student\'s"?',
+            options: ['To show plural.', 'To show possession.', 'To show a contraction.', 'To show an exclamation.'],
+            correct_answer: 'To show possession.',
+            rationale: 'The apostrophe indicates the books belong to the student.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'info_health',
+        passage: "Washing your hands is the most effective way to prevent the spread of germs and stay healthy.",
+        items: [{
+            id: 'rok-info-2', type: 'MC', standard: 'RI.8.1', difficulty: 1,
+            stem: 'What is the main benefit of hand washing according to the text?',
+            options: ['It makes hands smell good.', 'It prevents germs from spreading.', 'It uses a lot of water.', 'It takes a long time.'],
+            correct_answer: 'It prevents germs from spreading.',
+            rationale: 'The text states it is the most effective way to prevent the spread of germs.'
+        }]
     },
 
-    // ------------------------------------------------------
-    // ZONE 4: INFO INFINITY (Arguments, Evidence, Structure)
-    // ------------------------------------------------------
+    // --- SECTION 3: TIER 2 - SCHOLAR (DIFFICULTY 4-7) ---
+    {
+        type: 'mission', genre: 'info_social',
+        passage: "Urbanization leads to the 'Heat Island Effect.' Buildings and roads absorb more heat than natural landscapes.",
+        items: [{
+            id: 'sch-soc-1', type: 'MC', standard: 'RI.8.3', difficulty: 5,
+            stem: 'Identify the cause-and-effect relationship.',
+            options: ['Cities melt roads.', 'Rural areas cool buildings.', 'Infrastructure absorption causes higher heat.', 'Heat increases population.'],
+            correct_answer: 'Infrastructure absorption causes higher heat.',
+            rationale: 'Heat absorption by roads/buildings causes the temperature spike.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'lit_prose',
+        passage: "Behind him lay the safety of the village; before him lay the <b>formidable</b> peaks of the Unseen Mountains.",
+        items: [{
+            id: 'sch-lit-1', type: 'MC', standard: 'L.8.4', difficulty: 6,
+            stem: 'What does "formidable" suggest about the mountains?',
+            options: ['Easy to climb.', 'Small.', 'Beautiful.', 'Intimidating and challenging.'],
+            correct_answer: 'Intimidating and challenging.',
+            rationale: 'Contextual danger (howling winds/abyss) supports "intimidating."'
+        }]
+    },
+    {
+        type: 'mission', genre: 'grammar_logic',
+        passage: "The judge's decision was <b>arbitrary</b>; he seemed to choose the winner based on his mood rather than the rules.",
+        items: [{
+            id: 'sch-gram-1', type: 'MC', standard: 'L.8.4', difficulty: 6,
+            stem: 'What does "arbitrary" mean in this context?',
+            options: ['Carefully planned.', 'Based on random choice.', 'Legally binding.', 'Highly respected.'],
+            correct_answer: 'Based on random choice.',
+            rationale: 'The text states he used "mood" rather than "rules."'
+        }]
+    },
+    {
+        type: 'mission', genre: 'info_tech',
+        passage: "If data contains human bias, AI will <b>perpetuate</b> those prejudices in its results.",
+        items: [{
+            id: 'sch-tech-1', type: 'MC', standard: 'RI.8.1', difficulty: 7,
+            stem: 'Summarize the warning about AI.',
+            options: ['AI is smarter than humans.', 'AI can continue human biases.', 'Datasets eliminate human input.', 'Prejudices are intentional.'],
+            correct_answer: 'AI can continue human biases.',
+            rationale: 'The word "perpetuate" means to continue the existing bias.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'lit_mystery',
+        passage: "Detective Vance examined the <b>scant</b> evidence: a single muddy footprint and a broken latch.",
+        items: [{
+            id: 'sch-lit-2', type: 'MC', standard: 'L.8.4', difficulty: 5,
+            stem: 'What does the word "scant" imply about the evidence?',
+            options: ['There was a large amount.', 'It was very confusing.', 'There was very little of it.', 'It was clearly planted.'],
+            correct_answer: 'There was very little of it.',
+            rationale: 'The mention of only a footprint and a latch indicates a small amount.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'info_ecology',
+        passage: "Wetlands act as natural filters, trapping pollutants before they reach larger bodies of water.",
+        items: [{
+            id: 'sch-sci-1', type: 'MC', standard: 'RI.8.2', difficulty: 5,
+            stem: 'What is the primary function of wetlands described here?',
+            options: ['To provide a home for fish.', 'To clean water by filtering pollutants.', 'To cause flooding in rural areas.', 'To create bodies of water.'],
+            correct_answer: 'To clean water by filtering pollutants.',
+            rationale: 'The text explicitly states they "trap pollutants."'
+        }]
+    },
+    {
+        type: 'mission', genre: 'lit_analysis_mid',
+        passage: "The protagonist's journey mirrors the changing seasons, beginning in the hopeful spring and ending in the cold, reflective winter.",
+        items: [{
+            id: 'sch-lit-3', type: 'MC', standard: 'RL.8.3', difficulty: 6,
+            stem: 'How does the setting contribute to the character development?',
+            options: ['It shows the character likes cold weather.', 'It symbolizes the character\'s growth and aging.', 'It has no effect on the character.', 'It makes the character want to travel.'],
+            correct_answer: 'It symbolizes the character\'s growth and aging.',
+            rationale: 'The mirroring of seasons typically symbolizes the stages of life or character development.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'info_civics',
+        passage: "The three branches of government ensure a system of checks and balances, preventing any one branch from becoming too powerful.",
+        items: [{
+            id: 'sch-civ-1', type: 'MC', standard: 'RI.8.3', difficulty: 4,
+            stem: 'What is the purpose of "checks and balances"?',
+            options: ['To speed up lawmaking.', 'To distribute power evenly.', 'To eliminate the need for a President.', 'To increase taxes.'],
+            correct_answer: 'To distribute power evenly.',
+            rationale: 'The text states it prevents any one branch from becoming too powerful.'
+        }]
+    },
+
+    // --- SECTION 4: TIER 3 - LEGEND (DIFFICULTY 8-10) ---
+    {
+        type: 'mission', genre: 'info_philosophy',
+        passage: "The Socratic Method involves cooperative dialogue to draw out underlying <b>presuppositions</b>.",
+        items: [{
+            id: 'leg-phil-1', type: 'MC', standard: 'L.8.4', difficulty: 9,
+            stem: 'Define "presuppositions" in this context.',
+            options: ['Final conclusions.', 'Assumptions held before dialogue.', 'Argument techniques.', 'Unanswerable questions.'],
+            correct_answer: 'Assumptions held before dialogue.',
+            rationale: 'The prefix "pre-" indicates these are held beforehand.'
+        }]
+    },
+    {
+        type: 'mission', genre: 'lit_classic',
+        passage: "It was the best of times, it was the worst of times; wisdom and foolishness.",
+        items: [{
+            id: 'leg-lit-1', type: 'MC', standard: 'RL.8.2', difficulty: 10,
+            stem: 'How does paradox establish the setting?',
+            options: ['Wisdom and foolishness are same.', 'Suggests extreme contradictions.', 'Best of times was flawless.', 'Ignores history.'],
+            correct_answer: 'Suggests extreme contradictions.',
+            rationale: 'Repeated opposites highlight a contradictory era.'
+        }]
+    },
     {
         type: 'mission', genre: 'info_argument',
-        passage: "School uniforms limit student expression and are an unnecessary expense for parents. While proponents argue that uniforms reduce bullying, a 2022 study showed no significant decrease in bullying incidents in uniformed schools compared to non-uniformed ones.",
-        items: [
-            {
-                id: 'info-arg-1', type: 'MC', standard: 'RI.8.8', difficulty: 8,
-                stem: 'How does the author respond to the conflicting viewpoint (that uniforms reduce bullying)?',
-                options: ['By agreeing with it completely.', 'By attacking the character of the proponents.', 'By providing evidence (a study) to refute it.', 'By ignoring it.'],
-                correct_answer: 'By providing evidence (a study) to refute it.',
-                hint: 'Look at the sentence starting with "While proponents argue..."',
-                rationale: 'Evaluating Arguments: The author acknowledges the opposing view but counters it with a specific study.',
-                feedback: { 'By ignoring it.': 'Incorrect. They explicitly mention "While proponents argue...", so they didn\'t ignore it.' }
-            },
-            {
-                id: 'info-arg-2', type: 'MC', standard: 'RI.8.2', difficulty: 7,
-                stem: 'What is the central claim of the passage?',
-                options: ['Uniforms stop bullying.', 'Uniforms are expensive but worth it.', 'Uniforms are negative due to cost and limits on expression.', 'Schools should ban all clothing.'],
-                correct_answer: 'Uniforms are negative due to cost and limits on expression.',
-                hint: 'Look at the very first sentence.',
-                rationale: 'Key Ideas: The first sentence states the main argument: uniforms limit expression and cost too much.',
-                feedback: { 'Uniforms stop bullying.': 'Incorrect. The author argues AGAINST this idea.' }
-            }
-        ]
-    },
-    // --- KEPT: NWEA Music Industry (Text Structure) ---
-    {
-        type: 'mission', genre: 'informational',
-        passage: "While digital streaming has revolutionized the music industry by making songs accessible instantly, it has severely impacted artists' revenue. In the era of physical sales (CDs/Vinyl), artists earned a significant percentage per album. Conversely, streaming services pay fractions of a cent per play.",
-        items: [
-            {
-                id: 'nwea-struct-1', type: 'MC', standard: 'RI.8.5', difficulty: 6,
-                stem: 'Which text structure does the author primarily use in this passage?',
-                options: ['Chronological Order', 'Comparison and Contrast', 'Problem and Solution', 'Descriptive'],
-                correct_answer: 'Comparison and Contrast',
-                hint: 'The author looks at "the era of physical sales" versus "streaming services".',
-                rationale: 'Structure Analysis: The text contrasts two eras (Physical vs. Digital) and their financial results.',
-                feedback: { 'Problem and Solution': 'Incorrect. A problem is presented (low revenue), but no solution is offered.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 5: POETRY PEAK (NEW CONTENT!)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'poetry',
-        passage: "Hold fast to dreams / For if dreams die / Life is a broken-winged bird / That cannot fly. <br>Hold fast to dreams / For when dreams go / Life is a barren field / Frozen with snow.",
-        items: [
-            {
-                id: 'poetry-1', type: 'MC', standard: 'RL.8.4', difficulty: 5,
-                stem: 'What metaphor does the poet use to describe life without dreams?',
-                options: ['A broken-winged bird and a barren field.', 'A fast runner and a snowy day.', 'A flying bird and a green field.', 'A nightmare and a storm.'],
-                correct_answer: 'A broken-winged bird and a barren field.',
-                hint: 'Look for the lines starting with "Life is..."',
-                rationale: 'Metaphor: The poet directly compares life to a "broken-winged bird" and a "barren field."',
-                feedback: { 'A flying bird and a green field.': 'Incorrect. The poem describes negative outcomes (broken, barren) if dreams die.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 6: RESEARCH STATION (NEW CONTENT!)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'research',
-        passage: "<b>Source A:</b> A blog post by 'BurgerLover99' stating that grease is good for your heart.<br><b>Source B:</b> A peer-reviewed study by the American Heart Association regarding dietary fats.",
-        items: [
-            {
-                id: 'research-1', type: 'MC', standard: 'W.8.8', difficulty: 4,
-                stem: 'Which source would be considered more credible for a research paper on nutrition?',
-                options: ['Source A', 'Source B', 'Both are equal.', 'Neither is credible.'],
-                correct_answer: 'Source B',
-                hint: 'Credible sources usually come from experts or organizations, not anonymous users.',
-                rationale: 'Credibility: Peer-reviewed studies by recognized organizations (AHA) are authoritative. Anonymous blogs are not.',
-                feedback: { 'Source A': 'Incorrect. Blogs by anonymous users often lack scientific verification.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 7: PUNCTUATION PALACE (Ellipses & Dashes)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'grammar_punc',
-        passage: "I was thinking about going to the store... wait, did I leave the oven on? No—I definitely turned it off. At least, I think I did.",
-        items: [
-            {
-                id: 'punc-dash-1', type: 'MC', standard: 'L.8.2.a', difficulty: 5,
-                stem: 'Why does the author use a dash (—) in the second sentence?',
-                options: ['To indicate a sudden break in thought.', 'To show that words have been removed.', 'To connect two independent clauses.', 'To list items.'],
-                correct_answer: 'To indicate a sudden break in thought.',
-                hint: 'The speaker stops abruptly ("No") and changes direction.',
-                rationale: 'Punctuation: A dash is used to signal an abrupt break or interruption in thought.',
-                feedback: { 'To show that words have been removed.': 'Incorrect. That is the job of an ellipsis (...).' }
-            },
-            {
-                id: 'punc-ellip-1', type: 'MC', standard: 'L.8.2.a', difficulty: 4,
-                stem: 'The ellipsis (...) in the first sentence is used to show:',
-                options: ['A trailing off or pause.', 'A direct quote.', 'Excitement.', 'A question.'],
-                correct_answer: 'A trailing off or pause.',
-                hint: 'Read it aloud. "I was thinking... wait." What happens in the middle?',
-                rationale: 'Punctuation: The ellipsis indicates a pause or hesitation in the character\'s speech.',
-                feedback: { 'A direct quote.': 'Incorrect. Quotation marks are used for quotes.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 8: SPELLING SPIRE (Confused Words)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'grammar_spell',
-        passage: "The pollution had a negative **[effect/affect]** on the local wildlife. Scientists tried to **[effect/affect]** change by proposing new laws.",
-        items: [
-            {
-                id: 'spell-eff-1', type: 'MC', standard: 'L.8.2.c', difficulty: 6,
-                stem: 'Select the correct word to complete the first sentence: "The pollution had a negative _____."',
-                options: ['Effect', 'Affect', 'Efect', 'Afect'],
-                correct_answer: 'Effect',
-                hint: 'Is it a Noun (a thing/result) or a Verb (an action)? "A negative [Thing]."',
-                rationale: 'Spelling: "Effect" is a noun meaning "result." The pollution caused a result.',
-                feedback: { 'Affect': 'Incorrect. Affect is usually a verb (to influence).' }
-            },
-            {
-                id: 'spell-eff-2', type: 'MC', standard: 'L.8.2.c', difficulty: 7,
-                stem: 'Select the correct word to complete the second sentence: "Scientists tried to _____ change."',
-                options: ['Effect', 'Affect', 'Effected', 'Affects'],
-                correct_answer: 'Effect',
-                hint: 'Wait! This is a trick. Usually "Affect" is the verb, BUT "To effect change" means to CREATE change.',
-                rationale: 'Advanced Usage: While "Affect" is usually the verb, "To Effect Change" is a specific phrase meaning "to bring about/create".',
-                feedback: { 'Affect': 'Incorrect. To "affect change" would mean to alter the change itself. To "effect change" means to MAKE it happen.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 9: PERSPECTIVE PEAK (Author's POV)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'info_pov',
-        passage: "While many celebrate the new highway as a sign of progress, it is essentially a scar across our beautiful landscape. It disrupts migration paths and brings noise pollution to our quiet valley. We must ask ourselves: is this 'convenience' worth the destruction?",
-        items: [
-            {
-                id: 'pov-1', type: 'MC', standard: 'RI.8.6', difficulty: 6,
-                stem: 'What is the author\'s point of view regarding the new highway?',
-                options: ['It is a necessary evil.', 'It is a harmful mistake.', 'It is a wonderful innovation.', 'It is economically beneficial.'],
-                correct_answer: 'It is a harmful mistake.',
-                hint: 'Look at the words used: "scar," "disrupts," "destruction."',
-                rationale: 'Point of View: The author uses negative language ("scar", "destruction") to show strong disapproval.',
-                feedback: { 'It is a necessary evil.': 'Incorrect. The author asks if it is "worth" it, implying it is NOT necessary.' }
-            },
-            {
-                id: 'pov-2', type: 'MC', standard: 'RI.8.6', difficulty: 7,
-                stem: 'How does the author distinguish their position from others?',
-                options: ['By acknowledging that others see it as "progress" but refuting it.', 'By ignoring the opposing view entirely.', 'By using statistical data.', 'By interviewing the construction workers.'],
-                correct_answer: 'By acknowledging that others see it as "progress" but refuting it.',
-                hint: 'Look at the first sentence: "While many celebrate..."',
-                rationale: 'POV & Structure: The author admits others call it "progress" but immediately counters with "it is essentially a scar."',
-                feedback: { 'By ignoring the opposing view entirely.': 'Incorrect. They mention "many celebrate..." right at the start.' }
-            }
-        ]
-    },
-
-    // ======================================================
-    // ZONE 10: IAR RESEARCH SIMULATIONS (Multi-Source)
-    // ======================================================
-    {
-        type: 'mission', genre: 'iar_sim',
-        // Instead of 'passage', we use 'sources' array
-        sources: [
-            { 
-                title: 'Source A: Article', 
-                text: "<b>The Red Frontier</b><br>Colonizing Mars is the next logical step for humanity. It offers a backup plan for Earth's resources and a chance to discover signs of ancient life. However, the cost is astronomical. Transporting a single kilogram of supplies costs thousands of dollars, and the radiation exposure during the 7-month trip poses severe health risks." 
-            },
-            { 
-                title: 'Source B: Diary', 
-                text: "<b>Commander's Log: Sol 45</b><br>The silence here is heavy. I looked out the viewport today and saw nothing but rust-colored dust for miles. It’s beautiful, yes, but cold. I miss the sound of rain. I miss the color green. We are making history, they say. But tonight, I just feel like a ghost in a graveyard." 
-            },
-            { 
-                title: 'Source C: Data', 
-                image: 'https://placehold.co/600x300/f1f5f9/334155?text=Graph:+Cost+vs+Time+of+Space+Travel',
-                text: "<i>Figure 1: Projected cost of Mars colonization over 50 years. The line shows costs initially spiking to $500 Billion, then slowly decreasing as reusable rockets become standard.</i>" 
-            }
-        ],
-        items: [
-            {
-                id: 'iar-mars-1', type: 'MC', standard: 'RI.8.7', difficulty: 8,
-                stem: 'How does the diary entry (Source B) contribute to the understanding of Mars colonization differently than the article (Source A)?',
-                options: ['It provides specific data on the cost of the trip.', 'It illustrates the emotional and psychological toll on the astronauts.', 'It argues that the mission should be cancelled immediately.', 'It explains the radiation risks detailed in Source A.'],
-                correct_answer: 'It illustrates the emotional and psychological toll on the astronauts.',
-                hint: 'Source A deals with facts (cost/health). Source B deals with feelings ("silence," "miss the rain").',
-                rationale: 'Integration of Sources: While Source A is factual/logistical, Source B provides the "human element" (loneliness/isolation).',
-                feedback: { 'It argues that the mission should be cancelled immediately.': 'Incorrect. The astronaut feels lonely, but does not explicitly say to cancel the mission.' }
-            },
-            {
-                id: 'iar-mars-2', type: 'MC', standard: 'RI.8.9', difficulty: 9,
-                stem: 'Which claim from the Article (Source A) is supported by the Data (Source C)?',
-                options: ['The trip takes 7 months.', 'Radiation poses health risks.', 'The cost is astronomical.', 'There is ancient life on Mars.'],
-                correct_answer: 'The cost is astronomical.',
-                hint: 'Look at the Graph description in Source C. It mentions "$500 Billion."',
-                rationale: 'Evidence Evaluation: Source A claims costs are high ("astronomical"). Source C confirms this with the "$500 Billion" figure.',
-                feedback: { 'The trip takes 7 months.': 'Incorrect. The graph shows Cost vs Time (Years), not the duration of the flight.' }
-            }
-        ]
+        passage: "Critics argue costs rise for parents, but supporters point to district savings.",
+        items: [{
+            id: 'leg-arg-1', type: 'MC', standard: 'RI.8.8', difficulty: 9,
+            stem: 'How does the author evaluate the claims?',
+            options: ['Firmly sides against parents.', 'Prioritizes district savings.', 'Presents perspectives without resolution.', 'Utility costs are irrelevant.'],
+            correct_answer: 'Presents perspectives without resolution.',
+            rationale: 'The author balances both sides without choosing.'
+        }]
     },
     {
-        type: 'mission', genre: 'iar_history',
-        sources: [
-            { 
-                title: 'Source A: Historical Text', 
-                text: "<b>The Dust Bowl (1930s)</b><br>Severe drought combined with poor farming methods resulted in the 'Dust Bowl.' Farmers had removed the native prairie grass that held the soil in place. When the winds came, topsoil was blown away in massive 'black blizzards,' destroying millions of acres of farmland." 
-            },
-            { 
-                title: 'Source B: Video Transcript', 
-                text: "<b>Interview with a Survivor</b><br>[Interviewer]: What was it like when the storm hit?<br>[Witness]: You couldn't see your hand in front of your face. We hung wet sheets over the windows, but the dust still got in. It tasted like metal. We slept with masks on. The cattle... well, their lungs just filled up. It was apocalyptic." 
-            },
-            { 
-                title: 'Source C: Map', 
-                image: 'https://placehold.co/600x300/e2e8f0/1e293b?text=Map:+Severe+Drought+Area+(Texas,+Oklahoma,+Kansas)',
-                text: "<i>Figure 2: Map of the United States showing the 'Severe Drought' regions of the 1930s, centered on the Oklahoma panhandle.</i>" 
-            }
-        ],
-        items: [
-            {
-                id: 'iar-dust-1', type: 'MC', standard: 'RI.8.2', difficulty: 7,
-                stem: 'Based on Source A, what was the primary human cause of the Dust Bowl?',
-                options: ['The severe drought.', 'The removal of native prairie grass.', 'The use of wet sheets on windows.', 'The cattle grazing patterns.'],
-                correct_answer: 'The removal of native prairie grass.',
-                hint: 'Drought is nature\'s fault. What did the *farmers* do? (See Source A)',
-                rationale: 'Cause & Effect: Source A explicitly states farmers "removed the native prairie grass that held the soil in place."',
-                feedback: { 'The severe drought.': 'Incorrect. That is a natural cause, not the human cause mentioned in the text.' }
-            },
-            {
-                id: 'iar-dust-2', type: 'MC', standard: 'RI.8.3', difficulty: 8,
-                stem: 'Which source would be most useful for a student researching the personal, daily struggle of living through the Dust Bowl?',
-                options: ['Source A only.', 'Source B only.', 'Source C only.', 'All three sources equally.'],
-                correct_answer: 'Source B only.',
-                hint: 'Personal struggle = Feelings, sensory details, individual stories.',
-                rationale: 'Source Analysis: Source B is a first-hand account ("tasted like metal," "slept with masks"), providing the personal perspective.',
-                feedback: { 'Source A only.': 'Incorrect. Source A is a general overview of facts, not a personal story.' }
-            }
-        ]
+        type: 'mission', genre: 'lit_tragedy',
+        passage: "The crown sat heavy, a circle of gold that felt more like a shackle of lead.",
+        items: [{
+            id: 'leg-lit-2', type: 'MC', standard: 'RL.8.4', difficulty: 8,
+            stem: 'How does the "shackle" metaphor impact tone?',
+            options: ['Triumph and wealth.', 'Regret and burden.', 'Physical weakness.', 'Fake materials.'],
+            correct_answer: 'Regret and burden.',
+            rationale: 'Linking power to a "shackle" emphasizes the burden of rule.'
+        }]
     },
-
-    // ------------------------------------------------------
-    // ZONE 11: FUNCTION & STRUCTURE (Advanced)
-    // ------------------------------------------------------
     {
-        type: 'mission', genre: 'info_function',
-        passage: "[1] Electric cars are often hailed as the future of transportation. [2] They produce zero emissions and reduce our reliance on fossil fuels. [3] However, the mining of lithium for batteries poses its own environmental challenges. [4] Therefore, we must innovate battery technology before claiming victory.",
-        items: [
-            {
-                id: 'func-1', type: 'MC', standard: 'RI.8.5', difficulty: 8,
-                stem: 'What is the primary function of Sentence 3 ("However, the mining...")?',
-                options: ['To provide evidence supporting electric cars.', 'To introduce a counter-point or complication.', 'To conclude the argument.', 'To define the term "lithium".'],
-                correct_answer: 'To introduce a counter-point or complication.',
-                hint: 'Look at the transition word "However." Does it agree or disagree with the previous sentence?',
-                rationale: 'Text Structure: "However" signals a shift. The sentence introduces a negative aspect (complication) to the positive view presented earlier.',
-                feedback: { 'To provide evidence supporting electric cars.': 'Incorrect. It points out a "challenge," which supports the opposing view.' }
-            }
-        ]
+        type: 'mission', genre: 'info_science_advanced',
+        passage: "Quantum entanglement defies classical intuition, as particles remain <b>intrinsically</b> linked across vast distances.",
+        items: [{
+            id: 'leg-sci-1', type: 'MC', standard: 'L.8.4', difficulty: 9,
+            stem: 'What does "intrinsically" mean in this context?',
+            options: ['By accident.', 'At a fundamental level.', 'Occasionally.', 'With extreme effort.'],
+            correct_answer: 'At a fundamental level.',
+            rationale: 'The context of particle physics suggests an essential, built-in link.'
+        }]
     },
-
-    // ------------------------------------------------------
-    // ZONE 12: THE ECHO CHAMBER (Sound Devices)
-    // ------------------------------------------------------
     {
-        type: 'mission', genre: 'poetry_sound',
-        passage: "The **s**ilent **s**nakes **s**lithered **s**lowly through the gra**ss**.<br>The m**oo**n r**o**se over the l**oo**ming d**u**nes.",
-        items: [
-            {
-                id: 'sound-allit-1', type: 'MC', standard: 'RL.8.4.sound', difficulty: 5,
-                stem: 'The phrase "silent snakes slithered slowly" is an example of:',
-                options: ['Alliteration', 'Assonance', 'Onomatopoeia', 'Rhyme'],
-                correct_answer: 'Alliteration',
-                hint: 'Look at the first letter of each word. S... S... S...',
-                rationale: 'Sound Devices: Alliteration is the repetition of the same consonant sound at the beginning of words.',
-                feedback: { 'Assonance': 'Incorrect. Assonance repeats vowel sounds inside words.' }
-            },
-            {
-                id: 'sound-ass-1', type: 'MC', standard: 'RL.8.4.sound', difficulty: 6,
-                stem: 'The phrase "moon rose over the looming dunes" focuses on the repetition of which sound?',
-                options: ['The "oo" vowel sound (Assonance).', 'The "n" consonant sound (Alliteration).', 'The "r" sound.', 'There is no repetition.'],
-                correct_answer: 'The "oo" vowel sound (Assonance).',
-                hint: 'Listen to the vowels: M-oo-n, L-oo-ming, D-u-nes.',
-                rationale: 'Sound Devices: Assonance is the repetition of vowel sounds (oo/u) within nearby words.',
-                feedback: { 'The "n" consonant sound (Alliteration).': 'Incorrect. While "n" appears at the END of words, Alliteration must be at the START.' }
-            }
-        ]
+        type: 'mission', genre: 'lit_satire',
+        passage: "The politician promised to save the environment by building a parking lot on every forest, claiming it would hide the dirt.",
+        items: [{
+            id: 'leg-lit-3', type: 'MC', standard: 'RL.8.6', difficulty: 9,
+            stem: 'What is the most likely purpose of this satirical statement?',
+            options: ['To support construction projects.', 'To mock nonsensical environmental policies.', 'To teach about soil types.', 'To encourage forestation.'],
+            correct_answer: 'To mock nonsensical environmental policies.',
+            rationale: 'Satire uses irony to point out flaws—here, the absurdity of "saving" nature by paving it.'
+        }]
     },
-
-    // ------------------------------------------------------
-    // ZONE 13: DEBATE CLUB (Argument Strength)
-    // ------------------------------------------------------
     {
-        type: 'mission', genre: 'info_debate',
-        passage: "<b>Claim:</b> Schools should start later in the day to improve student health.<br><b>Evidence A:</b> A study by the CDC shows that 70% of teens do not get enough sleep.<br><b>Evidence B:</b> My little brother hates waking up early.<br><b>Evidence C:</b> Teachers also like coffee in the morning.",
-        items: [
-            {
-                id: 'arg-strength-1', type: 'MC', standard: 'RI.8.8.eval', difficulty: 5,
-                stem: 'Which piece of evidence is considered "Relevant and Sufficient" to support the claim?',
-                options: ['Evidence A', 'Evidence B', 'Evidence C', 'None of them'],
-                correct_answer: 'Evidence A',
-                hint: 'Which one comes from a trustworthy source (CDC) and uses data?',
-                rationale: 'Evaluating Evidence: Evidence A is relevant (about health/sleep) and sufficient (large study/data). B is anecdotal (one person). C is irrelevant to student health.',
-                feedback: { 'Evidence B': 'Incorrect. This is an anecdote (personal story), not scientific proof.' }
-            },
-            {
-                id: 'arg-strength-2', type: 'MC', standard: 'RI.8.8.eval', difficulty: 6,
-                stem: 'Evidence C ("Teachers like coffee") is an example of:',
-                options: ['Irrelevant Evidence.', 'A Counter-Claim.', 'Statistical Data.', 'A Logical Fallacy.'],
-                correct_answer: 'Irrelevant Evidence.',
-                hint: 'Does teacher coffee habits prove that STUDENTS need more sleep for HEALTH?',
-                rationale: 'Evaluating Evidence: This statement has nothing to do with the main claim (Student Health). It is irrelevant.',
-                feedback: { 'A Counter-Claim.': 'Incorrect. A counter-claim would argue AGAINST the start time (e.g., "Sports would end too late").' }
-            }
-        ]
+        type: 'mission', genre: 'info_rhetoric',
+        passage: "The orator's use of <b>anaphora</b>—repeating 'We shall' at the start of every sentence—galvanized the audience into a unified front.",
+        items: [{
+            id: 'leg-info-3', type: 'MC', standard: 'RI.8.6', difficulty: 8,
+            stem: 'What is the rhetorical effect of the repetition described?',
+            options: ['It makes the speech boring.', 'It creates a sense of urgency and unity.', 'It confuses the listeners.', 'It suggests the speaker has run out of ideas.'],
+            correct_answer: 'It creates a sense of urgency and unity.',
+            rationale: 'Repetition at the beginning of phrases (anaphora) is a classic tool to build emotional momentum and unity.'
+        }]
     },
-
-    // ------------------------------------------------------
-    // ZONE 14: THE EDITOR'S DESK (Writing Logic)
-    // ------------------------------------------------------
     {
-        type: 'mission', genre: 'writing_logic',
-        passage: "[1] Penguins are fascinating birds that have adapted to life in the water. [2] Their wings have evolved into flippers, making them expert swimmers. [3] However, they must return to land to lay their eggs. [4] They mostly eat krill and squid.",
-        items: [
-            {
-                id: 'write-place-1', type: 'MC', standard: 'W.8.2.c', difficulty: 6,
-                stem: 'Where is the best place to insert the following sentence?<br><b>"This transition from air to sea allows them to hunt effectively."</b>',
-                options: ['After Sentence 1', 'After Sentence 2', 'After Sentence 3', 'After Sentence 4'],
-                correct_answer: 'After Sentence 2',
-                hint: 'Sentence 2 talks about "wings into flippers" (transition) and "expert swimmers" (hunting). The new sentence connects these ideas.',
-                rationale: 'Organization: The new sentence connects the physical adaptation (Sentence 2) to the result (hunting), fitting perfectly before the shift to land (Sentence 3).',
-                feedback: { 'After Sentence 1': 'Incorrect. Sentence 2 explains the physical change (wings to flippers), so the summary sentence fits better AFTER that detail.' }
-            },
-            {
-                id: 'write-flow-1', type: 'MC', standard: 'W.8.2.c', difficulty: 5,
-                stem: 'Sentence 4 ("They mostly eat krill...") seems out of place. Where should it be moved to improve the flow?',
-                options: ['Leave it where it is.', 'After Sentence 1.', 'After Sentence 2.', 'It should be deleted.'],
-                correct_answer: 'After Sentence 2.',
-                hint: 'Sentence 2 talks about swimming/hunting. Sentence 3 moves to LAND. Food (krill) relates to swimming/hunting.',
-                rationale: 'Cohesion: Group related ideas. Swimming (S2) and Eating (S4) happen in the water. Laying eggs (S3) happens on land. S4 should stay with the water topic.',
-                feedback: { 'Leave it where it is.': 'Incorrect. It breaks the flow because Sentence 3 shifted the topic to "Land/Eggs," and then S4 jumps back to food.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 15: LEGENDS RETOLD (Modern vs. Myth)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'lit_compare',
-        passage: "<b>Original Myth:</b> Arachne was a weaver who boasted she was better than the goddess Athena. Athena challenged her to a contest and turned her into a spider for her arrogance.<br><br><b>Modern Story:</b> 'Net-Weaver' was a hacker who claimed no firewall could stop her. She challenged the government's AI, 'Athena,' to a duel. The AI trapped Net-Weaver inside her own code, leaving her to spin endless loops forever.",
-        items: [
-            {
-                id: 'lit-myth-1', type: 'MC', standard: 'RL.8.9', difficulty: 7,
-                stem: 'How does the modern story draw upon the theme of the original myth?',
-                options: ['It uses the same setting (Greece).', 'It transforms the punishment of "spinning" into a digital context.', 'It features a literal spider.', 'It ends happily for the main character.'],
-                correct_answer: 'It transforms the punishment of "spinning" into a digital context.',
-                hint: 'Arachne spins webs; Net-Weaver spins "endless loops" of code.',
-                rationale: 'Transformation: The author keeps the core punishment (spinning forever) but updates the weaving metaphor to computer coding.',
-                feedback: { 'It features a literal spider.': 'Incorrect. The modern version is symbolic (trapped in code), not a literal bug.' }
-            }
-        ]
-    },
-
-    // ------------------------------------------------------
-    // ZONE 16: ACADEMIC VOCABULARY (Science/Social Studies)
-    // ------------------------------------------------------
-    {
-        type: 'mission', genre: 'vocab_academic',
-        passage: "The **permeability** of the soil allowed water to drain through it quickly, unlike the clay layer below, which blocked the flow entirely. This drainage is crucial for preventing root rot in crops.",
-        items: [
-            {
-                id: 'voc-acad-1', type: 'MC', standard: 'L.8.4.a', difficulty: 6,
-                stem: 'Based on the context, what does the word "permeability" most likely mean?',
-                options: ['The ability to block water.', 'The ability to let fluids pass through.', 'The dark color of the soil.', 'The hardness of the rock.'],
-                correct_answer: 'The ability to let fluids pass through.',
-                hint: 'Look at the phrase "allowed water to drain through it."',
-                rationale: 'Context Clues: The text says it "allowed water to drain through," which is the definition of permeable.',
-                feedback: { 'The ability to block water.': 'Incorrect. The text contrasts it with clay, which "blocked the flow".' }
-            },
-            {
-                id: 'voc-acad-2', type: 'MC', standard: 'L.8.6', difficulty: 5,
-                stem: 'Which word from the passage is an antonym (opposite) for "permeability"?',
-                options: ['Drain', 'Blocked', 'Flow', 'Crucial'],
-                correct_answer: 'Blocked',
-                hint: 'Permeability lets water through. What word means stopping it?',
-                rationale: 'Antonyms: "Blocked" is the direct opposite action described for the clay layer.',
-                feedback: { 'Drain': 'Incorrect. Draining is what permeable soil DOES, not its opposite.' }
-            }
-        ]
+        type: 'mission', genre: 'lit_theme_advanced',
+        passage: "In the end, the protagonist realized that the monster he had been hunting was merely a reflection of his own unresolved guilt.",
+        items: [{
+            id: 'leg-lit-4', type: 'MC', standard: 'RL.8.2', difficulty: 9,
+            stem: 'What does the "monster" symbolize in this passage?',
+            options: ['A literal beast.', 'The character\'s internal struggle.', 'A dangerous animal.', 'A misunderstood friend.'],
+            correct_answer: 'The character\'s internal struggle.',
+            rationale: 'The direct link between the monster and "unresolved guilt" makes it an internal symbol.'
+        }]
     }
 ];
 
+// --- SYNCED MISSION DATA ---
 const allMissions = [
-    // --- THREAD 1: VOCABULARY & CRAFT (NWEA FOCUS) ---
-    { id: 'm-voc1', title: 'The Root Cellar', description: 'Mastering Greek & Latin Affixes', difficulty: 4, passageId: 'voc-roots-1', minLevel: 1 },
-    { id: 'm-voc-acad', title: 'Academic Context', description: 'NWEA: Tier 2 Academic Vocabulary', difficulty: 6, passageId: 'voc-acad-1', minLevel: 1 },
-    { id: 'm-punc', title: 'The Semicolon Sanctum', description: 'SAT Style: Sentence Boundaries', difficulty: 6, passageId: 'sat-gram-1', minLevel: 2 },
-    { id: 'm-spell', title: 'Confusion Clearer', description: 'Effect vs. Affect & Homophones', difficulty: 6, passageId: 'spell-eff-1', minLevel: 2 },
-
-    // --- THREAD 2: LITERARY ANALYSIS (IAR FOCUS) ---
-    { id: 'm-lit-irony', title: 'The Irony of Fate', description: 'Situational vs. Dramatic Irony', difficulty: 7, passageId: 'lit-irony-1', minLevel: 3 },
-    { id: 'm-lit-suspense', title: 'Master of Suspense', description: 'Analyzing Pacing & Sensory Detail', difficulty: 6, passageId: 'lit-suspense-1', minLevel: 3 },
-    { id: 'm-poetry', title: 'The Metaphor Lab', description: 'Interpreting Complex Imagery', difficulty: 5, passageId: 'poetry-1', minLevel: 3 },
-    { id: 'm-cask', title: 'Dark Intentions', description: 'Character Motives (RL.9.3)', difficulty: 6, passageId: 'mission-2a', minLevel: 4 },
-
-    // --- THREAD 3: INFORMATIONAL SYNTHESIS (IAR FOCUS) ---
-    { id: 'm-info-arg', title: 'The Great Debate', description: 'Evaluating Argument Strength', difficulty: 8, passageId: 'info-arg-1', minLevel: 4 },
-    { id: 'm-nwea-music', title: 'The Digital Shift', description: 'Text Structure: Compare/Contrast', difficulty: 6, passageId: 'nwea-struct-1', minLevel: 4 },
-    { id: 'm-pov-high', title: 'Perspective Peak', description: 'Analyzing Conflicting Points of View', difficulty: 7, passageId: 'pov-1', minLevel: 5 },
-    { id: 'm-iar-mars', title: 'Mission to Mars', description: 'Synthesis: Article + Video + Data', difficulty: 9, passageId: 'iar-mars-1', minLevel: 5 },
-    { id: 'm-iar-dust', title: 'The Dust Bowl', description: 'Integration of Knowledge & Media', difficulty: 8, passageId: 'iar-dust-1', minLevel: 5 }
+    { id: 'm-history', title: 'The Root Cellar', description: 'Mastering RI.8.1: Citing Evidence', difficulty: 2, passageId: 'rok-hist-1', minLevel: 1 },
+    { id: 'm-grammar', title: 'Verb Vault', description: 'Mastering L.8.1: Verb Tense consistency', difficulty: 3, passageId: 'rok-gram-1', minLevel: 1 },
+    { id: 'm-social', title: 'Heat Island Effect', description: 'Mastering RI.8.3: Connections', difficulty: 5, passageId: 'sch-soc-1', minLevel: 1 },
+    { id: 'm-tech', title: 'AI Awareness', description: 'Mastering RI.8.1: Implicit Bias', difficulty: 7, passageId: 'sch-tech-1', minLevel: 2 },
+    { id: 'm-classic', title: 'Classic Paradox', description: 'Mastering RL.8.2: Theme Analysis', difficulty: 10, passageId: 'leg-lit-1', minLevel: 2 }
 ];
+
+// --- MISSIONS HUB: ADAPTIVE TIERING ---
+function renderMissions() {
+    missionsList.innerHTML = '';
+    const rankTitle = gameState.user.elaLevel >= 3 ? 'Legend' : (gameState.user.elaLevel === 2 ? 'Scholar' : 'Rookie');
+    proficiencyDisplay.textContent = rankTitle;
+    
+    // FILTER: Adaptive complexity based on Calibration Result
+    const availableMissions = allMissions.filter(m => {
+        const missionTier = m.difficulty <= 3 ? 1 : (m.difficulty <= 7 ? 2 : 3);
+        return Math.abs(missionTier - gameState.user.elaLevel) <= 1;
+    });
+
+    availableMissions.forEach(mission => {
+        const isLocked = gameState.user.level < mission.minLevel;
+        const diffColor = mission.difficulty > 7 ? 'text-red-500' : (mission.difficulty > 4 ? 'text-orange-500' : 'text-green-500');
+        const missionCard = document.createElement('div');
+        
+        if (isLocked) {
+            missionCard.className = `bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 shadow border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center text-center opacity-60`;
+            missionCard.innerHTML = `<h3 class="text-lg font-bold text-gray-400">Level ${mission.minLevel} Required</h3><p class="text-sm text-gray-400 mb-4">${mission.title}</p>`;
+        } else {
+            missionCard.className = `bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-indigo-100 dark:border-indigo-900 flex flex-col hover:border-indigo-500 transition-all transform hover:-translate-y-1 cursor-pointer`;
+            missionCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-tighter">LVL ${mission.minLevel}+</span>
+                    <span class="${diffColor} text-xs font-bold">Difficulty: ${mission.difficulty}/10</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1 text-gray-800 dark:text-gray-100">${mission.title}</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">${mission.description}</p>
+                <button class="start-mission-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" data-mission-id="${mission.id}">BEGIN QUEST ⚔️</button>`;
+        }
+        missionsList.appendChild(missionCard);
+    });
+
+    // Check if the boss card function exists before calling to prevent errors
+    if (typeof appendBossCardToMissions === "function") {
+        appendBossCardToMissions();
+    }
+    
+    navigate('missions-screen');
+}
 
 // --- NEW BOSS BATTLE DATA ---
         const bossBattles = [
@@ -1561,34 +1207,56 @@ function renderCalibrationQuestion() {
             renderCalibrationQuestion();
         }
 
-        function endCalibrationQuest() {
-            gameState.user.elaLevel = calibrationProgress.elaLevel;
-            calibrationContent.classList.add('hidden');
-            elaLevelDisplay.textContent = gameState.user.elaLevel >= 4 ? 'Proficient Analyzer' : 'Rookie Adventurer';
-            calibrationResults.classList.remove('hidden');
-            saveProgress();
-        }
+function endCalibrationQuest() {
+    const score = calibrationProgress.elaLevel;
+    
+    // Tiering Logic
+    if (score >= 13) {
+        gameState.user.elaLevel = 3; 
+        elaLevelDisplay.textContent = 'Mythic Legend';
+    } else if (score >= 7) {
+        gameState.user.elaLevel = 2;
+        elaLevelDisplay.textContent = 'Expert Scholar';
+    } else {
+        gameState.user.elaLevel = 1;
+        elaLevelDisplay.textContent = 'Rookie Adventurer';
+    }
+
+    calibrationContent.classList.add('hidden');
+    calibrationResults.classList.remove('hidden');
+    
+    // FIX: Tie the button to the Missions Hub
+    document.getElementById('start-missions-button').onclick = () => {
+        calibrationResults.classList.add('hidden');
+        renderMissions();
+    };
+    
+    saveProgress();
+    updateUI();
+}
 
 // --- Missions Logic ---
+// --- Missions Hub: Adaptive Tiering ---
 function renderMissions() {
     missionsList.innerHTML = '';
-    proficiencyDisplay.textContent = gameState.user.elaLevel >= 4 ? 'Proficient' : 'Rookie';
+    // Map numerical level to a readable title
+    const rankTitle = gameState.user.elaLevel >= 3 ? 'Legend' : (gameState.user.elaLevel === 2 ? 'Scholar' : 'Rookie');
+    proficiencyDisplay.textContent = rankTitle;
     
-    allMissions.forEach(mission => {
+    // FILTER: Only show missions that match the user's tier +/- 1
+    const availableMissions = allMissions.filter(m => {
+        const missionTier = m.difficulty <= 3 ? 1 : (m.difficulty <= 7 ? 2 : 3);
+        return Math.abs(missionTier - gameState.user.elaLevel) <= 1;
+    });
+
+    availableMissions.forEach(mission => {
         const isLocked = gameState.user.level < mission.minLevel;
+        const diffColor = mission.difficulty > 7 ? 'text-red-500' : (mission.difficulty > 4 ? 'text-orange-500' : 'text-green-500');
         const missionCard = document.createElement('div');
         
-        // Define styling for difficulty colors
-        const diffColor = mission.difficulty > 7 ? 'text-red-500' : (mission.difficulty > 4 ? 'text-orange-500' : 'text-green-500');
-
         if (isLocked) {
             missionCard.className = `bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 shadow border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center text-center opacity-60`;
-            missionCard.innerHTML = `
-                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-4 text-2xl">🔒</div>
-                <h3 class="text-lg font-bold text-gray-400">Level ${mission.minLevel} Required</h3>
-                <p class="text-sm text-gray-400 mb-4">${mission.title}</p>
-                <div class="w-full h-2 bg-gray-200 rounded-full"></div>
-            `;
+            missionCard.innerHTML = `<h3 class="text-lg font-bold text-gray-400">Level ${mission.minLevel} Required</h3><p class="text-sm text-gray-400 mb-4">${mission.title}</p>`;
         } else {
             missionCard.className = `bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-indigo-100 dark:border-indigo-900 flex flex-col hover:border-indigo-500 transition-all transform hover:-translate-y-1 cursor-pointer`;
             missionCard.innerHTML = `
@@ -1598,55 +1266,16 @@ function renderMissions() {
                 </div>
                 <h3 class="text-xl font-bold mb-1 text-gray-800 dark:text-gray-100">${mission.title}</h3>
                 <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">${mission.description}</p>
-                <button class="start-mission-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" data-mission-id="${mission.id}">
-                    BEGIN QUEST ⚔️
-                </button>
-            `;
+                <button class="start-mission-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" data-mission-id="${mission.id}">BEGIN QUEST ⚔️</button>`;
         }
         missionsList.appendChild(missionCard);
     });
 
-    // Handle Boss Logic separately at the bottom
     appendBossCardToMissions();
-
-    // Attach Listeners
     document.querySelectorAll('.start-mission-btn').forEach(btn => {
         btn.onclick = (e) => startMission(e.target.dataset.missionId);
     });
-
     navigate('missions-screen');
-}
-
-function appendBossCardToMissions() {
-    const glitches = gameState.user.missedQuestions || [];
-    const isClean = glitches.length === 0;
-    
-    const bossCard = document.createElement('div');
-    bossCard.className = `col-span-1 md:col-span-2 lg:col-span-3 bg-gradient-to-br from-red-600 to-black text-white rounded-3xl p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 border-4 border-red-500/50 relative overflow-hidden group mt-8`;
-    
-    bossCard.innerHTML = `
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-        <div class="relative z-10 text-center md:text-left">
-            <h3 class="text-4xl font-black uppercase tracking-tighter mb-2 italic">👾 THE GLITCH</h3>
-            <p class="text-red-200 font-medium max-w-md">
-                ${isClean ? "The system is fully operational. Face the Final Exam to prove your mastery!" : `SYSTEM CORRUPTION DETECTED: You must purge <b>${glitches.length} glitches</b> in the Archive to unlock the Boss.`}
-            </p>
-        </div>
-        <div class="relative z-10 flex flex-col items-center">
-            <button id="mission-boss-btn" class="${isClean ? 'bg-white text-red-600 hover:scale-110 active:scale-95' : 'bg-gray-700 text-gray-500 cursor-not-allowed'} font-black py-4 px-10 rounded-2xl shadow-xl transition-all uppercase italic tracking-widest border-b-4 border-gray-300" ${isClean ? '' : 'disabled'}>
-                ${isClean ? 'FIGHT BOSS ⚔️' : 'LOCKED 🔒'}
-            </button>
-            ${!isClean ? `<button onclick="openArchive()" class="mt-4 text-sm text-red-400 underline hover:text-white font-bold transition-colors">Open Glitch Archive</button>` : ''}
-        </div>
-    `;
-    
-    missionsList.appendChild(bossCard);
-    
-    // Wire up the button if it's unlocked
-    const btn = document.getElementById('mission-boss-btn');
-    if (btn && isClean) {
-        btn.onclick = startBossRound;
-    }
 }
 
 function startMission(missionId) {
@@ -1655,1134 +1284,644 @@ function startMission(missionId) {
     gameState.missionScore = 0;
     gameState.streak = 0;
     gameState.missionHistoryData = [];
-
     navigate('game-play-screen');
-    startTimer(); // <--- NEW: START THE CLOCK
+    startTimer(); 
     renderMissionQuestion();
 }
 
-// --- UPDATED: RENDER MISSION (Supports Multi-Source Tabs) ---
 function renderMissionQuestion() {
-    const missionItem = itemBank.find(item => item.items.some(i => i.id.startsWith(gameState.currentMission.passageId)));
-    const currentItem = missionItem.items[gameState.currentQuestionIndex];
+    const missionItem = itemBank.find(zone => 
+        zone.id === gameState.currentMission.passageId || 
+        zone.genre === gameState.currentMission.id ||
+        zone.items.some(i => i.id.startsWith(gameState.currentMission.passageId))
+    );
     
+    if (!missionItem) {
+        showModal("Error", "Mission content not found! Check passageId alignment.", "error");
+        navigate('missions-screen');
+        return;
+    }
+
+    const currentItem = missionItem.items[gameState.currentQuestionIndex];
     if (!currentItem) { endMission(missionItem.items.length); return; }
     
-    // Header Stats
     gameTitle.textContent = gameState.currentMission.title;
-    const streakDisplay = gameState.streak > 1 ? `<span class="text-orange-500 ml-2">🔥 x${gameState.streak}</span>` : '';
-    missionScoreDisplay.innerHTML = `${gameState.missionScore} ${streakDisplay}`;
+    missionScoreDisplay.innerHTML = `${gameState.missionScore}`;
     missionTotalQuestions.textContent = missionItem.items.length;
 
-    // --- NEW: TAB SYSTEM FOR MULTI-SOURCE ---
-    if (missionItem.sources) {
-        // 1. Build Tab Buttons
-        let tabsHTML = `<div class="flex flex-wrap gap-2 mb-4 border-b border-gray-300 dark:border-gray-600 pb-2">`;
-        missionItem.sources.forEach((src, idx) => {
-            tabsHTML += `<button onclick="switchTab(${idx})" id="tab-btn-${idx}" class="tab-btn px-3 py-1 text-sm font-bold rounded-t-lg transition-colors ${idx === 0 ? 'bg-indigo-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'}">
-                ${src.title}
-            </button>`;
-        });
-        tabsHTML += `</div>`;
+    gamePassage.innerHTML = `<p class="font-bold mb-2 text-lg text-indigo-600 dark:text-indigo-400">Passage</p><div class="prose dark:prose-invert max-w-none">${missionItem.passage}</div>`;
 
-        // 2. Build Tab Content Areas
-        let contentHTML = `<div class="relative min-h-[300px]">`;
-        missionItem.sources.forEach((src, idx) => {
-            const hiddenClass = idx === 0 ? '' : 'hidden';
-            const imgHTML = src.image ? `<img src="${src.image}" class="w-full rounded-lg shadow-md mb-4 border border-gray-200">` : '';
-            contentHTML += `<div id="tab-content-${idx}" class="tab-content ${hiddenClass} animate-fade">
-                <h4 class="font-bold text-lg mb-2 text-indigo-600 dark:text-indigo-400">${src.title}</h4>
-                ${imgHTML}
-                <div class="prose dark:prose-invert max-w-none text-sm md:text-base">${src.text}</div>
-            </div>`;
-        });
-        contentHTML += `</div>`;
-
-        gamePassage.innerHTML = tabsHTML + contentHTML;
-    } else {
-        // Fallback for Standard Single Passage
-        gamePassage.innerHTML = `<p class="font-bold mb-2 text-lg text-indigo-600 dark:text-indigo-400">Passage</p><div class="prose dark:prose-invert max-w-none">${missionItem.passage}</div>`;
-    }
-
-    // Question Area (Standard)
-    let qImageHTML = currentItem.image ? `<div class="mb-4 text-center"><img src="${currentItem.image}" class="rounded-lg shadow-md max-w-full h-auto mx-auto border border-gray-200"></div>` : '';
-    
     gameQuestionsArea.innerHTML = `
         <div class="mb-4">
-            <div class="flex justify-between items-end mb-2">
-                <p class="font-bold text-lg">Question ${gameState.currentQuestionIndex + 1}</p>
-                <span class="text-xs font-mono text-gray-400">${currentItem.standard || ''}</span>
-            </div>
-            ${qImageHTML} 
+            <p class="font-bold text-lg mb-2 text-indigo-500">Question ${gameState.currentQuestionIndex + 1}</p>
             <p class="mb-4 text-lg font-medium">${currentItem.stem}</p>
-            <div id="options-container" class="space-y-3"></div>
+            <div id="options-container" class="space-y-3">
+                ${currentItem.options.map((option, index) => `
+                    <label class="flex items-start p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-indigo-50 transition-all">
+                        <input type="radio" name="mission-q" value="${option}" class="mt-1 mr-3 w-5 h-5">
+                        <span class="flex-1 text-base text-gray-800 dark:text-gray-200">${option}</span>
+                    </label>`).join('')}
+            </div>
         </div>`;
-
-    // Hints
-    if (currentItem.hint) {
-        const hintBtn = document.createElement('button');
-        hintBtn.className = "mb-4 text-xs bg-yellow-100 text-yellow-800 px-3 py-1 rounded border border-yellow-300 hover:bg-yellow-200 flex items-center shadow-sm";
-        hintBtn.innerHTML = `💡 Get Hint (10 Tokens)`;
-        hintBtn.onclick = () => {
-            if(gameState.user.tokens >= 10) {
-                gameState.user.tokens -= 10;
-                hintBtn.innerHTML = `💡 <b>Hint:</b> ${currentItem.hint}`;
-                hintBtn.className = "mb-4 text-xs bg-yellow-50 text-yellow-900 px-3 py-2 rounded border border-yellow-200 italic";
-                hintBtn.onclick = null;
-                updateUI();
-                playSound('buy');
-            } else {
-                showModal('Not enough tokens', 'You need 10 tokens to buy a hint.', 'error');
-            }
-        };
-        gameQuestionsArea.querySelector('.mb-4').appendChild(hintBtn);
-    }
-
-    // Options Rendering
-    const optionsContainer = document.getElementById('options-container');
-    
-    // Add Eliminator Toggle
-    const toolBar = document.createElement('div');
-    toolBar.className = "flex justify-end mb-2";
-    toolBar.innerHTML = `
-        <label class="flex items-center space-x-2 cursor-pointer text-xs font-bold text-gray-500 hover:text-red-500 transition-colors">
-            <input type="checkbox" id="eliminator-toggle" class="form-checkbox h-3 w-3 text-red-500 rounded">
-            <span>✏️ Eliminator Mode</span>
-        </label>
-    `;
-    optionsContainer.parentElement.insertBefore(toolBar, optionsContainer);
-
-    if (currentItem.type === 'MC') {
-        optionsContainer.innerHTML = currentItem.options.map((option, index) => `
-            <div class="option-wrapper relative group">
-                <label class="flex items-start p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all shadow-sm" id="opt-label-${index}">
-                    <input type="radio" name="mission-q" value="${option}" class="mt-1 mr-3 w-5 h-5 text-indigo-600 focus:ring-indigo-500 border-gray-300">
-                    <span class="flex-1 text-base text-gray-800 dark:text-gray-200 leading-snug">${option}</span>
-                </label>
-                <div class="absolute inset-0 z-20 cursor-crosshair hidden" onclick="toggleEliminate(${index})">
-                    <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-red-500/10 rounded-xl transition-opacity">
-                        <span class="text-red-500 font-bold text-xl">❌ CROSS OUT</span>
-                    </div>
-                </div>
-            </div>`).join('');
-
-        document.getElementById('eliminator-toggle').addEventListener('change', (e) => {
-            const isModeOn = e.target.checked;
-            document.querySelectorAll('.option-wrapper .absolute.z-20').forEach(overlay => {
-                if(isModeOn) overlay.classList.remove('hidden');
-                else overlay.classList.add('hidden');
-            });
-        });
-    } 
-    else if (currentItem.type === 'hot-text') {
-        // Check if passage content or source content
-        const textToUse = missionItem.sources ? missionItem.sources[0].text : missionItem.passage;
-        const words = textToUse.split(/\s+/);
-        optionsContainer.innerHTML = `<div id="hot-text-container" class="text-lg leading-relaxed p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"></div>`;
-        const container = document.getElementById('hot-text-container');
-        words.forEach(word => {
-            const span = document.createElement('span');
-            span.className = 'hot-text-word';
-            span.textContent = word + ' ';
-            span.onclick = () => span.classList.toggle('selected');
-            container.appendChild(span);
-        });
-    }
 
     renderSubmitButton(currentItem, missionItem.items.length);
 }
 
-// Helper to Switch Tabs
-window.switchTab = function(tabIndex) {
-    // 1. Hide all content
-    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    // 2. Show selected
-    document.getElementById(`tab-content-${tabIndex}`).classList.remove('hidden');
-    
-    // 3. Update Buttons
-    document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-        if(idx === tabIndex) {
-            btn.classList.remove('bg-gray-200', 'text-gray-600', 'dark:bg-gray-700', 'dark:text-gray-300');
-            btn.classList.add('bg-indigo-500', 'text-white');
-        } else {
-            btn.classList.add('bg-gray-200', 'text-gray-600', 'dark:bg-gray-700', 'dark:text-gray-300');
-            btn.classList.remove('bg-indigo-500', 'text-white');
-        }
-    });
-};
-
-function toggleEliminate(index) {
-    const label = document.getElementById(`opt-label-${index}`);
-    if (label.classList.contains('opacity-40')) {
-        label.classList.remove('opacity-40', 'line-through', 'grayscale');
-    } else {
-        label.classList.add('opacity-40', 'line-through', 'grayscale');
-        const radio = label.querySelector('input');
-        if(radio) radio.checked = false;
-    }
-}
-        // Helper to separate logic
-        function renderLifeline(currentItem, container) {
-            const btnId = 'lifeline-btn';
-            const existing = document.getElementById(btnId);
-            if(existing) existing.remove();
-
-            if (gameState.user.purchasedItems.some(i => i.id === 'lifeline-5050') && currentItem.type === 'MC') {
-                const btn = document.createElement('button');
-                btn.id = btnId;
-                btn.className = "mb-4 text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded border border-purple-300 hover:bg-purple-200";
-                btn.innerHTML = "💣 Use 50/50 Bomb";
-                btn.onclick = () => {
-                    const inputs = Array.from(document.querySelectorAll('input[name="mission-q"]'));
-                    const wrong = inputs.filter(i => i.value !== currentItem.correct_answer);
-                    wrong.sort(() => Math.random() - 0.5).slice(0, 2).forEach(i => i.closest('label').classList.add('hidden'));
-                    const idx = gameState.user.purchasedItems.findIndex(i => i.id === 'lifeline-5050');
-                    if (idx > -1) gameState.user.purchasedItems.splice(idx, 1);
-                    btn.remove();
-                    playSound('buy'); saveProgress(); updateUI();
-                };
-                container.parentElement.insertBefore(btn, container);
-            }
-        }
-
 function renderSubmitButton(currentItem, total) {
-            const existing = document.getElementById("submit-mission-btn");
-            if(existing) existing.remove();
-            
-            const btn = document.createElement('button');
-            btn.id = "submit-mission-btn";
-            btn.className = 'button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg';
-            btn.textContent = 'Submit Answer';
-            btn.onclick = () => checkMissionAnswer(currentItem, total, btn);
-            
-            // FIX: Select the container specifically inside the Game Play Screen
-            const container = document.querySelector('#game-play-screen .flex.justify-end');
-            if (container) {
-                container.prepend(btn);
-            } else {
-                console.error("Game container not found!");
-            }
-
-            document.getElementById('next-question-button').classList.add('hidden');
-            document.getElementById('finish-mission-button').classList.add('hidden');
-        }
+    const container = document.querySelector('#game-play-screen .flex.justify-end');
+    container.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = 'button bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg';
+    btn.textContent = 'Submit Answer';
+    btn.onclick = () => checkMissionAnswer(currentItem, total, btn);
+    container.appendChild(btn);
+}
 
 async function checkMissionAnswer(currentItem, total, btn) {
-            let isCorrect = false;
-            let userAnswer = null;
+    const selected = document.querySelector('input[name="mission-q"]:checked');
+    if(!selected) { await showModal('Oops', 'Select an answer', 'error'); return; }
+    
+    const isCorrect = selected.value === currentItem.correct_answer;
+    btn.disabled = true;
 
-            if (currentItem.type === 'MC') {
-                const selected = document.querySelector('input[name="mission-q"]:checked');
-                if(!selected) { await showModal('Oops', 'Select an answer', 'error'); return; }
-                userAnswer = selected.value;
-                isCorrect = userAnswer === currentItem.correct_answer;
-            } else if (currentItem.type === 'hot-text') {
-                const selected = Array.from(document.querySelectorAll('.hot-text-word.selected')).map(e => e.textContent.trim());
-                userAnswer = selected;
-                isCorrect = JSON.stringify(selected.sort()) === JSON.stringify(currentItem.correct_answer.sort());
-            }
+    // --- RIGOR FIX: Save data for the Review Screen ---
+    gameState.missionHistoryData.push({
+        question: currentItem.stem,
+        userAnswer: selected.value,
+        correctAnswer: currentItem.correct_answer,
+        isCorrect: isCorrect,
+        rationale: currentItem.rationale,
+        standard: currentItem.standard || "General"
+    });
 
-            // --- TRACK STATS ---
-            if (!gameState.user.standardsReport) gameState.user.standardsReport = {};
-            const std = currentItem.standard || "General";
-            if (!gameState.user.standardsReport[std]) {
-                gameState.user.standardsReport[std] = { correct: 0, total: 0, desc: getStandardDesc(std) };
-            }
-            gameState.user.standardsReport[std].total++;
-            if (isCorrect) gameState.user.standardsReport[std].correct++;
-            
-            // --- NEW: CAPTURE GLITCHES (Save Missed Qs) ---
-            if (!isCorrect) {
-                if(!gameState.user.missedQuestions) gameState.user.missedQuestions = [];
-                // Prevent duplicates
-                if(!gameState.user.missedQuestions.some(q => q.id === currentItem.id)) {
-                    gameState.user.missedQuestions.push(currentItem);
-                    saveProgress();
-                }
-            }
+    // Track Stats for Teacher Report
+    const std = currentItem.standard || "General";
+    if (!gameState.user.standardsReport) gameState.user.standardsReport = {};
+    if (!gameState.user.standardsReport[std]) {
+        gameState.user.standardsReport[std] = { correct: 0, total: 0, desc: getStandardDesc(std) };
+    }
+    gameState.user.standardsReport[std].total++;
 
-            // Feedback Logic
-            let feedbackMsg = currentItem.rationale;
-            if (!isCorrect && currentItem.feedback && currentItem.feedback[userAnswer]) {
-                feedbackMsg = `<b>${currentItem.feedback[userAnswer]}</b><br><br>Right Answer: ${currentItem.rationale}`;
-            }
+    if (isCorrect) {
+        gameState.missionScore++;
+        gameState.streak++;
+        gameState.user.standardsReport[std].correct++;
+        await showModal('Correct!', currentItem.rationale, 'success');
+    } else {
+        gameState.streak = 0;
+        if(!gameState.user.missedQuestions) gameState.user.missedQuestions = [];
+        // Add unique ID for Archive purging
+        gameState.user.missedQuestions.push({...currentItem, id: 'glitch-' + Date.now()});
+        await showModal('Incorrect', currentItem.rationale, 'error');
+    }
 
-            gameState.missionHistoryData.push({ 
-                question: currentItem.stem, standard: currentItem.standard || 'General', 
-                userAnswer, isCorrect, rationale: currentItem.rationale 
-            });
-
-            if (isCorrect) {
-                gameState.missionScore++;
-                gameState.streak++;
-                playSound('correct');
-                const streakMsg = gameState.streak > 1 ? ` (Streak x${gameState.streak}!)` : '';
-                await showModal('Correct!' + streakMsg, feedbackMsg, 'success');
-            } else {
-                gameState.streak = 0;
-                playSound('incorrect');
-                // Updated Message: Directs them to the Archive
-                await showModal('Glitch Detected!', `<b>Incorrect.</b><br>This question has been saved to the <b>Glitch Archive</b>. Go there to study the skill and fix the glitch!<br><br>${feedbackMsg}`, 'error');
-            }
-            
-            btn.remove();
-            if (gameState.currentQuestionIndex < total - 1) {
-                const nextBtn = document.getElementById('next-question-button');
-                nextBtn.classList.remove('hidden');
-                nextBtn.onclick = () => { gameState.currentQuestionIndex++; renderMissionQuestion(); };
-            } else {
-                const finBtn = document.getElementById('finish-mission-button');
-                finBtn.classList.remove('hidden');
-                finBtn.onclick = () => endMission(total);
-            }
-        }
-
-        // Helper to name standards (Paste this right below checkMissionAnswer)
-        function getStandardDesc(std) {
-            const map = {
-                'RI.8.1': 'Citing Evidence',
-                'RL.8.4': 'Figurative Language',
-                'RL.8.2': 'Theme Analysis',
-                'RI.9-10.9': 'Comparing Texts',
-                'RI.8.8': 'Evaluating Arguments',
-                'RL.9.3': 'Character Development',
-                'RI.9.6': 'Rhetoric & Purpose',
-                'RI.12.2': 'Complex Text Analysis',
-                'RL.12.6': 'Satire & Tone'
-            };
-            return map[std] || 'General Comprehension';
-        }
+    gameState.currentQuestionIndex++;
+    renderMissionQuestion();
+}
 
 function endMission(total) {
-    const timeTaken = stopTimer(); // <--- NEW: STOP CLOCK
-
-    const xpEarned = Math.round((gameState.missionScore / total) * 100);
+    const timeTaken = stopTimer(); 
     const accuracy = gameState.missionScore / total;
-
-    // SPEED BONUS LOGIC:
-    // If they average under 30 seconds per question, they get a bonus.
+    const xpEarned = Math.round(accuracy * 100);
+    
+    // Calculate Speed Bonus
     const avgTimePerQ = timeTaken / total;
     let speedBonus = 0;
-    if(avgTimePerQ < 20) speedBonus = 20;      // Super fast
-    else if(avgTimePerQ < 40) speedBonus = 10; // Decent pace
+    if(avgTimePerQ < 20) speedBonus = 20; 
+    else if(avgTimePerQ < 40) speedBonus = 10;
 
-    // Calculate Tokens (Base + Accuracy + Speed)
-    let tokensEarned = Math.round((gameState.missionScore * 10) * (1 + accuracy)) + speedBonus;
+    let tokensEarned = (gameState.missionScore * 15) + speedBonus;
 
     gameState.user.tokens += tokensEarned;
     addXp(xpEarned);
 
-    // ... (Keep your Rivals Logic here) ...
+    gameState.user.history.push({
+        missionTitle: gameState.currentMission.title,
+        score: `${gameState.missionScore}/${total}`,
+        date: new Date().toLocaleDateString(),
+        tokensEarned: tokensEarned,
+        xpEarned: xpEarned
+    });
 
-    // ... (Keep your Badge Logic here) ...
-
-    // ... (Keep History Save here) ...
-
-    // Pass the speed bonus to the review screen so they see it
-    renderReview(total, xpEarned, tokensEarned, null, speedBonus, timeTaken);
-}
-
-        // --- REVIEW SCREEN LOGIC ---
-        function renderReview(total, xp, tokens, badge) {
-            const reviewContent = document.getElementById('review-content');
-            reviewContent.innerHTML = ''; // Clear previous data
-
-            // 1. Summary Header
-            const summaryCard = document.createElement('div');
-            summaryCard.className = "bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg border-t-4 border-indigo-500 text-center mb-8";
-// Calculate formatted time
-const mins = Math.floor(timeTaken / 60);
-const secs = (timeTaken % 60).toString().padStart(2, '0');
-
-summaryCard.innerHTML = `
-    <h2 class="text-3xl font-bold mb-2 text-indigo-600 dark:text-indigo-400">Mission Complete!</h2>
-    <div class="flex justify-center gap-6 text-lg font-bold mb-4">
-        <span class="text-blue-500">Score: ${gameState.missionScore}/${total}</span>
-        <span class="text-amber-500">⏱️ ${mins}:${secs}</span>
-        <span class="text-green-500">+${xp} XP</span>
-        <span class="text-yellow-500">+${tokens} Tokens</span>
-    </div>
-    ${speedBonus > 0 ? `<div class="text-sm font-bold text-green-600 mb-2">⚡ Speed Bonus: +${speedBonus} Tokens!</div>` : ''}
-    ${badge ? `<div class="bg-yellow-100 text-yellow-800 p-2 rounded-lg inline-block animate-bounce">🏆 Badge Unlocked: ${badge.name}</div>` : ''}
-`;
-            reviewContent.appendChild(summaryCard);
-
-// 2. Question Breakdown
-            gameState.missionHistoryData.forEach((data, index) => {
-                const card = document.createElement('div');
-                const isCorrect = data.isCorrect;
-                card.className = `p-6 rounded-lg shadow-md border-l-8 ${isCorrect ? 'bg-green-50 border-green-500 dark:bg-gray-800' : 'bg-red-50 border-red-500 dark:bg-gray-800'}`;
-                
-                // Determine Video Link (You can customize this per standard)
-                let videoLink = '';
-                if (!isCorrect) {
-                     // Search YouTube for the Standard (e.g., "RI.8.1 help")
-                     const searchUrl = `https://www.youtube.com/results?search_query=ELA+Standard+${data.standard}+explanation`;
-                     videoLink = `<div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                        <a href="${searchUrl}" target="_blank" class="flex items-center gap-2 text-red-600 hover:text-red-800 font-bold text-sm">
-                            <span>📺</span> Watch a Video Explanation for ${data.standard}
-                        </a>
-                     </div>`;
-                }
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="font-bold text-gray-500 text-sm">Question ${index + 1} (${data.standard})</span>
-                        <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-bold">${isCorrect ? 'Correct' : 'Incorrect'}</span>
-                    </div>
-                    <p class="font-semibold text-lg mb-4 text-gray-800 dark:text-gray-200">${data.question}</p>
-                    
-                    <div class="mb-3">
-                        <p class="text-sm text-gray-500">Your Answer:</p>
-                        <p class="${isCorrect ? 'text-green-700' : 'text-red-600 line-through'} font-medium">
-                            ${Array.isArray(data.userAnswer) ? data.userAnswer.join(' ') : data.userAnswer}
-                        </p>
-                    </div>
-
-                    <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm text-gray-700 dark:text-gray-300">
-                        <span class="font-bold">💡 Feedback:</span> ${data.rationale}
-                    </div>
-                    ${videoLink}
-                `;
-                reviewContent.appendChild(card);
-            });
-
-            // 3. Continue Button
-            const btnContainer = document.createElement('div');
-            btnContainer.className = "text-center mt-8";
-            btnContainer.innerHTML = `<button id="review-continue-btn" class="button bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-12 rounded-full text-xl shadow-xl transition-transform transform hover:scale-105">Continue Adventure ➡</button>`;
-            reviewContent.appendChild(btnContainer);
-
-            document.getElementById('review-continue-btn').onclick = () => {
-                navigate('welcome-screen');
-            };
-
-            navigate('review-screen');
-        }
-
-        // --- BOSS BATTLE LOGIC (The Glitch) ---
-        let currentBossState = { activeBattle: null, playerHP: 3, bossHP: 3, fixedErrors: [] };
-        const bossTextDisplay = document.getElementById('boss-text-display');
-        const playerHpBar = document.getElementById('player-hp-bar');
-        const bossHpBar = document.getElementById('boss-hp-bar');
-        const editorModal = document.getElementById('editor-modal');
-        const editorOptions = document.getElementById('editor-options');
-        const closeEditorModal = document.getElementById('close-editor-modal');
-
-function startBossRound() {
-    // ANALYZE: What standard is the student weakest in?
-    const stats = gameState.user.standardsReport || {};
-    let weakestStandard = 'L.8.1'; // Default
-    let lowestAccuracy = 1;
-
-    for (const [std, data] of Object.entries(stats)) {
-        const accuracy = data.correct / data.total;
-        if (accuracy < lowestAccuracy) {
-            lowestAccuracy = accuracy;
-            weakestStandard = std;
-        }
-    }
-
-    // Select a battle that matches that standard, or fallback to random
-    const targetedBattle = bossBattles.find(b => b.id.includes(weakestStandard)) || bossBattles[Math.floor(Math.random() * bossBattles.length)];
-    
-    currentBossState.activeBattle = targetedBattle;
-    currentBossState.playerHP = 3;
-    currentBossState.bossHP = currentBossState.activeBattle.bossMaxHP;
-    currentBossState.fixedErrors = [];
-    updateHealthUI();
-    renderBossPassage();
-    navigate('boss-round-screen');
-}
-
-        function updateHealthUI() {
-            const playerPct = (currentBossState.playerHP / 3) * 100;
-            const bossPct = (currentBossState.bossHP / currentBossState.activeBattle.bossMaxHP) * 100;
-            playerHpBar.style.width = `${playerPct}%`;
-            bossHpBar.style.width = `${bossPct}%`;
-            playerHpBar.className = playerPct < 40 ? 'bg-red-500 h-full transition-all' : 'bg-blue-500 h-full transition-all';
-        }
-
-        function renderBossPassage() {
-            bossTextDisplay.innerHTML = '';
-            currentBossState.activeBattle.passageParts.forEach(part => {
-                const span = document.createElement('span');
-                if (part.type === 'error') {
-                    if (currentBossState.fixedErrors.includes(part.id)) {
-                        span.textContent = part.options[part.correctIndex];
-                        span.className = "boss-fixed px-1";
-                    } else {
-                        span.textContent = part.original;
-                        span.className = "boss-error hover:bg-red-100 px-1";
-                        span.onclick = () => openEditorModal(part);
-                    }
-                } else {
-                    span.textContent = part.text;
-                }
-                bossTextDisplay.appendChild(span);
-            });
-        }
-function openEditorModal(part) {
-            editorOptions.innerHTML = '';
-            part.options.forEach((option, index) => {
-                const btn = document.createElement('button');
-                // FIX: Added 'dark:hover:bg-gray-700' and 'hover:text-indigo-900' to manage contrast
-                btn.className = "w-full text-left p-3 rounded border border-gray-300 dark:border-gray-600 hover:bg-indigo-50 hover:text-indigo-900 hover:border-indigo-500 dark:hover:bg-gray-700 dark:hover:text-white transition-all font-medium mb-2";
-                btn.textContent = option;
-                btn.onclick = () => resolveBattleAction(part, index);
-                editorOptions.appendChild(btn);
-            });
-            editorModal.classList.remove('hidden');
-        }
-
-        closeEditorModal.onclick = () => editorModal.classList.add('hidden');
-
-        async function resolveBattleAction(part, selectedIndex) {
-            editorModal.classList.add('hidden');
-            if (selectedIndex === part.correctIndex) {
-                currentBossState.bossHP--;
-                currentBossState.fixedErrors.push(part.id);
-                playSound('correct');
-                await showModal('Hit!', 'Direct hit on the Glitch! ' + part.rationale, 'success');
-            } else {
-                currentBossState.playerHP--;
-                playSound('incorrect');
-                await showModal('Ouch!', 'The Glitch counter-attacked! Wrong fix.', 'error');
-            }
-            updateHealthUI();
-            renderBossPassage();
-            checkBattleStatus();
-        }
-
-function checkBattleStatus() {
-            if (currentBossState.bossHP <= 0) {
-                setTimeout(async () => {
-                    triggerConfetti();
-                    playSound('win');
-                    
-                    // --- FIX: AWARD BADGE ---
-                    if (!gameState.user.badges.includes('boss_slayer')) {
-                        gameState.user.badges.push('boss_slayer');
-                        await showModal('🏆 BADGE UNLOCKED!', 'You earned the <b>Glitch Hunter</b> Badge!', 'success');
-                    }
-                    
-                    showModal('Victory!', 'You purged the Glitch! +100 XP', 'success').then(() => {
-                        addXp(100);
-                        navigate('welcome-screen');
-                    });
-                }, 500);
-            } else if (currentBossState.playerHP <= 0) {
-                setTimeout(() => {
-                    playSound('incorrect');
-                    showModal('Defeat', 'The Glitch overwhelmed you.', 'error').then(() => navigate('welcome-screen'));
-                }, 500);
-            }
-        }
-
-        // --- Helpers ---
-        function addXp(amount) {
-            gameState.user.xp += amount;
-            while (gameState.user.xp >= 100) { gameState.user.xp -= 100; gameState.user.level++; }
-            updateUI();
-            saveProgress();
-        }
-
-function updateUI() {
-            // 1. Update Standard Elements
-            if(levelDisplay) levelDisplay.textContent = gameState.user.level;
-            if(xpDisplay) xpDisplay.textContent = gameState.user.xp;
-            if(xpBar) xpBar.style.width = `${gameState.user.xp}%`;
-            if(tokenDisplay) tokenDisplay.textContent = gameState.user.tokens;
-            
-            // 2. Re-render badges
-            if(badgesDisplay) {
-                badgesDisplay.innerHTML = '';
-                gameState.user.badges.forEach(bid => {
-                    if(allBadges[bid]) {
-                        const s = document.createElement('span'); s.className='text-3xl'; s.textContent=allBadges[bid].icon; badgesDisplay.appendChild(s);
-                    }
-                });
-            }
-
-            // 3. Re-render history
-            if(missionHistoryBody) {
-                missionHistoryBody.innerHTML = '';
-                gameState.user.history.forEach(h => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td class="p-4">${h.missionTitle}</td><td class="p-4">${h.score}</td><td class="p-4">${h.date}</td><td class="p-4">${h.tokensEarned || 0}</td><td class="p-4">${h.xpEarned}</td>`;
-                    missionHistoryBody.appendChild(tr);
-                });
-            }
-
-            // 4. UPDATE CORNER STATS (The New Part)
-            const mainLevel = document.getElementById('main-level-display');
-            const mainXpCur = document.getElementById('main-xp-current');
-            const mainXpBar = document.getElementById('main-xp-bar');
-            const mainTokens = document.getElementById('main-token-display');
-
-            if(mainLevel) mainLevel.textContent = gameState.user.level;
-            if(mainXpCur) mainXpCur.textContent = gameState.user.xp;
-            if(mainXpBar) mainXpBar.style.width = `${gameState.user.xp}%`; 
-            if(mainTokens) mainTokens.textContent = gameState.user.tokens;
-        }
-
-        function saveProgress() { localStorage.setItem('elaGameProgress', JSON.stringify(gameState.user)); }
-        function loadProgress() { 
-            const saved = localStorage.getItem('elaGameProgress'); 
-            if(saved) gameState.user = JSON.parse(saved); 
-        }
-
-        function resetGame() {
-            localStorage.removeItem('elaGameProgress');
-            gameState.user = { xp: 0, level: 1, elaLevel: 0, tokens: 0, badges: [], history: [], purchasedItems: [] };
-            updateUI();
-            navigate('welcome-screen');
-        }
-
-        function triggerConfetti() { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 90 }); }
-
-// --- Event Listeners ---
-        document.getElementById('start-calibration-button').addEventListener('click', startCalibrationQuest);
-        document.getElementById('missions-button').addEventListener('click', renderMissions);
-        // Boss button listener removed (moved to renderMissions)
-        
-        document.getElementById('shop-button').addEventListener('click', () => { 
-            // ... shop logic ...
-            shopItemsList.innerHTML = '';
-            shopItems.forEach(item => {
-                // Check if user owns this (for permanent items)
-                const isOwned = item.type === 'permanent' && gameState.user.purchasedItems.some(i => i.id === item.id);
-                
-                // Inventory Count (for consumables)
-                const count = gameState.user.purchasedItems.filter(i => i.id === item.id).length;
-                const countBadge = item.type === 'consumable' && count > 0 ? `<div class="absolute top-2 right-2 bg-white text-black font-bold px-2 py-1 rounded-full text-xs shadow">x${count} Owned</div>` : '';
-
-                const itemDiv = document.createElement('div');
-                // Make the card look cool
-                itemDiv.className = `relative rounded-xl p-6 shadow-xl text-white transform transition hover:scale-105 ${item.color || 'bg-gray-500'}`;
-                
-                itemDiv.innerHTML = `
-                    ${countBadge}
-                    <h3 class="font-extrabold text-2xl mb-2 drop-shadow-md">${item.name}</h3>
-                    <p class="mb-6 text-sm opacity-90 font-medium">${item.description}</p>
-                    <button class="buy-btn w-full py-3 rounded-lg font-bold shadow-lg transition-colors 
-                        ${isOwned ? 'bg-gray-400 cursor-not-allowed text-gray-700' : 'bg-white text-gray-900 hover:bg-gray-100'}">
-                        ${isOwned ? 'OWNED' : `Buy for ${item.cost} 💰`}
-                    </button>
-                `;
-                
-                const btn = itemDiv.querySelector('.buy-btn');
-                if (isOwned) {
-                    btn.disabled = true;
-                } else {
-                    btn.onclick = () => {
-                        if (gameState.user.tokens >= item.cost) {
-                            // Deduct Logic
-                            gameState.user.tokens -= item.cost;
-                            // Add to inventory if permanent, or execute immediate action
-                            if (item.type === 'permanent') {
-                                gameState.user.purchasedItems.push({ id: item.id });
-                            }
-                            
-                            // Execute Action
-                            item.action();
-                            
-                            saveProgress();
-                            updateUI();
-                            
-                            // Visual Feedback
-                            if (item.id !== 'mystery-box') {
-                                showModal('Purchase Successful!', `You bought: ${item.name}`, 'success');
-                                // Refresh shop to show "Owned" or new count
-                                document.getElementById('shop-button').click();
-                            }
-                        } else {
-                            playSound('incorrect');
-                            showModal('Insufficient Funds', `You need ${item.cost - gameState.user.tokens} more tokens!`, 'error');
-                        }
-                    };
-                }
-                shopItemsList.appendChild(itemDiv);
-            });
-            navigate('shop-screen'); 
-        });
-
-document.getElementById('progress-button').addEventListener('click', () => {
+    saveProgress();
     updateUI();
-    if(!gameState.user.stickers) gameState.user.stickers = [];
+    
+    // Call the review function with all the data
+    renderReview(total, xpEarned, tokensEarned, speedBonus, timeTaken);
+}
 
-    const rarityMap = {
-        legendary: ['👑', '🦄', '🐲', '🦁', '🧛', '🛸'], 
-        epic: ['🐉', '👽', '🏰', '⚔️', '🐘', '🦈', '🎭'], 
-        rare: ['🚀', '🛡️', '🔮', '🤖', '🦖', '💎', '🔭', '🦊', '🕵️‍♂️'] 
-    };
+function renderReview(total, xp, tokens, speedBonus, timeTaken) {
+    const reviewContent = document.getElementById('review-content');
+    reviewContent.innerHTML = ''; 
 
-    let albumHTML = '';
-    for (const [key, collection] of Object.entries(stickerCollections)) {
-        const ownedCount = collection.items.filter(i => gameState.user.stickers.includes(i)).length;
-        const totalCount = collection.items.length;
-        let grid = '';
-        collection.items.forEach(s => {
-            const isOwned = gameState.user.stickers.includes(s);
-            if (isOwned) {
-                let rarityClass = 'bg-white dark:bg-gray-700 border-2 border-gray-200';
-                if (rarityMap.legendary.includes(s)) rarityClass = 'rarity-legendary';
-                else if (rarityMap.epic.includes(s)) rarityClass = 'rarity-epic';
-                else if (rarityMap.rare.includes(s)) rarityClass = 'rarity-rare';
-                
-                grid += `<div class="${rarityClass} sticker-item rounded-xl shadow-lg flex items-center justify-center h-20 w-20 mx-auto cursor-pointer transform hover:scale-110 transition" title="Sticker"><span class="text-4xl drop-shadow-md">${s}</span></div>`;
-            } else {
-                grid += `<div class="bg-gray-200 dark:bg-gray-800 border-2 border-dashed border-gray-400 rounded-xl flex items-center justify-center h-20 w-20 mx-auto opacity-50"><span class="text-2xl text-gray-400">?</span></div>`;
-            }
-        });
-        albumHTML += `
-            <div class="mb-8">
-                <div class="flex justify-between items-end mb-3 border-b border-indigo-200 dark:border-indigo-800 pb-2">
-                    <h4 class="text-lg font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">${collection.name}</h4>
-                    <span class="text-sm font-mono ${ownedCount === totalCount ? 'text-green-500 font-bold' : 'text-gray-500'}">${ownedCount}/${totalCount}</span>
-                </div>
-                <div class="grid grid-cols-4 md:grid-cols-8 gap-4">${grid}</div>
-            </div>`;
-    }
+    const mins = Math.floor(timeTaken / 60);
+    const secs = (timeTaken % 60).toString().padStart(2, '0');
 
-    const totalXP = gameState.user.xp + ((gameState.user.level - 1) * 100);
-    const allPlayers = [ ...gameState.rivals, { name: "YOU", xp: totalXP, avatar: "😎", isPlayer: true } ];
-    allPlayers.sort((a, b) => b.xp - a.xp);
-
-    let leaderboardHTML = allPlayers.map((p, index) => {
-        const rank = index + 1;
-        const isMe = p.isPlayer ? "bg-indigo-100 dark:bg-indigo-900 border-indigo-500 transform scale-105" : "bg-white dark:bg-gray-700 border-transparent";
-        const medal = rank === 1 ? '🥇' : (rank === 2 ? '🥈' : (rank === 3 ? '🥉' : `#${rank}`));
-        return `
-            <div class="flex items-center justify-between p-3 rounded-lg border-l-4 shadow-sm ${isMe} mb-2">
-                <div class="flex items-center gap-3">
-                    <span class="font-bold text-xl w-8">${medal}</span>
-                    <span class="text-2xl">${p.avatar}</span>
-                    <span class="font-bold ${p.isPlayer ? 'text-indigo-600 dark:text-indigo-300' : ''}">${p.name}</span>
-                </div>
-                <span class="font-mono font-bold text-gray-500 dark:text-gray-400">${p.xp} XP</span>
-            </div>`;
-    }).join('');
-
-    const progressScreen = document.getElementById('progress-screen');
-    progressScreen.innerHTML = `
-        <button class="home-button absolute top-4 left-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 transition z-10">
-            <svg class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-10v10a1 1 0 001 1h3M12 20v-5m0 0H8m4 0h4"></path></svg>
-        </button>
-        <h2 class="text-3xl md:text-4xl font-bold mb-6 pl-16">My Profile & Rankings</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-purple-200 dark:border-purple-900">
-                <h3 class="text-xl font-bold text-purple-600 dark:text-purple-400 mb-4">🏆 Class Leaderboard</h3>
-                <div class="max-h-60 overflow-y-auto pr-2">${leaderboardHTML}</div>
+    // 1. Create Summary Header
+    const summaryCard = document.createElement('div');
+    summaryCard.className = "bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl border-t-8 border-indigo-500 text-center mb-8";
+    summaryCard.innerHTML = `
+        <h2 class="text-3xl font-black mb-4 text-indigo-600 dark:text-indigo-400">MISSION COMPLETE</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                <p class="text-xs font-bold text-blue-600 uppercase">Score</p>
+                <p class="text-2xl font-black">${gameState.missionScore}/${total}</p>
             </div>
-            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-yellow-200 dark:border-yellow-900">
-                <h3 class="text-xl font-bold text-yellow-600 dark:text-yellow-400 mb-4">Badges & Stats</h3>
-                <p class="mb-2">Total Tokens: <span class="font-bold text-yellow-500">${gameState.user.tokens} 💰</span></p>
-                <div class="flex flex-wrap gap-2 mt-4">
-                    ${gameState.user.badges.map(b => `<span class="text-3xl" title="${b}">${allBadges[b] ? allBadges[b].icon : '🏅'}</span>`).join('') || '<span class="text-gray-400 italic">No badges yet.</span>'}
-                </div>
+            <div class="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
+                <p class="text-xs font-bold text-amber-600 uppercase">Time</p>
+                <p class="text-2xl font-black">${mins}:${secs}</p>
+            </div>
+            <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                <p class="text-xs font-bold text-green-600 uppercase">XP</p>
+                <p class="text-2xl font-black">+${xp}</p>
+            </div>
+            <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
+                <p class="text-xs font-bold text-yellow-600 uppercase">Tokens</p>
+                <p class="text-2xl font-black">+${tokens}</p>
             </div>
         </div>
-
-        <div class="bg-indigo-50 dark:bg-gray-900/50 rounded-3xl p-8 border-4 border-indigo-200 dark:border-indigo-800 border-dashed">
-            <h3 class="text-2xl font-bold text-indigo-600 dark:text-indigo-300 mb-6 flex items-center">
-                <span class="mr-2">📒</span> Ultimate Sticker Album
-            </h3>
-            ${albumHTML}
-        </div>
+        ${speedBonus > 0 ? `<div class="mt-4 text-sm font-bold text-emerald-500 animate-bounce">⚡ Speed Bonus Applied: +${speedBonus} Tokens!</div>` : ''}
     `;
-    
-    // Updated: Only the Home button is attached here. The Report button is gone.
-    progressScreen.querySelector('.home-button').addEventListener('click', () => navigate('welcome-screen'));
-    
-    navigate('progress-screen');
-});
+    reviewContent.appendChild(summaryCard);
 
-        // Helper for the report (moved out for cleaner code)
-// Helper for the report (Updated with Standards Breakdown & Reteach Info)
-        function generateReport() {
-            const date = new Date().toLocaleDateString();
-            const totalXP = gameState.user.xp + ((gameState.user.level - 1) * 100);
-            
-            // 1. Calculate Aggregate Stats
-            const stats = gameState.user.standardsReport || {};
-            let totalQ = 0;
-            let totalCorrect = 0;
-            let standardsRows = '';
-            let reteachRows = '';
+    // 2. Create Question Breakdown
+    gameState.missionHistoryData.forEach((data, index) => {
+        const card = document.createElement('div');
+        const isCorrect = data.isCorrect;
+        card.className = `p-6 rounded-xl shadow-md border-l-8 mb-4 ${isCorrect ? 'bg-green-50 border-green-500 dark:bg-gray-800' : 'bg-red-50 border-red-500 dark:bg-gray-800'}`;
+        card.innerHTML = `
+            <div class="flex justify-between items-start mb-2">
+                <span class="font-bold text-gray-400 text-xs uppercase tracking-widest">Question ${index + 1} • ${data.standard}</span>
+                <span class="${isCorrect ? 'text-green-600' : 'text-red-600'} font-black italic">${isCorrect ? 'SUCCESS' : 'GLITCHED'}</span>
+            </div>
+            <p class="font-bold text-lg mb-3 text-gray-800 dark:text-gray-100">${data.question}</p>
+            <div class="bg-white/50 dark:bg-black/20 p-3 rounded-lg border border-black/5 mb-3">
+                <p class="text-sm"><b>Your Answer:</b> <span class="${isCorrect ? 'text-green-600' : 'text-red-600'}">${data.userAnswer}</span></p>
+            </div>
+            <div class="text-xs leading-relaxed text-gray-600 dark:text-gray-400 p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded border border-indigo-100 dark:border-indigo-900/50">
+                <b>Explanation:</b> ${data.rationale}
+            </div>
+        `;
+        reviewContent.appendChild(card);
+    });
 
-            for (const [std, data] of Object.entries(stats)) {
-                totalQ += data.total;
-                totalCorrect += data.correct;
-                const percent = Math.round((data.correct / data.total) * 100);
-                const status = percent >= 80 ? 'Mastered' : (percent >= 60 ? 'Developing' : 'Needs Focus');
-                const statusColor = percent >= 80 ? '#059669' : (percent >= 60 ? '#d97706' : '#dc2626');
-                
-                // Add to breakdown table
-                standardsRows += `
-                    <tr>
-                        <td><strong>${std}</strong><br><span style="font-size:11px; color:#666;">${data.desc}</span></td>
-                        <td style="text-align:center;">${data.correct}/${data.total}</td>
-                        <td style="text-align:center; font-weight:bold; color:${statusColor}">${percent}%</td>
-                        <td style="text-align:center;"><span style="background:${statusColor}20; color:${statusColor}; padding:2px 6px; border-radius:4px; font-size:10px; font-weight:bold;">${status.toUpperCase()}</span></td>
-                    </tr>
-                `;
+    // 3. Return Home Button
+    const btnContainer = document.createElement('div');
+    btnContainer.className = "text-center py-8";
+    btnContainer.innerHTML = `<button onclick="navigate('welcome-screen')" class="button bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-16 rounded-2xl text-xl shadow-2xl transition-transform hover:scale-105">RETURN TO BASE ➡</button>`;
+    reviewContent.appendChild(btnContainer);
 
-                // Add to Reteach Section if needed
-                if (percent < 70) {
-                    reteachRows += `
-                        <div style="background:#fef2f2; border-left:4px solid #ef4444; padding:10px; margin-bottom:10px; font-size:13px;">
-                            <strong style="color:#b91c1c;">${std} - ${data.desc} (${percent}%)</strong>
-                            <p style="margin:5px 0 0 0; color:#7f1d1d;">Student struggled with this concept. Recommendation: Review foundations of ${data.desc.toLowerCase()} and provide scaffolded practice examples.</p>
-                        </div>
-                    `;
-                }
-            }
-            
-            const overallAccuracy = totalQ > 0 ? Math.round((totalCorrect / totalQ) * 100) : 0;
+    navigate('review-screen');
+}
 
-            // 2. Build the Professional HTML Report
-            const reportHTML = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>ELA Legends - Official Student Report</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
-                    <style>
-                        @page { size: portrait; margin: 0.5in; }
-                        body { font-family: 'Outfit', sans-serif; background: white; padding: 20px; color: #1f2937; -webkit-print-color-adjust: exact; }
-                        .report-container { max-width: 800px; margin: 0 auto; border: 2px solid #3730a3; border-radius: 12px; overflow: hidden; }
-                        .header { background: #3730a3; color: white; padding: 30px; text-align: center; }
-                        h1 { margin: 0; font-size: 32px; text-transform: uppercase; letter-spacing: 2px; }
-                        .subtitle { opacity: 0.9; font-size: 14px; margin-top: 5px; font-weight: 300; }
-                        .content { padding: 30px; }
-                        
-                        /* Stats Grid */
-                        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; }
-                        .stat-card { background: #f3f4f6; border-left: 4px solid #4f46e5; padding: 10px; border-radius: 0 6px 6px 0; }
-                        .stat-value { font-size: 20px; font-weight: 800; color: #111827; display: block; }
-                        .stat-label { font-size: 10px; text-transform: uppercase; color: #6b7280; font-weight: 600; letter-spacing: 0.5px; }
-
-                        h3 { color: #3730a3; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px; margin-top: 30px; margin-bottom: 15px; font-size: 18px; }
-
-                        /* Tables */
-                        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-                        th { background: #e0e7ff; color: #3730a3; padding: 8px; text-align: left; text-transform: uppercase; font-size: 11px; }
-                        td { padding: 8px; border-bottom: 1px solid #e5e7eb; }
-                        tr:nth-child(even) { background-color: #f9fafb; }
-
-                        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px dashed #d1d5db; display: flex; justify-content: space-between; font-size: 12px; color: #6b7280; }
-                        .signature-line { width: 200px; border-top: 1px solid #000; text-align: center; padding-top: 5px; margin-top: 30px; font-weight: bold; color: #000; }
-                    </style>
-                </head>
-                <body>
-                    <div class="report-container">
-                        <div class="header">
-                            <h1>Student Progress Report</h1>
-                            <div class="subtitle">ELA Legends Assessment Data • ${date}</div>
-                        </div>
-
-                        <div class="content">
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <span class="stat-value">Level ${gameState.user.level}</span>
-                                    <span class="stat-label">Current Rank</span>
-                                </div>
-                                <div class="stat-card">
-                                    <span class="stat-value">${overallAccuracy}%</span>
-                                    <span class="stat-label">Overall Accuracy</span>
-                                </div>
-                                <div class="stat-card">
-                                    <span class="stat-value">${totalQ}</span>
-                                    <span class="stat-label">Questions Answered</span>
-                                </div>
-                                <div class="stat-card">
-                                    <span class="stat-value">${gameState.user.tokens}</span>
-                                    <span class="stat-label">Tokens Earned</span>
-                                </div>
-                            </div>
-
-                            <h3>Performance by Standard</h3>
-                            ${standardsRows ? `
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th width="40%">Standard / Category</th>
-                                        <th width="20%" style="text-align:center;">Score</th>
-                                        <th width="20%" style="text-align:center;">Accuracy</th>
-                                        <th width="20%" style="text-align:center;">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>${standardsRows}</tbody>
-                            </table>` : '<p style="color:#666; font-style:italic;">No data recorded yet. Play missions to generate standards data.</p>'}
-
-                            ${reteachRows ? `
-                                <h3>Recommended Focus Areas (Reteach)</h3>
-                                <div>${reteachRows}</div>
-                            ` : ''}
-
-                            <h3>Recent Mission Log</h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Mission Title</th>
-                                        <th>Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${gameState.user.history.length > 0 ? gameState.user.history.slice(-5).map(h => `
-                                        <tr>
-                                            <td>${h.date}</td>
-                                            <td><strong>${h.missionTitle}</strong></td>
-                                            <td>${h.score}</td>
-                                        </tr>
-                                    `).join('') : '<tr><td colspan="3" style="text-align:center; padding: 10px; color: #999;">No missions completed yet.</td></tr>'}
-                                </tbody>
-                            </table>
-
-                            <div class="footer">
-                                <div>Generated by <strong>ELA Legends</strong></div>
-                                <div><div class="signature-line">Teacher Signature</div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <script>
-                        window.onload = function() { window.print(); }
-                    <\/script>
-                </body>
-                </html>
-            `;
-
-            const printWindow = window.open('', '_blank', 'width=850,height=1100');
-            printWindow.document.write(reportHTML);
-            printWindow.document.close();
-        }
-// --- NEW: GLITCH ARCHIVE & RETEACH SYSTEM ---
-        function openArchive() {
-            const list = document.getElementById('archive-list');
-            const emptyMsg = document.getElementById('archive-empty-msg');
-            list.innerHTML = '';
-            
-            if (!gameState.user.missedQuestions || gameState.user.missedQuestions.length === 0) {
-                emptyMsg.classList.remove('hidden');
-            } else {
-                emptyMsg.classList.add('hidden');
-                gameState.user.missedQuestions.forEach((item, index) => {
-                    const card = document.createElement('div');
-                    card.className = "bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-8 border-red-500 relative overflow-hidden";
-                    
-                    // Render Options
-                    let optionsHTML = '';
-                    if (item.type === 'MC') {
-                        optionsHTML = item.options.map(opt => 
-                            `<button class="archive-opt w-full text-left p-3 mt-2 rounded border border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors" onclick="checkArchiveAnswer('${item.id}', '${opt.replace(/'/g, "\\'")}', this)">${opt}</button>`
-                        ).join('');
-                    } else {
-                        optionsHTML = `<p class="italic text-gray-400 mt-4">Hot Text questions must be re-taken inside the mission.</p>`;
-                    }
-
-                    // RETEACH BUTTON LOGIC
-                    const standardKey = item.standard; // e.g., 'RI.8.1'
-
-                    // ... inside openArchive loop ...
-                    
-                    // AUTO-SHOW LESSON BUTTON
-                    const lessonText = skillLessons[standardKey] || "Review the text carefully.";
-                    
-                    // Add a "Learning" Banner
-                    const lessonBanner = `
-                        <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg mb-4 border border-blue-100 dark:border-blue-800">
-                            <p class="text-xs font-bold text-blue-500 uppercase mb-1">RETEACH LESSON:</p>
-                            <p class="text-sm text-gray-700 dark:text-gray-300">${lessonText}</p>
-                        </div>
-                    `;
-
-                    card.innerHTML = `
-                        <div class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-2">
-                             <span>⚠️ CORRUPTED</span>
-                        </div>
-                        
-                        <div class="mb-2">
-                             <p class="font-bold text-gray-500 text-xs uppercase">Standard: ${item.standard || 'General'}</p>
-                        </div>
-
-                        ${lessonBanner} <p class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">${item.stem}</p>
-                        <div>${optionsHTML}</div>
-                    `;
-                    
-                    card.innerHTML = `
-                        <div class="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg flex items-center gap-2">
-                            <span>⚠️ CORRUPTED</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-end mb-2">
-                             <p class="font-bold text-gray-500 text-xs uppercase">Standard: ${item.standard || 'General'}</p>
-                             <button onclick="showLesson('${standardKey}')" class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold hover:bg-blue-200 border border-blue-300">
-                                📖 Study Skill
-                             </button>
-                        </div>
-
-                        <p class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">${item.stem}</p>
-                        <div>${optionsHTML}</div>
-                    `;
-                    list.appendChild(card);
-                });
-            }
-            navigate('archive-screen');
-        }
-
-        function showLesson(std) {
-            const lesson = skillLessons[std] || "<b>General Comprehension:</b> Read the text carefully and look for evidence that directly supports your answer.";
-            showModal(`Study Guide: ${std}`, lesson, 'info');
-        }
-
-        async function checkArchiveAnswer(itemId, answer, btnElement) {
-            const itemIndex = gameState.user.missedQuestions.findIndex(q => q.id === itemId);
-            if (itemIndex === -1) return;
-            const item = gameState.user.missedQuestions[itemIndex];
-            
-            if (answer === item.correct_answer) {
-                // SUCCESS
-                playSound('correct');
-                await showModal('Glitch Purged! 🛡️', `Excellent work! You applied the skill correctly.<br><br><b>Why:</b> ${item.rationale}`, 'success');
-                
-                gameState.user.missedQuestions.splice(itemIndex, 1);
-                gameState.user.tokens += 5; // Reward
-                addXp(10);
-                saveProgress();
-                triggerConfetti();
-                openArchive(); // Refresh list
-            } else {
-                // FAIL
-                playSound('incorrect');
-                btnElement.classList.add('bg-red-200', 'border-red-500', 'text-red-800');
-                btnElement.disabled = true;
-                btnElement.innerHTML += " ❌";
-            }
-        }
-
-// --- NEW: SURVIVAL MODE (THE GAUNTLET) ---
+// --- SURVIVAL: THE GAUNTLET ---
 function startSurvival() {
-            // 1. Gather ALL questions into one giant pool
-            const allItems = itemBank.flatMap(zone => zone.items.map(item => ({ ...item, passage: zone.passage, sources: zone.sources })));
-            // 2. Shuffle them
-            gameState.survivalQueue = allItems.sort(() => Math.random() - 0.5);
-            
-            gameState.mode = 'survival';
-            gameState.missionScore = 0;
-            gameState.currentQuestionIndex = 0;
-            
-            // 3. Start
-            navigate('game-play-screen');
-            startTimer(); // <--- FIX: This starts the clock!
-            renderSurvivalQuestion();
-        }
+    const allItems = itemBank.flatMap(zone => 
+        zone.items.map(item => ({ ...item, passage: zone.passage }))
+    ).sort((a, b) => a.difficulty - b.difficulty);
+    
+    gameState.survivalQueue = allItems;
+    gameState.mode = 'survival';
+    gameState.missionScore = 0;
+    gameState.currentQuestionIndex = 0;
+    
+    navigate('game-play-screen');
+    startTimer();
+    renderSurvivalQuestion();
+}
 
 function renderSurvivalQuestion() {
-    if (gameState.currentQuestionIndex >= gameState.survivalQueue.length) {
-        showModal('IMPOSSIBLE!', 'You have answered every single question correctly. You are a Legend.', 'success');
-        navigate('welcome-screen');
-        return;
-    }
-
     const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
-    
-    // Header Stats
-    gameTitle.innerHTML = `<span class="text-red-600">💀 SURVIVAL MODE</span>`;
-    missionScoreDisplay.innerHTML = `${gameState.missionScore} <span class="text-xs">Streak</span>`;
-    missionTotalQuestions.innerHTML = "∞";
+    if (!currentItem) { navigate('welcome-screen'); return; }
 
-    // Text-to-Speech Setup
-    const speakerBtn = `<button onclick="speakText('${currentItem.id}')" class="mb-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center gap-1">🔊 Read Aloud</button>`;
-    let textSource = currentItem.sources ? currentItem.sources[0].text : currentItem.passage;
-    const ttsContent = `<div id="tts-content-${currentItem.id}" class="hidden">${textSource.replace(/<[^>]*>/g, '')}</div>`;
-
-    // Render Passage
-    gamePassage.innerHTML = `${speakerBtn}${ttsContent}<div class="prose dark:prose-invert max-w-none">${textSource}</div>`;
-
-    // Render Question and Options
-    // FIX: Explicitly check for currentItem.options OR currentItem.items[0].options
-    const options = currentItem.options || (currentItem.items && currentItem.items[0].options);
-    
+    gameTitle.innerHTML = `<span class="text-red-600 uppercase italic font-black">💀 The Gauntlet</span>`;
+    gamePassage.innerHTML = `<div class="prose dark:prose-invert">${currentItem.passage}</div>`;
     gameQuestionsArea.innerHTML = `
         <div class="mb-4">
-            <p class="font-bold text-lg mb-2">Question ${gameState.missionScore + 1}</p>
-            <p class="mb-4 text-lg font-medium">${currentItem.stem || currentItem.items[0].stem}</p>
+            <p class="font-bold text-red-500 mb-2 italic tracking-widest uppercase">Survival Level: ${currentItem.difficulty}</p>
+            <p class="mb-4 text-lg font-medium">${currentItem.stem}</p>
             <div id="options-container" class="space-y-3">
-                ${options ? options.map(option => `
-                    <label class="flex items-start p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10 transition-all">
-                        <input type="radio" name="survival-q" value="${option}" class="mt-1 mr-3 w-5 h-5 text-red-600">
-                        <span class="flex-1 text-base text-gray-800 dark:text-gray-200">${option}</span>
-                    </label>`).join('') : '<p class="text-red-500 font-bold">Error: Answer options not found for this item.</p>'}
+                ${currentItem.options.map(opt => `
+                    <label class="flex items-center p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-red-50 transition-all">
+                        <input type="radio" name="survival-q" value="${opt}" class="mr-3">
+                        <span>${opt}</span>
+                    </label>`).join('')}
             </div>
+            <button onclick="checkSurvivalAnswer()" class="w-full mt-6 bg-red-600 text-white font-bold py-3 rounded-xl shadow-lg">Submit Answer</button>
         </div>`;
-
-    const btnContainer = document.querySelector('#game-play-screen .flex.justify-end');
-    btnContainer.innerHTML = `<button onclick="checkSurvivalAnswer('${currentItem.id}')" class="button bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">Submit (Risk It!)</button>`;
 }
 
-async function checkSurvivalAnswer(itemId) {
+async function checkSurvivalAnswer() {
     const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
     const selected = document.querySelector('input[name="survival-q"]:checked');
-    const correctAns = currentItem.correct_answer || currentItem.items[0].correct_answer;
-    const rationale = currentItem.rationale || currentItem.items[0].rationale;
-    
     if(!selected) return;
 
-    if (selected.value === correctAns) {
-        playSound('correct');
+    if (selected.value === currentItem.correct_answer) {
         gameState.missionScore++;
         gameState.currentQuestionIndex++;
-        await showModal('SURVIVED!', `Correct. Streak: ${gameState.missionScore}`, 'success');
+        await showModal('SURVIVED!', `Streak: ${gameState.missionScore}`, 'success');
         renderSurvivalQuestion();
     } else {
         stopTimer();
-        playSound('incorrect');
-        // HIGH-LEVEL TUTOR FIX: Show the rationale so the student learns WHY they were wrong
-        await showModal('💀 GAME OVER', `
-            <div class="text-left">
-                <p class="mb-2 text-red-600 font-bold">Incorrect Answer.</p>
-                <p class="mb-4 text-sm">The correct answer was: <b>${correctAns}</b></p>
-                <div class="p-3 bg-gray-100 rounded-lg text-xs italic">
-                    <b>Tutor Note:</b> ${rationale}
-                </div>
-            </div>
-        `, 'error');
-        
-        const tokens = gameState.missionScore * 5;
-        gameState.user.tokens += tokens;
+        await showModal('💀 GAME OVER', `Correct: ${currentItem.correct_answer}<br><br>${currentItem.rationale}`, 'error');
         saveProgress();
         navigate('welcome-screen');
     }
 }
 
-        // --- ACCESSIBILITY: TEXT TO SPEECH ---
-        function speakText(id) {
-            const text = document.getElementById(`tts-content-${id}`).innerText;
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9; // Slightly slower for students
-            window.speechSynthesis.cancel(); // Stop previous
-            window.speechSynthesis.speak(utterance);
-        }
+// --- SYSTEM HELPERS ---
+function addXp(amount) {
+    gameState.user.xp += amount;
+    while (gameState.user.xp >= 100) { 
+        gameState.user.xp -= 100; 
+        gameState.user.level++; 
+        triggerConfetti();
+    }
+    updateUI();
+}
 
-// --- Init ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProgress();
-            updateUI();
+function updateUI() {
+    const profDisplay = document.getElementById('proficiency-display');
+if(profDisplay) {
+    const rank = gameState.user.elaLevel >= 3 ? 'LEGEND' : (gameState.user.elaLevel === 2 ? 'SCHOLAR' : 'ROOKIE');
+    profDisplay.className = `font-black px-3 py-1 rounded-full text-xs ${rank === 'LEGEND' ? 'bg-purple-600 text-white animate-pulse' : (rank === 'SCHOLAR' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700')}`;
+    profDisplay.textContent = rank;
+};
+    const mainLevel = document.getElementById('main-level-display');
+    const mainXpCur = document.getElementById('main-xp-current');
+    const mainXpBar = document.getElementById('main-xp-bar');
+    const mainTokens = document.getElementById('main-token-display');
 
-            // FIX: Activate ALL Hardcoded Home Buttons
-            document.querySelectorAll('.home-button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    navigate('welcome-screen');
-                });
-            });
+    if(mainLevel) mainLevel.textContent = gameState.user.level;
+    if(mainXpCur) mainXpCur.textContent = gameState.user.xp;
+    if(mainXpBar) mainXpBar.style.width = `${gameState.user.xp}%`; 
+    if(mainTokens) mainTokens.textContent = gameState.user.tokens;
+    if(tokenDisplay) tokenDisplay.textContent = gameState.user.tokens;
+}
 
-            // Activate Report Button
-            const reportBtn = document.getElementById('export-report-btn');
-            if(reportBtn) reportBtn.addEventListener('click', generateReport);
+function saveProgress() { localStorage.setItem('elaGameProgress', JSON.stringify(gameState.user)); }
+function loadProgress() { 
+    const saved = localStorage.getItem('elaGameProgress'); 
+    if(saved) gameState.user = { ...gameState.user, ...JSON.parse(saved) }; 
+}
+
+function resetGame() {
+    localStorage.removeItem('elaGameProgress');
+    location.reload();
+}
+
+function triggerConfetti() { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 90 }); }
+
+// --- TEACHER REPORT HELPER: STANDARD DEFINITIONS ---
+function getStandardDesc(std) {
+    const map = {
+        'RI.8.1': 'Citing Evidence',
+        'RI.8.2': 'Central Idea & Summary',
+        'RI.8.3': 'Connections & Distinctions',
+        'RI.8.4': 'Vocabulary in Context',
+        'RI.8.5': 'Text Structure',
+        'RI.8.6': 'Author Point of View',
+        'RI.8.8': 'Evaluating Arguments',
+        'RL.8.1': 'Inference & Evidence',
+        'RL.8.2': 'Theme & Plot',
+        'RL.8.3': 'Character Development',
+        'RL.8.4': 'Figurative Language',
+        'RL.8.6': 'Irony & Suspense',
+        'L.8.1': 'Grammar & Usage',
+        'L.8.2': 'Punctuation & Spelling',
+        'L.8.4': 'Vocabulary Acquisition',
+        'L.8.5': 'Figures of Speech'
+    };
+    return map[std] || 'General ELA Mastery';
+}
+
+// --- GLITCH ARCHIVE: RETEACH & REPAIR SYSTEM ---
+function openArchive() {
+    const list = document.getElementById('archive-list');
+    const emptyMsg = document.getElementById('archive-empty-msg');
+    list.innerHTML = '';
+    
+    // Check if user has any missed questions saved
+    if (!gameState.user.missedQuestions || gameState.user.missedQuestions.length === 0) {
+        emptyMsg.classList.remove('hidden');
+    } else {
+        emptyMsg.classList.add('hidden');
+        gameState.user.missedQuestions.forEach((item) => {
+            const card = document.createElement('div');
+            const standardKey = item.standard || 'General';
+            
+            // Pull the specific mini-lesson you wrote in skillLessons
+            const lessonText = skillLessons[standardKey] || "Review the text for direct evidence. ELA mastery requires citing specific lines to support your claims.";
+
+            card.className = "bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border-l-8 border-red-500 mb-6 relative overflow-hidden";
+            card.innerHTML = `
+                <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">CORRUPTED</div>
+                <div class="mb-4 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-900/50">
+                    <p class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase mb-1 tracking-widest">Targeted Study: ${getStandardDesc(standardKey)}</p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">${lessonText}</p>
+                </div>
+                <p class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">${item.stem}</p>
+                <div class="space-y-2">
+                    ${item.options.map(opt => `
+                        <button class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors font-medium" 
+                        onclick="checkArchiveAnswer('${item.id}', '${opt.replace(/'/g, "\\'")}', this)">
+                            ${opt}
+                        </button>`).join('')}
+                </div>
+                <p class="mt-4 text-[10px] text-gray-400 font-mono italic">Successful purge grants +10 XP and +5 Tokens</p>
+            `;
+            list.appendChild(card);
         });
+    }
+    navigate('archive-screen');
+}
+
+async function checkArchiveAnswer(itemId, answer, btnElement) {
+    const itemIndex = gameState.user.missedQuestions.findIndex(q => q.id === itemId);
+    if (itemIndex === -1) return;
+    const item = gameState.user.missedQuestions[itemIndex];
+    
+    if (answer === item.correct_answer) {
+        // Correct Fix
+        await showModal('Glitch Purged! 🛡️', `Excellent! You applied the skill correctly.<br><br><b>Explanation:</b> ${item.rationale}`, 'success');
+        
+        gameState.user.missedQuestions.splice(itemIndex, 1);
+        gameState.user.tokens += 5; 
+        addXp(10);
+        saveProgress();
+        triggerConfetti();
+        openArchive(); // Refresh the list
+    } else {
+        // Failed Fix
+        btnElement.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+        btnElement.disabled = true;
+        btnElement.innerHTML += " ❌";
+    }
+}
+
+// --- DEPLOYMENT & CONTENT VALIDATION SYSTEM ---
+/**
+ * Scans the mission list to ensure every button has a 
+ * matching academic passage in the item bank.
+ */
+function validateMissionContent() {
+    console.log("🚀 Starting Content Deployment Scan...");
+    let missingContent = [];
+
+    allMissions.forEach(mission => {
+        // Search logic must match renderMissionQuestion exactly
+        const hasContent = itemBank.find(zone => 
+            zone.id === mission.passageId || 
+            zone.genre === mission.id ||
+            (zone.items && zone.items.some(i => i.id.startsWith(mission.passageId)))
+        );
+
+        if (!hasContent) {
+            missingContent.push(`[${mission.id}] ${mission.title}`);
+        }
+    });
+
+    if (missingContent.length > 0) {
+        console.error("❌ DEPLOYMENT ERROR: The following missions are missing academic content in itemBank:", missingContent);
+        // Optional: Alert the developer during testing
+        // alert("Developer Alert: Missing content for " + missingContent.join(", "));
+    } else {
+        console.log("✅ All Missions Validated: Ready for student deployment.");
+    }
+}
+
+/**
+ * Enhanced Start Mission with Safety Catch
+ */
+function safeStartMission(missionId) {
+    const mission = allMissions.find(m => m.id === missionId);
+    const content = itemBank.find(zone => 
+        zone.id === mission.passageId || 
+        zone.genre === mission.id ||
+        (zone.items && zone.items.some(i => i.id.startsWith(mission.passageId)))
+    );
+
+    if (!content) {
+        showModal("System Error", "This mission file is corrupted or missing content. Please choose another quest.", "error");
+        return;
+    }
+    
+    startMission(missionId);
+}
+
+function appendBossCardToMissions() {
+    // Only show boss if student has reached a high enough level
+    if (gameState.user.level < 3) return;
+
+    const bossCard = document.createElement('div');
+    bossCard.className = "col-span-1 md:col-span-2 lg:col-span-3 bg-gradient-to-r from-red-900 to-black rounded-2xl p-8 shadow-2xl border-4 border-red-600 flex flex-col md:flex-row items-center justify-between gap-6 transform hover:scale-[1.02] transition-transform";
+    bossCard.innerHTML = `
+        <div class="flex-1 text-center md:text-left">
+            <h3 class="text-3xl font-black text-white mb-2">🚨 GLITCH DETECTED</h3>
+            <p class="text-red-200 text-lg">The system core is corrupted. Face the Glitch to restore order.</p>
+        </div>
+        <button onclick="startBossBattle('boss-1')" class="bg-red-600 hover:bg-red-500 text-white font-black py-4 px-10 rounded-xl shadow-lg animate-pulse">ELIMINATE THREAT</button>
+    `;
+    missionsList.appendChild(bossCard);
+}
+
+function generateReport() {
+    const stats = gameState.user.standardsReport || {};
+    let rows = "";
+    let totalCorrect = 0;
+    let totalQ = 0;
+
+    for (const [std, data] of Object.entries(stats)) {
+        const percent = Math.round((data.correct / data.total) * 100);
+        totalCorrect += data.correct;
+        totalQ += data.total;
+        rows += `
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 10px;"><b>${std}</b><br><small>${data.desc}</small></td>
+                <td style="padding: 10px; text-align: center;">${data.correct}/${data.total}</td>
+                <td style="padding: 10px; text-align: center; color: ${percent >= 80 ? 'green' : 'red'};"><b>${percent}%</b></td>
+            </tr>`;
+    }
+
+    const overall = totalQ > 0 ? Math.round((totalCorrect / totalQ) * 100) : 0;
+
+    const reportHTML = `
+        <div style="font-family: sans-serif; padding: 20px; color: #333;">
+            <h1 style="color: #4f46e5;">ELA Legends: Proficiency Report</h1>
+            <p><b>Student Rank:</b> ${proficiencyDisplay.textContent} | <b>Level:</b> ${gameState.user.level}</p>
+            <p><b>Overall Accuracy:</b> ${overall}%</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <tr style="background: #f3f4f6;">
+                    <th style="padding: 10px; text-align: left;">Standard</th>
+                    <th style="padding: 10px;">Score</th>
+                    <th style="padding: 10px;">Mastery</th>
+                </tr>
+                ${rows || "<tr><td colspan='3' style='text-align:center; padding: 20px;'>No mission data recorded yet.</td></tr>"}
+            </table>
+            <p style="margin-top: 30px; font-size: 12px; color: #666;">Generated on: ${new Date().toLocaleString()}</p>
+            <button onclick="window.print()" style="margin-top: 20px; padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 5px; cursor: pointer;">Print Report</button>
+        </div>
+    `;
+
+    const reportWindow = window.open('', '_blank');
+    reportWindow.document.write(reportHTML);
+    reportWindow.document.close();
+}
+
+// --- BOSS BATTLE SYSTEM CORE ---
+let currentBossHP = 0;
+let currentPlayerHP = 3;
+let currentBossData = null;
+
+function startBossBattle(bossId) {
+    currentBossData = bossBattles.find(b => b.id === bossId);
+    currentBossHP = currentBossData.bossMaxHP;
+    currentPlayerHP = 3;
+    
+    updateBossUI();
+    renderBossText();
+    navigate('boss-round-screen');
+}
+
+function updateBossUI() {
+    const playerBar = document.getElementById('player-hp-bar');
+    const bossBar = document.getElementById('boss-hp-bar');
+    
+    if(playerBar) playerBar.style.width = (currentPlayerHP / 3 * 100) + '%';
+    if(bossBar) bossBar.style.width = (currentBossHP / currentBossData.bossMaxHP * 100) + '%';
+}
+
+function renderBossText() {
+    const display = document.getElementById('boss-text-display');
+    display.innerHTML = '';
+
+    currentBossData.passageParts.forEach(part => {
+        if (part.type === 'error') {
+            const span = document.createElement('span');
+            span.className = "bg-red-100 border-b-2 border-red-500 cursor-pointer hover:bg-red-200 px-1 mx-1 rounded transition-colors font-bold text-red-700";
+            span.textContent = part.original;
+            span.onclick = () => openEditorModal(part);
+            display.appendChild(span);
+        } else {
+            const textNode = document.createTextNode(part.text);
+            display.appendChild(textNode);
+        }
+    });
+}
+
+function openEditorModal(part) {
+    const modal = document.getElementById('editor-modal');
+    const optionsContainer = document.getElementById('editor-options');
+    optionsContainer.innerHTML = '';
+
+    part.options.forEach((opt, index) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all font-medium";
+        btn.textContent = opt;
+        btn.onclick = () => checkBossAnswer(part, index);
+        optionsContainer.appendChild(btn);
+    });
+
+    modal.classList.remove('hidden');
+    document.getElementById('close-editor-modal').onclick = () => modal.classList.add('hidden');
+}
+
+async function checkBossAnswer(part, selectedIndex) {
+    document.getElementById('editor-modal').classList.add('hidden');
+    
+    if (selectedIndex === part.correctIndex) {
+        currentBossHP--;
+        await showModal("DIRECT HIT! 🎯", `<b>Correction applied!</b><br><br>${part.rationale}`, "success");
+    } else {
+        currentPlayerHP--;
+        await showModal("SYSTEM CRASH! ⚡", `The Glitch attacked your core!<br><br><b>Explanation:</b> ${part.rationale}`, "error");
+    }
+
+    updateBossUI();
+
+    if (currentBossHP <= 0) {
+        addXp(500);
+        gameState.user.tokens += 200;
+        triggerConfetti();
+        await showModal("VICTORY! 🏆", "The Glitch has been purged from this sector! +500 XP / +200 Tokens", "success");
+        navigate('welcome-screen');
+    } else if (currentPlayerHP <= 0) {
+        await showModal("DEFEATED 💀", "The Glitch was too strong. Study your standards and try again!", "error");
+        navigate('welcome-screen');
+    }
+}// --- STICKER BOOK: COLLECTION DISPLAY ---
+function renderStickerBook() {
+    const progressScreen = document.getElementById('progress-screen');
+    // We will reuse the progress screen but add a sticker grid
+    const stickerAreaId = 'sticker-collection-grid';
+    let stickerGrid = document.getElementById(stickerAreaId);
+    
+    if (!stickerGrid) {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+            <h3 class="text-2xl font-bold mt-8 mb-4">My Stickers</h3>
+            <div id="${stickerAreaId}" class="grid grid-cols-4 md:grid-cols-8 gap-4 p-6 bg-white/50 dark:bg-black/20 rounded-2xl border border-white/20"></div>
+        `;
+        progressScreen.appendChild(wrapper);
+        stickerGrid = document.getElementById(stickerAreaId);
+    }
+
+    stickerGrid.innerHTML = '';
+    if (gameState.user.stickers.length === 0) {
+        stickerGrid.innerHTML = '<p class="col-span-full text-center text-gray-500 italic py-4">No stickers collected yet. Visit the Shop!</p>';
+    } else {
+        gameState.user.stickers.forEach(emoji => {
+            const div = document.createElement('div');
+            div.className = "text-4xl p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center transform hover:scale-110 transition-transform";
+            div.textContent = emoji;
+            stickerGrid.appendChild(div);
+        });
+    }
+    
+    // Update history table too
+    renderMissionHistory();
+    navigate('progress-screen');
+}
+
+function renderMissionHistory() {
+    missionHistoryBody.innerHTML = gameState.user.history.map(entry => `
+        <tr class="border-b border-gray-100 dark:border-gray-700">
+            <td class="p-4 font-bold text-indigo-600">${entry.missionTitle}</td>
+            <td class="p-4">${entry.score}</td>
+            <td class="p-4 text-xs">${entry.date}</td>
+            <td class="p-4 text-yellow-600 font-bold">+${entry.tokensEarned}</td>
+            <td class="p-4 text-green-600 font-bold">+${entry.xpEarned}</td>
+        </tr>
+    `).join('');
+}
+
+// --- INIT ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadProgress();
+    updateUI();
+
+    // Run Deployment Scan
+    validateMissionContent();
+
+    document.getElementById('start-calibration-button').onclick = startCalibrationQuest;
+    document.getElementById('missions-button').onclick = renderMissions;
+    document.getElementById('shop-button').onclick = () => { navigate('shop-screen'); };
+    document.getElementById('progress-button').onclick = renderStickerBook;
+    
+    // Update Mission Hub to use the Safe Start logic
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('start-mission-btn')) {
+            safeStartMission(e.target.dataset.missionId);
+        }
+    });
+
+    document.querySelectorAll('.home-button').forEach(btn => {
+        btn.onclick = () => { 
+            stopTimer(); 
+            navigate('welcome-screen'); 
+        };
+    });
+});
 
     </script>
 </body>
