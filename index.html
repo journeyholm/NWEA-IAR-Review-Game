@@ -57,7 +57,7 @@
 
         /* --- FIXED: HOME BUTTON & HEADER TEXT --- */
         .home-button { 
-            top: 1.5rem !important; /* Moved down for breathing room */
+top: 1.5rem !important;
             left: 1.5rem !important; /* Moved right */
             background: white; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
@@ -166,7 +166,7 @@
 
 <div id="welcome-screen" class="screen flex flex-col items-center justify-start text-center px-4 md:px-8 pb-8 pt-8 min-h-[60vh] relative">
 
-    <div class="w-full max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border border-white/40 p-4 rounded-3xl shadow-lg mb-12">
+    <div class="w-full max-w-5xl mx-auto flex flex-col md:flex-row justify-center items-center gap-12 bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg border border-white/40 p-4 rounded-3xl shadow-lg mb-12">
         
         <div class="flex items-center gap-4 w-full md:w-auto">
             <div class="relative group">
@@ -237,8 +237,7 @@
             </button>
         </div>
         
-        <button id="reset-button" class="text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors bg-white/50 px-4 py-2 rounded-lg">Reset Save Data</button>
-    </div>
+<button id="reset-button" onclick="if(confirm('Are you sure? This deletes all progress!')) resetGame()" class="mt-8 text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors bg-white/50 px-4 py-2 rounded-lg">Reset Save Data</button>    </div>
 
 <div id="calibration-screen" class="screen hidden p-4 md:p-8 relative">
             <button class="home-button absolute top-4 left-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors z-50">
@@ -326,37 +325,8 @@
         <div id="progress-screen" class="screen hidden p-4 md:p-8 relative">
             <button class="home-button absolute top-4 left-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors z-10"><svg class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-10v10a1 1 0 001 1h3M12 20v-5m0 0H8m4 0h4"></path></svg></button>
             <h2 class="text-3xl md:text-4xl font-bold mb-6">My Progress</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl mb-8">
-        
-        <button id="start-calibration-button" class="button bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-blue-400/20">
-            <span class="text-3xl block mb-2">🧙‍♂️</span>Calibration Quest
-        </button>
 
-        <button onclick="startSurvival()" class="button bg-gradient-to-br from-red-600 to-orange-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-1 bg-black/20 rounded-bl-lg text-xs font-mono">HARDCORE</div>
-            <span class="text-3xl block mb-2">💀</span>The Gauntlet
-        </button>
-
-        <button id="missions-button" class="button bg-gradient-to-br from-emerald-500 to-emerald-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-emerald-400/20">
-            <span class="text-3xl block mb-2">📜</span>Daily Missions
-        </button>
-
-        <button id="shop-button" class="button bg-gradient-to-br from-amber-400 to-orange-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-amber-400/20">
-            <span class="text-3xl block mb-2">🛍️</span>The Shop
-        </button>
-
-        <button id="progress-button" class="button bg-gradient-to-br from-violet-500 to-purple-700 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-violet-400/20">
-            <span class="text-3xl block mb-2">📒</span>My Sticker Book
-        </button>
-        
-        <button id="archive-button" onclick="openArchive()" class="col-span-1 md:col-span-2 button bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 flex flex-col md:flex-row items-center justify-center gap-4 relative overflow-hidden group">
-             <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-             <span class="text-4xl animate-pulse">⚠️</span> 
-             <span>Glitch Archive (Fix Mistakes & Study)</span>
-        </button>
-    </div>
-
-            <div class="mt-8">
+<div class="mt-8">
                 <h3 class="text-2xl font-bold mb-4">Mission History</h3>
                 <table id="mission-history-table" class="w-full text-left table-auto">
                     <thead>
@@ -613,6 +583,57 @@ const skillLessons = {
 // ======================================================
 
 const itemBank = [
+    // --- NEW CALIBRATION ITEMS (Now the logic will find these) ---
+{
+    type: 'calibration', genre: 'diagnostic',
+    passage: "The proliferation of digital interfaces has fundamentally altered human attention spans. While some argue that this 'hyper-connectivity' fosters multitasking, studies suggest it actually degrades deep-cognitive processing.",
+    items: [{
+        id: 'cal-1', type: 'MC', standard: 'RI.8.1', difficulty: 5,
+        stem: 'Which statement best summarizes the central idea regarding digital interfaces?',
+        options: ['They help humans learn to multitask better.', 'They are essential for modern cognitive development.', 'They may negatively impact the ability to think deeply.', 'They have had no measurable effect on attention.'],
+        correct_answer: 'They may negatively impact the ability to think deeply.',
+        rationale: 'The text states it "degrades deep-cognitive processing," supporting the idea of negative impact.'
+    }]
+},
+
+// --- NEW IAR RESEARCH SIMULATION (Multi-Source) ---
+{
+    type: 'mission', genre: 'iar_sim',
+    sources: [
+        { 
+            title: 'Source A: Science Report', 
+            text: "<b>The Geothermal Pulse</b><br>Geothermal energy harnesses heat from the Earth's core. It is reliable and produces minimal carbon emissions. However, the high initial cost of drilling remains a significant barrier to widespread adoption." 
+        },
+        { 
+            title: 'Source B: Economic Blog', 
+            text: "<b>The Green Wall</b><br>Investors are hesitant about geothermal projects. Unlike solar or wind, which have seen a 70% drop in costs, geothermal drilling technology has remained stagnant in price for a decade." 
+        }
+    ],
+    items: [
+        {
+            id: 'iar-geo-1', type: 'MC', standard: 'RI.8.9', difficulty: 8,
+            stem: 'Which claim in Source A is specifically supported by the data in Source B?',
+            options: ['Geothermal is a reliable energy source.', 'Geothermal produces minimal emissions.', 'High drilling costs are a barrier to adoption.', 'Drilling technology has remained stagnant.'],
+            correct_answer: 'High drilling costs are a barrier to adoption.',
+            rationale: 'Source A mentions cost is a "barrier," and Source B explains why: drilling costs haven\'t dropped like solar/wind.'
+        }
+    ]
+},
+
+// --- NEW ACADEMIC VOCABULARY (NWEA Style) ---
+{
+    type: 'mission', genre: 'vocab_academic',
+    passage: "The politician's **equivocal** response to the question left the audience wondering where he actually stood on the tax increase. He managed to speak for five minutes without taking a definitive side.",
+    items: [
+        {
+            id: 'voc-acad-high-1', type: 'MC', standard: 'L.8.4.a', difficulty: 7,
+            stem: 'Based on the context, what does the word "equivocal" most likely mean?',
+            options: ['Direct and honest.', 'Intentionally vague or ambiguous.', 'Aggressive and loud.', 'Highly technical.'],
+            correct_answer: 'Intentionally vague or ambiguous.',
+            rationale: 'The text says the response left people "wondering where he stood" and he didn\'t take a "definitive side," indicating vagueness.'
+        }
+    ]
+},
     // ------------------------------------------------------
     // ZONE 1: VOCABULARY VALLEY (Roots, Affixes, Analogies)
     // ------------------------------------------------------
@@ -1164,53 +1185,24 @@ const itemBank = [
 ];
 
 const allMissions = [
-    // --- LEVEL 1: FOUNDATIONS (Vocab & Roots) ---
-    { id: 'm-voc1', title: 'The Root Cellar', description: 'Vocab: Roots & Affixes', difficulty: 4, passageId: 'voc-roots-1', minLevel: 1 },
-    { id: 'm-voc2', title: 'Analogies Arena', description: 'Vocab: Relationships', difficulty: 6, passageId: 'voc-analogy-1', minLevel: 1 },
-    { id: 'm-research', title: 'Source Detective', description: 'Research: Credibility', difficulty: 4, passageId: 'research-1', minLevel: 1 },
+    // --- THREAD 1: VOCABULARY & CRAFT (NWEA FOCUS) ---
+    { id: 'm-voc1', title: 'The Root Cellar', description: 'Mastering Greek & Latin Affixes', difficulty: 4, passageId: 'voc-roots-1', minLevel: 1 },
+    { id: 'm-voc-acad', title: 'Academic Context', description: 'NWEA: Tier 2 Academic Vocabulary', difficulty: 6, passageId: 'voc-acad-1', minLevel: 1 },
+    { id: 'm-punc', title: 'The Semicolon Sanctum', description: 'SAT Style: Sentence Boundaries', difficulty: 6, passageId: 'sat-gram-1', minLevel: 2 },
+    { id: 'm-spell', title: 'Confusion Clearer', description: 'Effect vs. Affect & Homophones', difficulty: 6, passageId: 'spell-eff-1', minLevel: 2 },
 
-    // --- LEVEL 2: GRAMMAR & WRITING ---
-    { id: 'm-gram1', title: 'The Mood Ring', description: 'Grammar: Verb Moods', difficulty: 5, passageId: 'gram-mood-1', minLevel: 2 },
-    { id: 'm-gram2', title: 'Active vs Passive', description: 'Grammar: Voice', difficulty: 6, passageId: 'gram-voice-1', minLevel: 2 },
-    { id: 'm-sat1', title: 'Ghost Army', description: 'Grammar: Punctuation', difficulty: 6, passageId: 'sat-gram-1', minLevel: 2 },
+    // --- THREAD 2: LITERARY ANALYSIS (IAR FOCUS) ---
+    { id: 'm-lit-irony', title: 'The Irony of Fate', description: 'Situational vs. Dramatic Irony', difficulty: 7, passageId: 'lit-irony-1', minLevel: 3 },
+    { id: 'm-lit-suspense', title: 'Master of Suspense', description: 'Analyzing Pacing & Sensory Detail', difficulty: 6, passageId: 'lit-suspense-1', minLevel: 3 },
+    { id: 'm-poetry', title: 'The Metaphor Lab', description: 'Interpreting Complex Imagery', difficulty: 5, passageId: 'poetry-1', minLevel: 3 },
+    { id: 'm-cask', title: 'Dark Intentions', description: 'Character Motives (RL.9.3)', difficulty: 6, passageId: 'mission-2a', minLevel: 4 },
 
-// --- NEW LEVEL 3 CONTENT ---
-    { id: 'm-punc', title: 'The Interruption', description: 'Grammar: Ellipses & Dashes', difficulty: 5, passageId: 'punc-dash-1', minLevel: 3 },
-    { id: 'm-spell', title: 'The Lab Report', description: 'Spelling: Effect vs Affect', difficulty: 6, passageId: 'spell-eff-1', minLevel: 3 },
-    
-    // --- NEW LEVEL 3 CONTENT ---
-    { id: 'm-punc', title: 'The Interruption', description: 'Grammar: Ellipses & Dashes', difficulty: 5, passageId: 'punc-dash-1', minLevel: 3 },
-    { id: 'm-spell', title: 'The Lab Report', description: 'Spelling: Effect vs Affect', difficulty: 6, passageId: 'spell-eff-1', minLevel: 3 },
-    
-    // --- NEW LEVEL 4 CONTENT ---
-    { id: 'm-pov', title: 'Highway Debate', description: 'Info: Author\'s POV', difficulty: 7, passageId: 'pov-1', minLevel: 4 },
-
-    // --- NEW LEVEL 4 CONTENT ---
-    { id: 'm-pov', title: 'Highway Debate', description: 'Info: Author\'s POV', difficulty: 7, passageId: 'pov-1', minLevel: 4 },
-    // --- LEVEL 3: LITERARY ANALYSIS ---
-    { id: 'm-lit1', title: 'The Irony of Fate', description: 'Reading: Irony Types', difficulty: 7, passageId: 'lit-irony-1', minLevel: 3 },
-    { id: 'm-lit2', title: 'House of Suspense', description: 'Reading: Creating Tension', difficulty: 6, passageId: 'lit-suspense-1', minLevel: 3 },
-    { id: 'm-poetry', title: 'Dream Catcher', description: 'Poetry: Metaphors', difficulty: 5, passageId: 'poetry-1', minLevel: 3 },
-    { id: 'm-cask', title: 'The Cask', description: 'Lit: Character Motives', difficulty: 6, passageId: 'mission-2a', minLevel: 3 },
-
-    // --- LEVEL 4: INFORMATIONAL TEXT ---
-    { id: 'm-info1', title: 'Uniform Debate', description: 'Info: Evaluating Claims', difficulty: 8, passageId: 'info-arg-1', minLevel: 4 },
-    { id: 'm-nwea1', title: 'Music Trends', description: 'Info: Compare/Contrast', difficulty: 6, passageId: 'nwea-struct-1', minLevel: 4 },
-
-    // --- LEVEL 5: RESEARCH SIMULATIONS (IAR PREP) ---
-    { id: 'iar-1', title: 'Mission to Mars', description: 'IAR: 3 Sources (Text/Video/Graph)', difficulty: 9, passageId: 'iar-mars-1', minLevel: 4 },
-    { id: 'iar-2', title: 'The Dust Bowl', description: 'IAR: Integrating History & Media', difficulty: 8, passageId: 'iar-dust-1', minLevel: 4 },
-
-    { id: 'm-func', title: 'The Battery Dilemma', description: 'Logic: Function of Sentences', difficulty: 8, passageId: 'func-1', minLevel: 4 },
-
-    { id: 'm-sound', title: 'Echo Chamber', description: 'Poetry: Alliteration/Assonance', difficulty: 5, passageId: 'sound-allit-1', minLevel: 3 },
-    { id: 'm-debate', title: 'Debate Club', description: 'Logic: Relevant Evidence', difficulty: 6, passageId: 'arg-strength-1', minLevel: 4 },
-
-    // --- LEVEL 5+: MASTERY CHALLENGES ---
-    { id: 'm-write', title: 'The Editor', description: 'Writing: Sentence Logic', difficulty: 6, passageId: 'write-place-1', minLevel: 4 },
-    { id: 'm-myth', title: 'Cyber-Arachne', description: 'Lit: Modern vs Myth', difficulty: 7, passageId: 'lit-myth-1', minLevel: 4 },
-    { id: 'm-acad', title: 'Soil Science', description: 'Vocab: Context Clues', difficulty: 6, passageId: 'voc-acad-1', minLevel: 4 },
-
+    // --- THREAD 3: INFORMATIONAL SYNTHESIS (IAR FOCUS) ---
+    { id: 'm-info-arg', title: 'The Great Debate', description: 'Evaluating Argument Strength', difficulty: 8, passageId: 'info-arg-1', minLevel: 4 },
+    { id: 'm-nwea-music', title: 'The Digital Shift', description: 'Text Structure: Compare/Contrast', difficulty: 6, passageId: 'nwea-struct-1', minLevel: 4 },
+    { id: 'm-pov-high', title: 'Perspective Peak', description: 'Analyzing Conflicting Points of View', difficulty: 7, passageId: 'pov-1', minLevel: 5 },
+    { id: 'm-iar-mars', title: 'Mission to Mars', description: 'Synthesis: Article + Video + Data', difficulty: 9, passageId: 'iar-mars-1', minLevel: 5 },
+    { id: 'm-iar-dust', title: 'The Dust Bowl', description: 'Integration of Knowledge & Media', difficulty: 8, passageId: 'iar-dust-1', minLevel: 5 }
 ];
 
 // --- NEW BOSS BATTLE DATA ---
@@ -1510,36 +1502,44 @@ function showModal(title, message, type = 'info') {
 
         // --- Calibration Logic ---
         let calibrationProgress = { questions: [], currentQuestion: 0, elaLevel: 0 };
-        function startCalibrationQuest() {
-            calibrationProgress.questions = itemBank.filter(item => item.type === 'calibration');
-            calibrationProgress.currentQuestion = 0;
-            calibrationProgress.elaLevel = 0;
-            navigate('calibration-screen');
-            renderCalibrationQuestion();
-        }
+function startCalibrationQuest() {
+    // This now correctly pulls the calibration items we added above
+    calibrationProgress.questions = itemBank.filter(item => item.type === 'calibration');
+    calibrationProgress.currentQuestion = 0;
+    calibrationProgress.elaLevel = 0;
+    
+    if(calibrationProgress.questions.length === 0) {
+        showModal("Error", "No calibration questions found in database!", "error");
+        return;
+    }
 
-        function renderCalibrationQuestion() {
-            const currentItem = calibrationProgress.questions[calibrationProgress.currentQuestion];
-            if (!currentItem) { endCalibrationQuest(); return; }
+    navigate('calibration-screen');
+    renderCalibrationQuestion();
+}
 
-            questionArea.innerHTML = `
-                <div class="mb-4">
-                    <p class="font-bold text-lg mb-2">Question ${calibrationProgress.currentQuestion + 1}</p>
-                    <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow-inner mb-4"><p>${currentItem.passage}</p></div>
-                </div>
-                <div>
-                    <p class="font-bold mb-2">${currentItem.items[0].stem}</p>
-                    <div id="options-container" class="space-y-2">
-                        ${currentItem.items[0].options.map(option => `
-                            <label class="flex items-center p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <input type="radio" name="calibration-q" value="${option}" class="mr-2"><span>${option}</span>
-                            </label>`).join('')}
-                    </div>
-                </div>`;
-            submitButton.onclick = submitCalibrationAnswer;
-            submitButton.classList.remove('hidden');
-            messageBox.classList.add('hidden');
-        }
+function renderCalibrationQuestion() {
+    const currentItem = calibrationProgress.questions[calibrationProgress.currentQuestion];
+    if (!currentItem) { endCalibrationQuest(); return; }
+
+    questionArea.innerHTML = `
+        <div class="mb-4">
+            <p class="font-bold text-lg mb-2 text-blue-600 uppercase">Diagnostic Question ${calibrationProgress.currentQuestion + 1}</p>
+            <div class="p-6 bg-white dark:bg-gray-700 rounded-xl shadow-inner border-l-4 border-blue-500 mb-4">
+                <p class="italic text-gray-800 dark:text-gray-100 font-serif leading-relaxed">${currentItem.passage}</p>
+            </div>
+        </div>
+        <div>
+            <p class="font-bold mb-4 text-xl">${currentItem.items[0].stem}</p>
+            <div id="options-container" class="grid grid-cols-1 gap-3">
+                ${currentItem.items[0].options.map(option => `
+                    <label class="flex items-center p-4 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-all">
+                        <input type="radio" name="calibration-q" value="${option}" class="mr-3 w-5 h-5">
+                        <span class="text-lg font-medium">${option}</span>
+                    </label>`).join('')}
+            </div>
+        </div>`;
+    submitButton.onclick = submitCalibrationAnswer;
+}
 
         async function submitCalibrationAnswer() {
             const selectedOption = document.querySelector('input[name="calibration-q"]:checked');
@@ -1570,64 +1570,84 @@ function showModal(title, message, type = 'info') {
         }
 
 // --- Missions Logic ---
- function renderMissions() {
-            missionsList.innerHTML = '';
-            proficiencyDisplay.textContent = gameState.user.elaLevel >= 4 ? 'Proficient' : 'Rookie';
-            
-            // 1. Render Standard Missions
-            allMissions.forEach(mission => {
-                const isLocked = gameState.user.level < mission.minLevel;
-                const missionCard = document.createElement('div');
-                
-                if (isLocked) {
-                    missionCard.className = `bg-gray-200 dark:bg-gray-700 rounded-lg p-6 shadow border-2 border-gray-400 flex flex-col items-center text-center opacity-75`;
-                    missionCard.innerHTML = `
-                        <h3 class="text-xl font-bold mb-2 text-gray-500">🔒 Level ${mission.minLevel} Required</h3>
-                        <p class="text-gray-500 mb-4">Gain XP to unlock this mission.</p>
-                        <button class="bg-gray-400 text-white font-bold py-2 px-4 rounded cursor-not-allowed">LOCKED</button>
-                    `;
-} else {
-        // --- UPDATED: Standard Passage with Read Aloud ---
-        const speakerBtn = `<button onclick="speakText('${missionItem.items[0].id}')" class="mb-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center gap-1">🔊 Read Aloud</button>`;
+function renderMissions() {
+    missionsList.innerHTML = '';
+    proficiencyDisplay.textContent = gameState.user.elaLevel >= 4 ? 'Proficient' : 'Rookie';
+    
+    allMissions.forEach(mission => {
+        const isLocked = gameState.user.level < mission.minLevel;
+        const missionCard = document.createElement('div');
         
-        // Create hidden text for the reader (removes HTML tags)
-        const ttsContent = `<div id="tts-content-${missionItem.items[0].id}" class="hidden">${missionItem.passage.replace(/<[^>]*>/g, '')}</div>`;
-        
-        gamePassage.innerHTML = `
-            ${speakerBtn} 
-            ${ttsContent}
-            <p class="font-bold mb-2 text-lg text-indigo-600 dark:text-indigo-400">Passage</p>
-            <div class="prose dark:prose-invert max-w-none">${missionItem.passage}</div>
-        `;
-    }
-                missionsList.appendChild(missionCard);
-            });
+        // Define styling for difficulty colors
+        const diffColor = mission.difficulty > 7 ? 'text-red-500' : (mission.difficulty > 4 ? 'text-orange-500' : 'text-green-500');
 
-// CHECK: Is the Archive Empty?
-            const glitches = gameState.user.missedQuestions || [];
-            const isClean = glitches.length === 0;
-
-            bossCard.innerHTML = `
-                <div class="mb-4 md:mb-0 text-center md:text-left">
-                    <h3 class="text-3xl font-extrabold uppercase tracking-widest">👾 The Glitch</h3>
-                    <p class="text-red-100 font-medium">${isClean ? "The system is clean. You may proceed!" : "WARNING: Corrupted Files Detected!"}</p>
-                </div>
-                <div class="flex flex-col items-center">
-                    <button id="mission-boss-btn" class="${isClean ? 'bg-white text-red-600 hover:scale-105' : 'bg-gray-400 text-gray-200 cursor-not-allowed'} font-extrabold py-3 px-8 rounded-xl shadow-lg transition-transform" ${isClean ? '' : 'disabled'}>
-                        ${isClean ? 'FIGHT BOSS ⚔️' : 'LOCKED 🔒'}
-                    </button>
-                    ${!isClean ? `<button onclick="openArchive()" class="mt-2 text-xs text-white underline hover:text-yellow-300">Fix ${glitches.length} Glitches to Unlock</button>` : ''}
-                </div>
+        if (isLocked) {
+            missionCard.className = `bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 shadow border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center text-center opacity-60`;
+            missionCard.innerHTML = `
+                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mb-4 text-2xl">🔒</div>
+                <h3 class="text-lg font-bold text-gray-400">Level ${mission.minLevel} Required</h3>
+                <p class="text-sm text-gray-400 mb-4">${mission.title}</p>
+                <div class="w-full h-2 bg-gray-200 rounded-full"></div>
             `;
-
-            missionsList.appendChild(bossCard);
-
-            // 3. Attach Listeners
-            document.querySelectorAll('.start-mission-btn').forEach(btn => btn.onclick = (e) => startMission(e.target.dataset.missionId));
-            document.getElementById('mission-boss-btn').onclick = startBossRound;
-
-            navigate('missions-screen');
+        } else {
+            missionCard.className = `bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-indigo-100 dark:border-indigo-900 flex flex-col hover:border-indigo-500 transition-all transform hover:-translate-y-1 cursor-pointer`;
+            missionCard.innerHTML = `
+                <div class="flex justify-between items-start mb-4">
+                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-tighter">LVL ${mission.minLevel}+</span>
+                    <span class="${diffColor} text-xs font-bold">Difficulty: ${mission.difficulty}/10</span>
+                </div>
+                <h3 class="text-xl font-bold mb-1 text-gray-800 dark:text-gray-100">${mission.title}</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">${mission.description}</p>
+                <button class="start-mission-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" data-mission-id="${mission.id}">
+                    BEGIN QUEST ⚔️
+                </button>
+            `;
         }
+        missionsList.appendChild(missionCard);
+    });
+
+    // Handle Boss Logic separately at the bottom
+    appendBossCardToMissions();
+
+    // Attach Listeners
+    document.querySelectorAll('.start-mission-btn').forEach(btn => {
+        btn.onclick = (e) => startMission(e.target.dataset.missionId);
+    });
+
+    navigate('missions-screen');
+}
+
+function appendBossCardToMissions() {
+    const glitches = gameState.user.missedQuestions || [];
+    const isClean = glitches.length === 0;
+    
+    const bossCard = document.createElement('div');
+    bossCard.className = `col-span-1 md:col-span-2 lg:col-span-3 bg-gradient-to-br from-red-600 to-black text-white rounded-3xl p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 border-4 border-red-500/50 relative overflow-hidden group mt-8`;
+    
+    bossCard.innerHTML = `
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
+        <div class="relative z-10 text-center md:text-left">
+            <h3 class="text-4xl font-black uppercase tracking-tighter mb-2 italic">👾 THE GLITCH</h3>
+            <p class="text-red-200 font-medium max-w-md">
+                ${isClean ? "The system is fully operational. Face the Final Exam to prove your mastery!" : `SYSTEM CORRUPTION DETECTED: You must purge <b>${glitches.length} glitches</b> in the Archive to unlock the Boss.`}
+            </p>
+        </div>
+        <div class="relative z-10 flex flex-col items-center">
+            <button id="mission-boss-btn" class="${isClean ? 'bg-white text-red-600 hover:scale-110 active:scale-95' : 'bg-gray-700 text-gray-500 cursor-not-allowed'} font-black py-4 px-10 rounded-2xl shadow-xl transition-all uppercase italic tracking-widest border-b-4 border-gray-300" ${isClean ? '' : 'disabled'}>
+                ${isClean ? 'FIGHT BOSS ⚔️' : 'LOCKED 🔒'}
+            </button>
+            ${!isClean ? `<button onclick="openArchive()" class="mt-4 text-sm text-red-400 underline hover:text-white font-bold transition-colors">Open Glitch Archive</button>` : ''}
+        </div>
+    `;
+    
+    missionsList.appendChild(bossCard);
+    
+    // Wire up the button if it's unlocked
+    const btn = document.getElementById('mission-boss-btn');
+    if (btn && isClean) {
+        btn.onclick = startBossRound;
+    }
+}
 
 function startMission(missionId) {
     gameState.currentMission = allMissions.find(m => m.id === missionId);
@@ -2049,16 +2069,31 @@ summaryCard.innerHTML = `
         const editorOptions = document.getElementById('editor-options');
         const closeEditorModal = document.getElementById('close-editor-modal');
 
-        function startBossRound() {
-            const battleIndex = Math.floor(Math.random() * bossBattles.length);
-            currentBossState.activeBattle = bossBattles[battleIndex];
-            currentBossState.playerHP = 3;
-            currentBossState.bossHP = currentBossState.activeBattle.bossMaxHP;
-            currentBossState.fixedErrors = [];
-            updateHealthUI();
-            renderBossPassage();
-            navigate('boss-round-screen');
+function startBossRound() {
+    // ANALYZE: What standard is the student weakest in?
+    const stats = gameState.user.standardsReport || {};
+    let weakestStandard = 'L.8.1'; // Default
+    let lowestAccuracy = 1;
+
+    for (const [std, data] of Object.entries(stats)) {
+        const accuracy = data.correct / data.total;
+        if (accuracy < lowestAccuracy) {
+            lowestAccuracy = accuracy;
+            weakestStandard = std;
         }
+    }
+
+    // Select a battle that matches that standard, or fallback to random
+    const targetedBattle = bossBattles.find(b => b.id.includes(weakestStandard)) || bossBattles[Math.floor(Math.random() * bossBattles.length)];
+    
+    currentBossState.activeBattle = targetedBattle;
+    currentBossState.playerHP = 3;
+    currentBossState.bossHP = currentBossState.activeBattle.bossMaxHP;
+    currentBossState.fixedErrors = [];
+    updateHealthUI();
+    renderBossPassage();
+    navigate('boss-round-screen');
+}
 
         function updateHealthUI() {
             const playerPct = (currentBossState.playerHP / 3) * 100;
