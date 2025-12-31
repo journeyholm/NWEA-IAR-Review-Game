@@ -583,52 +583,758 @@ const skillLessons = {
 // ======================================================
 
 const itemBank = [
-    // --- CALIBRATION / DIAGNOSTIC (IAR Standard RI.8.1) ---
-    {
-        id: 'cal-1', type: 'MC', standard: 'RI.8.1', difficulty: 5, type_tag: 'calibration',
-        passage: "The proliferation of digital interfaces has fundamentally altered human attention spans. While some argue that this 'hyper-connectivity' fosters multitasking, studies suggest it actually degrades deep-cognitive processing.",
+    // --- NEW CALIBRATION ITEMS (Now the logic will find these) ---
+{
+    type: 'calibration', genre: 'diagnostic',
+    passage: "The proliferation of digital interfaces has fundamentally altered human attention spans. While some argue that this 'hyper-connectivity' fosters multitasking, studies suggest it actually degrades deep-cognitive processing.",
+    items: [{
+        id: 'cal-1', type: 'MC', standard: 'RI.8.1', difficulty: 5,
         stem: 'Which statement best summarizes the central idea regarding digital interfaces?',
         options: ['They help humans learn to multitask better.', 'They are essential for modern cognitive development.', 'They may negatively impact the ability to think deeply.', 'They have had no measurable effect on attention.'],
         correct_answer: 'They may negatively impact the ability to think deeply.',
-        rationale: 'The text states it "degrades deep-cognitive processing," which directly supports the idea of a negative impact on deep thought.'
+        rationale: 'The text states it "degrades deep-cognitive processing," supporting the idea of negative impact.'
+    }]
+},
+
+// --- NEW IAR RESEARCH SIMULATION (Multi-Source) ---
+{
+    type: 'mission', genre: 'iar_sim',
+    sources: [
+        { 
+            title: 'Source A: Science Report', 
+            text: "<b>The Geothermal Pulse</b><br>Geothermal energy harnesses heat from the Earth's core. It is reliable and produces minimal carbon emissions. However, the high initial cost of drilling remains a significant barrier to widespread adoption." 
+        },
+        { 
+            title: 'Source B: Economic Blog', 
+            text: "<b>The Green Wall</b><br>Investors are hesitant about geothermal projects. Unlike solar or wind, which have seen a 70% drop in costs, geothermal drilling technology has remained stagnant in price for a decade." 
+        }
+    ],
+    items: [
+        {
+            id: 'iar-geo-1', type: 'MC', standard: 'RI.8.9', difficulty: 8,
+            stem: 'Which claim in Source A is specifically supported by the data in Source B?',
+            options: ['Geothermal is a reliable energy source.', 'Geothermal produces minimal emissions.', 'High drilling costs are a barrier to adoption.', 'Drilling technology has remained stagnant.'],
+            correct_answer: 'High drilling costs are a barrier to adoption.',
+            rationale: 'Source A mentions cost is a "barrier," and Source B explains why: drilling costs haven\'t dropped like solar/wind.'
+        }
+    ]
+},
+
+// --- NEW ACADEMIC VOCABULARY (NWEA Style) ---
+{
+    type: 'mission', genre: 'vocab_academic',
+    passage: "The politician's **equivocal** response to the question left the audience wondering where he actually stood on the tax increase. He managed to speak for five minutes without taking a definitive side.",
+    items: [
+        {
+            id: 'voc-acad-high-1', type: 'MC', standard: 'L.8.4.a', difficulty: 7,
+            stem: 'Based on the context, what does the word "equivocal" most likely mean?',
+            options: ['Direct and honest.', 'Intentionally vague or ambiguous.', 'Aggressive and loud.', 'Highly technical.'],
+            correct_answer: 'Intentionally vague or ambiguous.',
+            rationale: 'The text says the response left people "wondering where he stood" and he didn\'t take a "definitive side," indicating vagueness.'
+        }
+    ]
+},
+    // ------------------------------------------------------
+    // ZONE 1: VOCABULARY VALLEY (Roots, Affixes, Analogies)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'vocab_roots',
+        passage: "The **benevolent** king granted a pardon to the prisoner, a gesture that surprised his **malevolent** advisor. The advisor had hoped for a harsh punishment to instill fear in the kingdom.",
+        items: [
+            {
+                id: 'voc-roots-1', type: 'MC', standard: 'L.8.4.b', difficulty: 4,
+                stem: 'Based on the root "bene" and "mal", what is the relationship between "benevolent" and "malevolent"?',
+                options: ['They are synonyms.', 'They are antonyms.', 'They both mean "evil".', 'They both mean "kingly".'],
+                correct_answer: 'They are antonyms.',
+                hint: '"Bene" means good (benefit). "Mal" means bad (malfunction).',
+                rationale: 'Roots: Bene (good) vs Mal (bad) makes these words opposites (Antonyms).',
+                feedback: { 'They are synonyms.': 'Incorrect. Prefixes usually determine direction. Good vs. Bad are opposites.' }
+            },
+            {
+                id: 'voc-roots-2', type: 'MC', standard: 'L.8.4.b', difficulty: 5,
+                stem: 'Which other word contains the same root as "benevolent"?',
+                options: ['Beneficial', 'Beneath', 'Bendable', 'Bench'],
+                correct_answer: 'Beneficial',
+                hint: 'Look for a word that relates to doing something "good" or helpful.',
+                rationale: 'Etymology: "Beneficial" comes from the same root *bene* (well/good).',
+                feedback: { 'Beneath': 'Incorrect. This is a positional word, unrelated to the Latin root *bene*.' }
+            }
+        ]
+    },
+    {
+        type: 'mission', genre: 'vocab_analogy',
+        passage: "Scientists categorize living things to understand relationships. Just as a **stanza** is part of a **poem**, a **chapter** is part of a **novel**.",
+        items: [
+            {
+                id: 'voc-analogy-1', type: 'MC', standard: 'L.8.5.b', difficulty: 6,
+                stem: 'Complete the analogy: **Microscope** is to **Biologist** as **Telescope** is to __________.',
+                options: ['Star', 'Astronomer', 'Lens', 'Laboratory'],
+                correct_answer: 'Astronomer',
+                hint: 'Tool : User relationship. Who uses a telescope?',
+                rationale: 'Relationship: A biologist uses a microscope to see small things; an astronomer uses a telescope to see far things.',
+                feedback: { 'Star': 'Incorrect. A star is what they LOOK at, not who uses the tool.' }
+            }
+        ]
     },
 
-    // --- VOCABULARY MASTERY (NWEA Standard L.8.4.b) ---
+    // ------------------------------------------------------
+    // ZONE 2: GRAMMAR GARRISON (Verb Moods, Active/Passive)
+    // ------------------------------------------------------
     {
-        id: 'voc-roots-1', type: 'MC', standard: 'L.8.4.b', difficulty: 4,
-        passage: "The benevolent king granted a pardon to the prisoner, a gesture that surprised his malevolent advisor.",
-        stem: 'Based on the root "bene" and "mal", what is the relationship between "benevolent" and "malevolent"?',
-        options: ['They are synonyms.', 'They are antonyms.', 'They both mean "evil".', 'They both mean "kingly".'],
-        correct_answer: 'They are antonyms.',
-        rationale: 'The root "bene" means good and "mal" means bad; therefore, the words are opposites (antonyms).'
+        type: 'mission', genre: 'grammar_moods',
+        passage: "<b>Sentence A:</b> If I were you, I would study for the test.<br><b>Sentence B:</b> Go to your room immediately!<br><b>Sentence C:</b> The Earth revolves around the sun.",
+        items: [
+            {
+                id: 'gram-mood-1', type: 'MC', standard: 'L.8.1.c', difficulty: 7,
+                stem: 'Which verb mood is used in Sentence A ("If I were you...")?',
+                options: ['Indicative', 'Imperative', 'Subjunctive', 'Interrogative'],
+                correct_answer: 'Subjunctive',
+                hint: 'It describes a hypothetical situation (something contrary to fact).',
+                rationale: 'Verb Moods: The Subjunctive mood is used for wishes, suggestions, or hypotheticals ("If I were...").',
+                feedback: { 'Imperative': 'Incorrect. Imperative is for commands (like Sentence B).' }
+            },
+            {
+                id: 'gram-mood-2', type: 'MC', standard: 'L.8.1.c', difficulty: 5,
+                stem: 'Which sentence is written in the Imperative mood?',
+                options: ['Sentence A', 'Sentence B', 'Sentence C', 'None of them'],
+                correct_answer: 'Sentence B',
+                hint: 'Imperative means a command or request.',
+                rationale: 'Verb Moods: "Go to your room" is a direct command, which is Imperative.',
+                feedback: { 'Sentence C': 'Incorrect. Sentence C states a fact, so it is Indicative.' }
+            }
+        ]
+    },
+    {
+        type: 'mission', genre: 'grammar_voice',
+        passage: "<b>Version 1:</b> The winning goal was scored by the rookie player in the final seconds.<br><b>Version 2:</b> The rookie player scored the winning goal in the final seconds.",
+        items: [
+            {
+                id: 'gram-voice-1', type: 'MC', standard: 'L.8.3.a', difficulty: 6,
+                stem: 'What is the main difference between Version 1 and Version 2?',
+                options: ['Version 1 is Active; Version 2 is Passive.', 'Version 1 is Passive; Version 2 is Active.', 'Version 1 uses incorrect grammar.', 'Version 2 uses more descriptive adjectives.'],
+                correct_answer: 'Version 1 is Passive; Version 2 is Active.',
+                hint: 'In Version 1, is the subject DOING the action, or having the action done TO it?',
+                rationale: 'Voice: Version 1 ("was scored by") is Passive. Version 2 ("scored") is Active and stronger.',
+                feedback: { 'Version 1 is Active; Version 2 is Passive.': 'Incorrect. You have them swapped.' }
+            }
+        ]
+    },
+    // --- KEPT: SAT Grammar (Good for 8th Grade Challenge) ---
+    {
+        type: 'mission', genre: 'sat_grammar',
+        passage: "The 'Ghost Army' was a United States Army tactical deception unit during World War II. officially known as the 23rd Headquarters Special Troops, the unit was unique.",
+        items: [
+            {
+                id: 'sat-gram-1', type: 'MC', standard: 'SAT.Convention.1', difficulty: 6,
+                stem: 'Which choice completes the text so that it conforms to the conventions of Standard English?',
+                options: ['II officially', 'II. Officially', 'II, officially', 'II; officially'],
+                correct_answer: 'II. Officially',
+                hint: 'Check for independent clauses. "The Ghost Army was..." is a complete sentence.',
+                rationale: 'Sentence Boundaries: The first sentence is a complete thought. We need a period to separate it from the next sentence.',
+                feedback: { 'II, officially': 'Incorrect. This creates a comma splice.' }
+            }
+        ]
     },
 
-    // --- COMPLEX LITERARY ANALYSIS (IAR Standard RL.8.6) ---
+    // ------------------------------------------------------
+    // ZONE 3: FICTION FORTRESS (Irony, Theme, POV)
+    // ------------------------------------------------------
     {
-        id: 'lit-irony-1', type: 'MC', standard: 'RL.8.6', difficulty: 7,
-        passage: "Mr. Graves was the most feared dentist in town. Ironically, his own teeth were crooked and yellow, and he was terrified of letting anyone else work on them.",
-        stem: 'Which type of irony is present in this passage?',
-        options: ['Verbal Irony', 'Situational Irony', 'Dramatic Irony', 'Socratic Irony'],
-        correct_answer: 'Situational Irony',
-        rationale: 'Situational irony occurs when the outcome is the opposite of what is expected (e.g., a dentist fearing dental work).'
+        type: 'mission', genre: 'lit_irony',
+        passage: "Mr. Graves was the most feared dentist in town. He had a collection of sharp, terrifying tools and never smiled. Ironically, his own teeth were crooked and yellow, and he was terrified of letting anyone else work on them.",
+        items: [
+            {
+                id: 'lit-irony-1', type: 'MC', standard: 'RL.8.6', difficulty: 7,
+                stem: 'Which type of irony is present in this passage?',
+                options: ['Verbal Irony', 'Situational Irony', 'Dramatic Irony', 'Socratic Irony'],
+                correct_answer: 'Situational Irony',
+                hint: 'Is the outcome different from what you would expect for a dentist?',
+                rationale: 'Irony: It is situational irony because you expect a dentist to have perfect teeth and not fear dentistry.',
+                feedback: { 'Verbal Irony': 'Incorrect. No one said anything sarcastic.' }
+            }
+        ]
+    },
+    {
+        type: 'mission', genre: 'lit_suspense',
+        passage: "The floorboards creaked. Maya froze. She knew she was alone in the house, yet the sound came distinctly from the hallway. *Thump. Drag. Thump.* It was getting closer.",
+        items: [
+            {
+                id: 'lit-suspense-1', type: 'MC', standard: 'RL.8.6', difficulty: 6,
+                stem: 'How does the author primarily create suspense in this excerpt?',
+                options: ['By describing the setting in detail.', 'By using sensory details and pacing.', 'By revealing the monster immediately.', 'By using dialogue.'],
+                correct_answer: 'By using sensory details and pacing.',
+                hint: 'Look at the sound words (*Thump*) and the short sentences.',
+                rationale: 'Craft & Structure: Short sentences ("Maya froze") and sound effects ("Thump") slow the pace and build tension.',
+                feedback: { 'By revealing the monster immediately.': 'Incorrect. We don\'t know what it is yet; that IS the suspense.' }
+            }
+        ]
+    },
+    // --- KEPT: The Classics (Good for Complexity) ---
+    {
+        type: 'mission', genre: 'literature', 
+        passage: "The thousand injuries of Fortunato I had borne as I best could, but when he ventured upon insult I vowed revenge. You, who so well know the nature of my soul, will not suppose, however, that I gave utterance to a threat.",
+        items: [
+            {
+                id: 'mission-2a', type: 'MC', standard: 'RL.9.3', difficulty: 6,
+                stem: 'What does the narrator\'s reaction to the "insult" reveal about his character?',
+                options: ['He is forgiving and patient.', 'He is impulsive and loud.', 'He is calculating and cold.', 'He is confused and hurt.'],
+                correct_answer: 'He is calculating and cold.',
+                hint: 'He vows revenge but explicitly says he did NOT utter a threat.',
+                rationale: 'Characterization: He plans revenge silently ("vowed revenge" but no "threat"), showing he is calculating.',
+                feedback: { 'He is impulsive and loud.': 'Incorrect. An impulsive person would have threatened him immediately.' }
+            }
+        ]
     },
 
-    // --- ARGUMENT SYNTHESIS (High Rigor Mastery RI.8.8) ---
+    // ------------------------------------------------------
+    // ZONE 4: INFO INFINITY (Arguments, Evidence, Structure)
+    // ------------------------------------------------------
     {
-        id: 'mast-arg-1', type: 'MC', standard: 'RI.8.8', difficulty: 9,
-        passage: "Proponents of renewable energy cite its low environmental impact. Conversely, critics point to the 'intermittency problem'—the fact that solar and wind power are not constant. However, recent breakthroughs in battery storage technology are beginning to mitigate these concerns.",
-        stem: "How does the author use the concept of 'battery storage' to strengthen the overall argument?",
-        options: [
-            'By acknowledging a valid criticism and providing a technological solution.',
-            'By proving that renewable energy is more expensive than fossil fuels.',
-            'By dismissing the critics as being uninformed about modern science.',
-            'By suggesting that renewable energy is not yet ready for public use.'
+        type: 'mission', genre: 'info_argument',
+        passage: "School uniforms limit student expression and are an unnecessary expense for parents. While proponents argue that uniforms reduce bullying, a 2022 study showed no significant decrease in bullying incidents in uniformed schools compared to non-uniformed ones.",
+        items: [
+            {
+                id: 'info-arg-1', type: 'MC', standard: 'RI.8.8', difficulty: 8,
+                stem: 'How does the author respond to the conflicting viewpoint (that uniforms reduce bullying)?',
+                options: ['By agreeing with it completely.', 'By attacking the character of the proponents.', 'By providing evidence (a study) to refute it.', 'By ignoring it.'],
+                correct_answer: 'By providing evidence (a study) to refute it.',
+                hint: 'Look at the sentence starting with "While proponents argue..."',
+                rationale: 'Evaluating Arguments: The author acknowledges the opposing view but counters it with a specific study.',
+                feedback: { 'By ignoring it.': 'Incorrect. They explicitly mention "While proponents argue...", so they didn\'t ignore it.' }
+            },
+            {
+                id: 'info-arg-2', type: 'MC', standard: 'RI.8.2', difficulty: 7,
+                stem: 'What is the central claim of the passage?',
+                options: ['Uniforms stop bullying.', 'Uniforms are expensive but worth it.', 'Uniforms are negative due to cost and limits on expression.', 'Schools should ban all clothing.'],
+                correct_answer: 'Uniforms are negative due to cost and limits on expression.',
+                hint: 'Look at the very first sentence.',
+                rationale: 'Key Ideas: The first sentence states the main argument: uniforms limit expression and cost too much.',
+                feedback: { 'Uniforms stop bullying.': 'Incorrect. The author argues AGAINST this idea.' }
+            }
+        ]
+    },
+    // --- KEPT: NWEA Music Industry (Text Structure) ---
+    {
+        type: 'mission', genre: 'informational',
+        passage: "While digital streaming has revolutionized the music industry by making songs accessible instantly, it has severely impacted artists' revenue. In the era of physical sales (CDs/Vinyl), artists earned a significant percentage per album. Conversely, streaming services pay fractions of a cent per play.",
+        items: [
+            {
+                id: 'nwea-struct-1', type: 'MC', standard: 'RI.8.5', difficulty: 6,
+                stem: 'Which text structure does the author primarily use in this passage?',
+                options: ['Chronological Order', 'Comparison and Contrast', 'Problem and Solution', 'Descriptive'],
+                correct_answer: 'Comparison and Contrast',
+                hint: 'The author looks at "the era of physical sales" versus "streaming services".',
+                rationale: 'Structure Analysis: The text contrasts two eras (Physical vs. Digital) and their financial results.',
+                feedback: { 'Problem and Solution': 'Incorrect. A problem is presented (low revenue), but no solution is offered.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 5: POETRY PEAK (NEW CONTENT!)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'poetry',
+        passage: "Hold fast to dreams / For if dreams die / Life is a broken-winged bird / That cannot fly. <br>Hold fast to dreams / For when dreams go / Life is a barren field / Frozen with snow.",
+        items: [
+            {
+                id: 'poetry-1', type: 'MC', standard: 'RL.8.4', difficulty: 5,
+                stem: 'What metaphor does the poet use to describe life without dreams?',
+                options: ['A broken-winged bird and a barren field.', 'A fast runner and a snowy day.', 'A flying bird and a green field.', 'A nightmare and a storm.'],
+                correct_answer: 'A broken-winged bird and a barren field.',
+                hint: 'Look for the lines starting with "Life is..."',
+                rationale: 'Metaphor: The poet directly compares life to a "broken-winged bird" and a "barren field."',
+                feedback: { 'A flying bird and a green field.': 'Incorrect. The poem describes negative outcomes (broken, barren) if dreams die.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 6: RESEARCH STATION (NEW CONTENT!)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'research',
+        passage: "<b>Source A:</b> A blog post by 'BurgerLover99' stating that grease is good for your heart.<br><b>Source B:</b> A peer-reviewed study by the American Heart Association regarding dietary fats.",
+        items: [
+            {
+                id: 'research-1', type: 'MC', standard: 'W.8.8', difficulty: 4,
+                stem: 'Which source would be considered more credible for a research paper on nutrition?',
+                options: ['Source A', 'Source B', 'Both are equal.', 'Neither is credible.'],
+                correct_answer: 'Source B',
+                hint: 'Credible sources usually come from experts or organizations, not anonymous users.',
+                rationale: 'Credibility: Peer-reviewed studies by recognized organizations (AHA) are authoritative. Anonymous blogs are not.',
+                feedback: { 'Source A': 'Incorrect. Blogs by anonymous users often lack scientific verification.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 7: PUNCTUATION PALACE (Ellipses & Dashes)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'grammar_punc',
+        passage: "I was thinking about going to the store... wait, did I leave the oven on? No—I definitely turned it off. At least, I think I did.",
+        items: [
+            {
+                id: 'punc-dash-1', type: 'MC', standard: 'L.8.2.a', difficulty: 5,
+                stem: 'Why does the author use a dash (—) in the second sentence?',
+                options: ['To indicate a sudden break in thought.', 'To show that words have been removed.', 'To connect two independent clauses.', 'To list items.'],
+                correct_answer: 'To indicate a sudden break in thought.',
+                hint: 'The speaker stops abruptly ("No") and changes direction.',
+                rationale: 'Punctuation: A dash is used to signal an abrupt break or interruption in thought.',
+                feedback: { 'To show that words have been removed.': 'Incorrect. That is the job of an ellipsis (...).' }
+            },
+            {
+                id: 'punc-ellip-1', type: 'MC', standard: 'L.8.2.a', difficulty: 4,
+                stem: 'The ellipsis (...) in the first sentence is used to show:',
+                options: ['A trailing off or pause.', 'A direct quote.', 'Excitement.', 'A question.'],
+                correct_answer: 'A trailing off or pause.',
+                hint: 'Read it aloud. "I was thinking... wait." What happens in the middle?',
+                rationale: 'Punctuation: The ellipsis indicates a pause or hesitation in the character\'s speech.',
+                feedback: { 'A direct quote.': 'Incorrect. Quotation marks are used for quotes.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 8: SPELLING SPIRE (Confused Words)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'grammar_spell',
+        passage: "The pollution had a negative **[effect/affect]** on the local wildlife. Scientists tried to **[effect/affect]** change by proposing new laws.",
+        items: [
+            {
+                id: 'spell-eff-1', type: 'MC', standard: 'L.8.2.c', difficulty: 6,
+                stem: 'Select the correct word to complete the first sentence: "The pollution had a negative _____."',
+                options: ['Effect', 'Affect', 'Efect', 'Afect'],
+                correct_answer: 'Effect',
+                hint: 'Is it a Noun (a thing/result) or a Verb (an action)? "A negative [Thing]."',
+                rationale: 'Spelling: "Effect" is a noun meaning "result." The pollution caused a result.',
+                feedback: { 'Affect': 'Incorrect. Affect is usually a verb (to influence).' }
+            },
+            {
+                id: 'spell-eff-2', type: 'MC', standard: 'L.8.2.c', difficulty: 7,
+                stem: 'Select the correct word to complete the second sentence: "Scientists tried to _____ change."',
+                options: ['Effect', 'Affect', 'Effected', 'Affects'],
+                correct_answer: 'Effect',
+                hint: 'Wait! This is a trick. Usually "Affect" is the verb, BUT "To effect change" means to CREATE change.',
+                rationale: 'Advanced Usage: While "Affect" is usually the verb, "To Effect Change" is a specific phrase meaning "to bring about/create".',
+                feedback: { 'Affect': 'Incorrect. To "affect change" would mean to alter the change itself. To "effect change" means to MAKE it happen.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 9: PERSPECTIVE PEAK (Author's POV)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'info_pov',
+        passage: "While many celebrate the new highway as a sign of progress, it is essentially a scar across our beautiful landscape. It disrupts migration paths and brings noise pollution to our quiet valley. We must ask ourselves: is this 'convenience' worth the destruction?",
+        items: [
+            {
+                id: 'pov-1', type: 'MC', standard: 'RI.8.6', difficulty: 6,
+                stem: 'What is the author\'s point of view regarding the new highway?',
+                options: ['It is a necessary evil.', 'It is a harmful mistake.', 'It is a wonderful innovation.', 'It is economically beneficial.'],
+                correct_answer: 'It is a harmful mistake.',
+                hint: 'Look at the words used: "scar," "disrupts," "destruction."',
+                rationale: 'Point of View: The author uses negative language ("scar", "destruction") to show strong disapproval.',
+                feedback: { 'It is a necessary evil.': 'Incorrect. The author asks if it is "worth" it, implying it is NOT necessary.' }
+            },
+            {
+                id: 'pov-2', type: 'MC', standard: 'RI.8.6', difficulty: 7,
+                stem: 'How does the author distinguish their position from others?',
+                options: ['By acknowledging that others see it as "progress" but refuting it.', 'By ignoring the opposing view entirely.', 'By using statistical data.', 'By interviewing the construction workers.'],
+                correct_answer: 'By acknowledging that others see it as "progress" but refuting it.',
+                hint: 'Look at the first sentence: "While many celebrate..."',
+                rationale: 'POV & Structure: The author admits others call it "progress" but immediately counters with "it is essentially a scar."',
+                feedback: { 'By ignoring the opposing view entirely.': 'Incorrect. They mention "many celebrate..." right at the start.' }
+            }
+        ]
+    },
+
+    // ======================================================
+    // ZONE 10: IAR RESEARCH SIMULATIONS (Multi-Source)
+    // ======================================================
+    {
+        type: 'mission', genre: 'iar_sim',
+        // Instead of 'passage', we use 'sources' array
+        sources: [
+            { 
+                title: 'Source A: Article', 
+                text: "<b>The Red Frontier</b><br>Colonizing Mars is the next logical step for humanity. It offers a backup plan for Earth's resources and a chance to discover signs of ancient life. However, the cost is astronomical. Transporting a single kilogram of supplies costs thousands of dollars, and the radiation exposure during the 7-month trip poses severe health risks." 
+            },
+            { 
+                title: 'Source B: Diary', 
+                text: "<b>Commander's Log: Sol 45</b><br>The silence here is heavy. I looked out the viewport today and saw nothing but rust-colored dust for miles. It’s beautiful, yes, but cold. I miss the sound of rain. I miss the color green. We are making history, they say. But tonight, I just feel like a ghost in a graveyard." 
+            },
+            { 
+                title: 'Source C: Data', 
+                image: 'https://placehold.co/600x300/f1f5f9/334155?text=Graph:+Cost+vs+Time+of+Space+Travel',
+                text: "<i>Figure 1: Projected cost of Mars colonization over 50 years. The line shows costs initially spiking to $500 Billion, then slowly decreasing as reusable rockets become standard.</i>" 
+            }
         ],
-        correct_answer: 'By acknowledging a valid criticism and providing a technological solution.',
-        rationale: "The author uses 'Counter-argument/Rebuttal' structure: acknowledging a flaw (intermittency) and providing evidence (batteries) that the flaw is being addressed."
+        items: [
+            {
+                id: 'iar-mars-1', type: 'MC', standard: 'RI.8.7', difficulty: 8,
+                stem: 'How does the diary entry (Source B) contribute to the understanding of Mars colonization differently than the article (Source A)?',
+                options: ['It provides specific data on the cost of the trip.', 'It illustrates the emotional and psychological toll on the astronauts.', 'It argues that the mission should be cancelled immediately.', 'It explains the radiation risks detailed in Source A.'],
+                correct_answer: 'It illustrates the emotional and psychological toll on the astronauts.',
+                hint: 'Source A deals with facts (cost/health). Source B deals with feelings ("silence," "miss the rain").',
+                rationale: 'Integration of Sources: While Source A is factual/logistical, Source B provides the "human element" (loneliness/isolation).',
+                feedback: { 'It argues that the mission should be cancelled immediately.': 'Incorrect. The astronaut feels lonely, but does not explicitly say to cancel the mission.' }
+            },
+            {
+                id: 'iar-mars-2', type: 'MC', standard: 'RI.8.9', difficulty: 9,
+                stem: 'Which claim from the Article (Source A) is supported by the Data (Source C)?',
+                options: ['The trip takes 7 months.', 'Radiation poses health risks.', 'The cost is astronomical.', 'There is ancient life on Mars.'],
+                correct_answer: 'The cost is astronomical.',
+                hint: 'Look at the Graph description in Source C. It mentions "$500 Billion."',
+                rationale: 'Evidence Evaluation: Source A claims costs are high ("astronomical"). Source C confirms this with the "$500 Billion" figure.',
+                feedback: { 'The trip takes 7 months.': 'Incorrect. The graph shows Cost vs Time (Years), not the duration of the flight.' }
+            }
+        ]
+    },
+    {
+        type: 'mission', genre: 'iar_history',
+        sources: [
+            { 
+                title: 'Source A: Historical Text', 
+                text: "<b>The Dust Bowl (1930s)</b><br>Severe drought combined with poor farming methods resulted in the 'Dust Bowl.' Farmers had removed the native prairie grass that held the soil in place. When the winds came, topsoil was blown away in massive 'black blizzards,' destroying millions of acres of farmland." 
+            },
+            { 
+                title: 'Source B: Video Transcript', 
+                text: "<b>Interview with a Survivor</b><br>[Interviewer]: What was it like when the storm hit?<br>[Witness]: You couldn't see your hand in front of your face. We hung wet sheets over the windows, but the dust still got in. It tasted like metal. We slept with masks on. The cattle... well, their lungs just filled up. It was apocalyptic." 
+            },
+            { 
+                title: 'Source C: Map', 
+                image: 'https://placehold.co/600x300/e2e8f0/1e293b?text=Map:+Severe+Drought+Area+(Texas,+Oklahoma,+Kansas)',
+                text: "<i>Figure 2: Map of the United States showing the 'Severe Drought' regions of the 1930s, centered on the Oklahoma panhandle.</i>" 
+            }
+        ],
+        items: [
+            {
+                id: 'iar-dust-1', type: 'MC', standard: 'RI.8.2', difficulty: 7,
+                stem: 'Based on Source A, what was the primary human cause of the Dust Bowl?',
+                options: ['The severe drought.', 'The removal of native prairie grass.', 'The use of wet sheets on windows.', 'The cattle grazing patterns.'],
+                correct_answer: 'The removal of native prairie grass.',
+                hint: 'Drought is nature\'s fault. What did the *farmers* do? (See Source A)',
+                rationale: 'Cause & Effect: Source A explicitly states farmers "removed the native prairie grass that held the soil in place."',
+                feedback: { 'The severe drought.': 'Incorrect. That is a natural cause, not the human cause mentioned in the text.' }
+            },
+            {
+                id: 'iar-dust-2', type: 'MC', standard: 'RI.8.3', difficulty: 8,
+                stem: 'Which source would be most useful for a student researching the personal, daily struggle of living through the Dust Bowl?',
+                options: ['Source A only.', 'Source B only.', 'Source C only.', 'All three sources equally.'],
+                correct_answer: 'Source B only.',
+                hint: 'Personal struggle = Feelings, sensory details, individual stories.',
+                rationale: 'Source Analysis: Source B is a first-hand account ("tasted like metal," "slept with masks"), providing the personal perspective.',
+                feedback: { 'Source A only.': 'Incorrect. Source A is a general overview of facts, not a personal story.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 11: FUNCTION & STRUCTURE (Advanced)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'info_function',
+        passage: "[1] Electric cars are often hailed as the future of transportation. [2] They produce zero emissions and reduce our reliance on fossil fuels. [3] However, the mining of lithium for batteries poses its own environmental challenges. [4] Therefore, we must innovate battery technology before claiming victory.",
+        items: [
+            {
+                id: 'func-1', type: 'MC', standard: 'RI.8.5', difficulty: 8,
+                stem: 'What is the primary function of Sentence 3 ("However, the mining...")?',
+                options: ['To provide evidence supporting electric cars.', 'To introduce a counter-point or complication.', 'To conclude the argument.', 'To define the term "lithium".'],
+                correct_answer: 'To introduce a counter-point or complication.',
+                hint: 'Look at the transition word "However." Does it agree or disagree with the previous sentence?',
+                rationale: 'Text Structure: "However" signals a shift. The sentence introduces a negative aspect (complication) to the positive view presented earlier.',
+                feedback: { 'To provide evidence supporting electric cars.': 'Incorrect. It points out a "challenge," which supports the opposing view.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 12: THE ECHO CHAMBER (Sound Devices)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'poetry_sound',
+        passage: "The **s**ilent **s**nakes **s**lithered **s**lowly through the gra**ss**.<br>The m**oo**n r**o**se over the l**oo**ming d**u**nes.",
+        items: [
+            {
+                id: 'sound-allit-1', type: 'MC', standard: 'RL.8.4.sound', difficulty: 5,
+                stem: 'The phrase "silent snakes slithered slowly" is an example of:',
+                options: ['Alliteration', 'Assonance', 'Onomatopoeia', 'Rhyme'],
+                correct_answer: 'Alliteration',
+                hint: 'Look at the first letter of each word. S... S... S...',
+                rationale: 'Sound Devices: Alliteration is the repetition of the same consonant sound at the beginning of words.',
+                feedback: { 'Assonance': 'Incorrect. Assonance repeats vowel sounds inside words.' }
+            },
+            {
+                id: 'sound-ass-1', type: 'MC', standard: 'RL.8.4.sound', difficulty: 6,
+                stem: 'The phrase "moon rose over the looming dunes" focuses on the repetition of which sound?',
+                options: ['The "oo" vowel sound (Assonance).', 'The "n" consonant sound (Alliteration).', 'The "r" sound.', 'There is no repetition.'],
+                correct_answer: 'The "oo" vowel sound (Assonance).',
+                hint: 'Listen to the vowels: M-oo-n, L-oo-ming, D-u-nes.',
+                rationale: 'Sound Devices: Assonance is the repetition of vowel sounds (oo/u) within nearby words.',
+                feedback: { 'The "n" consonant sound (Alliteration).': 'Incorrect. While "n" appears at the END of words, Alliteration must be at the START.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 13: DEBATE CLUB (Argument Strength)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'info_debate',
+        passage: "<b>Claim:</b> Schools should start later in the day to improve student health.<br><b>Evidence A:</b> A study by the CDC shows that 70% of teens do not get enough sleep.<br><b>Evidence B:</b> My little brother hates waking up early.<br><b>Evidence C:</b> Teachers also like coffee in the morning.",
+        items: [
+            {
+                id: 'arg-strength-1', type: 'MC', standard: 'RI.8.8.eval', difficulty: 5,
+                stem: 'Which piece of evidence is considered "Relevant and Sufficient" to support the claim?',
+                options: ['Evidence A', 'Evidence B', 'Evidence C', 'None of them'],
+                correct_answer: 'Evidence A',
+                hint: 'Which one comes from a trustworthy source (CDC) and uses data?',
+                rationale: 'Evaluating Evidence: Evidence A is relevant (about health/sleep) and sufficient (large study/data). B is anecdotal (one person). C is irrelevant to student health.',
+                feedback: { 'Evidence B': 'Incorrect. This is an anecdote (personal story), not scientific proof.' }
+            },
+            {
+                id: 'arg-strength-2', type: 'MC', standard: 'RI.8.8.eval', difficulty: 6,
+                stem: 'Evidence C ("Teachers like coffee") is an example of:',
+                options: ['Irrelevant Evidence.', 'A Counter-Claim.', 'Statistical Data.', 'A Logical Fallacy.'],
+                correct_answer: 'Irrelevant Evidence.',
+                hint: 'Does teacher coffee habits prove that STUDENTS need more sleep for HEALTH?',
+                rationale: 'Evaluating Evidence: This statement has nothing to do with the main claim (Student Health). It is irrelevant.',
+                feedback: { 'A Counter-Claim.': 'Incorrect. A counter-claim would argue AGAINST the start time (e.g., "Sports would end too late").' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 14: THE EDITOR'S DESK (Writing Logic)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'writing_logic',
+        passage: "[1] Penguins are fascinating birds that have adapted to life in the water. [2] Their wings have evolved into flippers, making them expert swimmers. [3] However, they must return to land to lay their eggs. [4] They mostly eat krill and squid.",
+        items: [
+            {
+                id: 'write-place-1', type: 'MC', standard: 'W.8.2.c', difficulty: 6,
+                stem: 'Where is the best place to insert the following sentence?<br><b>"This transition from air to sea allows them to hunt effectively."</b>',
+                options: ['After Sentence 1', 'After Sentence 2', 'After Sentence 3', 'After Sentence 4'],
+                correct_answer: 'After Sentence 2',
+                hint: 'Sentence 2 talks about "wings into flippers" (transition) and "expert swimmers" (hunting). The new sentence connects these ideas.',
+                rationale: 'Organization: The new sentence connects the physical adaptation (Sentence 2) to the result (hunting), fitting perfectly before the shift to land (Sentence 3).',
+                feedback: { 'After Sentence 1': 'Incorrect. Sentence 2 explains the physical change (wings to flippers), so the summary sentence fits better AFTER that detail.' }
+            },
+            {
+                id: 'write-flow-1', type: 'MC', standard: 'W.8.2.c', difficulty: 5,
+                stem: 'Sentence 4 ("They mostly eat krill...") seems out of place. Where should it be moved to improve the flow?',
+                options: ['Leave it where it is.', 'After Sentence 1.', 'After Sentence 2.', 'It should be deleted.'],
+                correct_answer: 'After Sentence 2.',
+                hint: 'Sentence 2 talks about swimming/hunting. Sentence 3 moves to LAND. Food (krill) relates to swimming/hunting.',
+                rationale: 'Cohesion: Group related ideas. Swimming (S2) and Eating (S4) happen in the water. Laying eggs (S3) happens on land. S4 should stay with the water topic.',
+                feedback: { 'Leave it where it is.': 'Incorrect. It breaks the flow because Sentence 3 shifted the topic to "Land/Eggs," and then S4 jumps back to food.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 15: LEGENDS RETOLD (Modern vs. Myth)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'lit_compare',
+        passage: "<b>Original Myth:</b> Arachne was a weaver who boasted she was better than the goddess Athena. Athena challenged her to a contest and turned her into a spider for her arrogance.<br><br><b>Modern Story:</b> 'Net-Weaver' was a hacker who claimed no firewall could stop her. She challenged the government's AI, 'Athena,' to a duel. The AI trapped Net-Weaver inside her own code, leaving her to spin endless loops forever.",
+        items: [
+            {
+                id: 'lit-myth-1', type: 'MC', standard: 'RL.8.9', difficulty: 7,
+                stem: 'How does the modern story draw upon the theme of the original myth?',
+                options: ['It uses the same setting (Greece).', 'It transforms the punishment of "spinning" into a digital context.', 'It features a literal spider.', 'It ends happily for the main character.'],
+                correct_answer: 'It transforms the punishment of "spinning" into a digital context.',
+                hint: 'Arachne spins webs; Net-Weaver spins "endless loops" of code.',
+                rationale: 'Transformation: The author keeps the core punishment (spinning forever) but updates the weaving metaphor to computer coding.',
+                feedback: { 'It features a literal spider.': 'Incorrect. The modern version is symbolic (trapped in code), not a literal bug.' }
+            }
+        ]
+    },
+
+    // ------------------------------------------------------
+    // ZONE 16: ACADEMIC VOCABULARY (Science/Social Studies)
+    // ------------------------------------------------------
+    {
+        type: 'mission', genre: 'vocab_academic',
+        passage: "The **permeability** of the soil allowed water to drain through it quickly, unlike the clay layer below, which blocked the flow entirely. This drainage is crucial for preventing root rot in crops.",
+        items: [
+            {
+                id: 'voc-acad-1', type: 'MC', standard: 'L.8.4.a', difficulty: 6,
+                stem: 'Based on the context, what does the word "permeability" most likely mean?',
+                options: ['The ability to block water.', 'The ability to let fluids pass through.', 'The dark color of the soil.', 'The hardness of the rock.'],
+                correct_answer: 'The ability to let fluids pass through.',
+                hint: 'Look at the phrase "allowed water to drain through it."',
+                rationale: 'Context Clues: The text says it "allowed water to drain through," which is the definition of permeable.',
+                feedback: { 'The ability to block water.': 'Incorrect. The text contrasts it with clay, which "blocked the flow".' }
+            },
+            {
+                id: 'voc-acad-2', type: 'MC', standard: 'L.8.6', difficulty: 5,
+                stem: 'Which word from the passage is an antonym (opposite) for "permeability"?',
+                options: ['Drain', 'Blocked', 'Flow', 'Crucial'],
+                correct_answer: 'Blocked',
+                hint: 'Permeability lets water through. What word means stopping it?',
+                rationale: 'Antonyms: "Blocked" is the direct opposite action described for the clay layer.',
+                feedback: { 'Drain': 'Incorrect. Draining is what permeable soil DOES, not its opposite.' }
+            }
+        ]
     }
-    // YOU CAN PASTE ALL 20+ PREVIOUS ITEMS HERE USING THIS SAME FORMAT (ID, TYPE, STANDARD, DIFFICULTY, PASSAGE, STEM, OPTIONS, CORRECT_ANSWER, RATIONALE)
 ];
+
+const allMissions = [
+    // --- THREAD 1: VOCABULARY & CRAFT (NWEA FOCUS) ---
+    { id: 'm-voc1', title: 'The Root Cellar', description: 'Mastering Greek & Latin Affixes', difficulty: 4, passageId: 'voc-roots-1', minLevel: 1 },
+    { id: 'm-voc-acad', title: 'Academic Context', description: 'NWEA: Tier 2 Academic Vocabulary', difficulty: 6, passageId: 'voc-acad-1', minLevel: 1 },
+    { id: 'm-punc', title: 'The Semicolon Sanctum', description: 'SAT Style: Sentence Boundaries', difficulty: 6, passageId: 'sat-gram-1', minLevel: 2 },
+    { id: 'm-spell', title: 'Confusion Clearer', description: 'Effect vs. Affect & Homophones', difficulty: 6, passageId: 'spell-eff-1', minLevel: 2 },
+
+    // --- THREAD 2: LITERARY ANALYSIS (IAR FOCUS) ---
+    { id: 'm-lit-irony', title: 'The Irony of Fate', description: 'Situational vs. Dramatic Irony', difficulty: 7, passageId: 'lit-irony-1', minLevel: 3 },
+    { id: 'm-lit-suspense', title: 'Master of Suspense', description: 'Analyzing Pacing & Sensory Detail', difficulty: 6, passageId: 'lit-suspense-1', minLevel: 3 },
+    { id: 'm-poetry', title: 'The Metaphor Lab', description: 'Interpreting Complex Imagery', difficulty: 5, passageId: 'poetry-1', minLevel: 3 },
+    { id: 'm-cask', title: 'Dark Intentions', description: 'Character Motives (RL.9.3)', difficulty: 6, passageId: 'mission-2a', minLevel: 4 },
+
+    // --- THREAD 3: INFORMATIONAL SYNTHESIS (IAR FOCUS) ---
+    { id: 'm-info-arg', title: 'The Great Debate', description: 'Evaluating Argument Strength', difficulty: 8, passageId: 'info-arg-1', minLevel: 4 },
+    { id: 'm-nwea-music', title: 'The Digital Shift', description: 'Text Structure: Compare/Contrast', difficulty: 6, passageId: 'nwea-struct-1', minLevel: 4 },
+    { id: 'm-pov-high', title: 'Perspective Peak', description: 'Analyzing Conflicting Points of View', difficulty: 7, passageId: 'pov-1', minLevel: 5 },
+    { id: 'm-iar-mars', title: 'Mission to Mars', description: 'Synthesis: Article + Video + Data', difficulty: 9, passageId: 'iar-mars-1', minLevel: 5 },
+    { id: 'm-iar-dust', title: 'The Dust Bowl', description: 'Integration of Knowledge & Media', difficulty: 8, passageId: 'iar-dust-1', minLevel: 5 }
+];
+
+// --- NEW BOSS BATTLE DATA ---
+        const bossBattles = [
+{
+                id: 'boss-1',
+                title: 'The Run-On Robot',
+                bossMaxHP: 3, 
+                passageParts: [
+                    { text: "The concept of artificial intelligence has existed for centuries, " },
+                    { 
+                        type: 'error', id: 'err1',
+                        original: "however, modern computers made it a reality.",
+                        // FIX: clearer options to teach semicolon vs FANBOYS
+                        options: ["NO CHANGE", "however; modern computers made it a reality.", "but modern computers made it a reality.", "modern computers, made it a reality."],
+                        correctIndex: 2,
+                        rationale: "Comma Splice Fix: You cannot join two sentences with just a comma and 'however'. Use a conjunction like 'but', or use a semicolon."
+                    },
+                    { text: " Early computers were massive machines " },
+                    { 
+                        type: 'error', id: 'err2',
+                        original: "that took up entire rooms.",
+                        options: ["NO CHANGE", "who took up entire rooms.", "they took up entire rooms.", "it took up entire rooms."],
+                        correctIndex: 0,
+                        rationale: "Relative Pronouns: Use 'that' for objects (machines). Use 'who' for people."
+                    },
+                    { text: " Today, we carry more processing power in our pockets " },
+                    { 
+                        type: 'error', id: 'err3',
+                        original: "then NASA had during the moon landing.",
+                        options: ["NO CHANGE", "than NASA had during the moon landing.", "then NASA has during the moon landing.", "than NASA has during the moon landing."],
+                        correctIndex: 1,
+                        rationale: "Word Choice: 'Than' is for comparisons (more than). 'Then' is for time."
+                    }
+                ]
+            },
+
+            {
+                id: 'boss-2',
+                title: 'Captain Comma',
+                bossMaxHP: 3,
+                passageParts: [
+                    { text: "Cooking is my favorite hobby, " },
+                    {
+                        type: 'error', id: 'cc1',
+                        original: "I make dinner every night.",
+                        options: ["NO CHANGE", "I make dinner, every night.", "so I make dinner every night.", "I make dinner every night"],
+                        correctIndex: 2,
+                        rationale: "Comma Splice! You cannot join two sentences with just a comma. You need a conjunction like 'so'."
+                    },
+                    { text: " My specialties include lasagna, tacos " },
+                    {
+                        type: 'error', id: 'cc2',
+                        original: "and, spicy curry.",
+                        options: ["NO CHANGE", "and spicy curry.", "and spicy, curry.", "and: spicy curry."],
+                        correctIndex: 1,
+                        rationale: "No comma is needed after 'and' in a simple list unless it's an Oxford comma situation, but the comma here breaks the flow."
+                    },
+                    { text: " My friends say I should open a restaurant " },
+                    {
+                        type: 'error', id: 'cc3',
+                        original: "because, my food is delicious.",
+                        options: ["NO CHANGE", "because my food is delicious.", "because; my food is delicious.", "because my food, is delicious."],
+                        correctIndex: 1,
+                        rationale: "Do not put a comma before 'because' when it follows the main clause."
+                    }
+                ]
+            },
+
+            {
+                id: 'boss-3',
+                title: 'The Modifier Monster',
+                bossMaxHP: 3,
+                passageParts: [
+                    { text: "Walking down the street, " },
+                    {
+                        type: 'error', id: 'mm1',
+                        original: "the trees looked beautiful.",
+                        options: ["NO CHANGE", "I saw the beautiful trees.", "the trees were looking beautiful.", "beauty was seen in the trees."],
+                        correctIndex: 1,
+                        rationale: "Dangling Modifier: The 'trees' were not walking down the street! YOU were. The subject (I) must immediately follow the introductory phrase."
+                    },
+                    { text: " hungry after the long walk, " },
+                    {
+                        type: 'error', id: 'mm2',
+                        original: "the pizza shop smelled amazing.",
+                        options: ["NO CHANGE", "the smell of pizza was amazing.", "I thought the pizza shop smelled amazing.", "amazing smells came from the pizza shop."],
+                        correctIndex: 2,
+                        rationale: "Misplaced Modifier: The 'shop' wasn't hungry. You were! The subject 'I' must perform the action of being hungry."
+                    },
+                    { text: " I ordered a slice with pepperoni, " },
+                    {
+                        type: 'error', id: 'mm3',
+                        original: "which was greasy.",
+                        options: ["NO CHANGE", "that was greasy.", "being greasy.", "it was greasy."],
+                        correctIndex: 0,
+                        rationale: "Correct Usage: 'Which' correctly refers back to the pepperoni slice. The comma + which sets off a non-essential clause."
+                    }
+                ]
+            },
+            {
+                id: 'boss-4',
+                title: 'The Parallel Phantom',
+                bossMaxHP: 3,
+                passageParts: [
+                    { text: "To succeed in this class, you must be attentive, hardworking, and " },
+                    {
+                        type: 'error', id: 'pp1',
+                        original: "do your homework.",
+                        options: ["NO CHANGE", "doing your homework.", "complete your homework.", "studious."],
+                        correctIndex: 3,
+                        rationale: "Parallelism: 'Attentive' and 'hardworking' are adjectives. The list must end with another adjective ('studious'), not a verb phrase."
+                    },
+                    { text: " The teacher expects us to listen carefully, to take notes, and " },
+                    {
+                        type: 'error', id: 'pp2',
+                        original: "asking questions.",
+                        options: ["NO CHANGE", "to ask questions.", "ask questions.", "questioning."],
+                        correctIndex: 1,
+                        rationale: "Parallelism: The pattern is 'to listen', 'to take'. It must match with 'to ask'."
+                    },
+                    { text: " She says that wisdom comes not from memorizing facts, but " },
+                    {
+                        type: 'error', id: 'pp3',
+                        original: "from understanding concepts.",
+                        options: ["NO CHANGE", "understanding concepts.", "to understand concepts.", "concepts are understood."],
+                        correctIndex: 0,
+                        rationale: "Parallelism: 'Not from X, but from Y'. The phrase 'from understanding' matches 'from memorizing'."
+                    }
+                ]
+            }
+        ];
 
         const allBadges = {
             'first_mission': { name: 'First Quest', icon: '🌟' },
@@ -797,15 +1503,16 @@ function showModal(title, message, type = 'info') {
         // --- Calibration Logic ---
         let calibrationProgress = { questions: [], currentQuestion: 0, elaLevel: 0 };
 function startCalibrationQuest() {
-    // This finds items that have the 'calibration' tag in our database
-    calibrationProgress.questions = itemBank.filter(item => item.type_tag === 'calibration' || item.type === 'calibration');
+    // This now correctly pulls the calibration items we added above
+    calibrationProgress.questions = itemBank.filter(item => item.type === 'calibration');
     calibrationProgress.currentQuestion = 0;
     calibrationProgress.elaLevel = 0;
     
     if(calibrationProgress.questions.length === 0) {
-        showModal("Error", "No calibration items found!", "error");
+        showModal("Error", "No calibration questions found in database!", "error");
         return;
     }
+
     navigate('calibration-screen');
     renderCalibrationQuestion();
 }
@@ -854,27 +1561,13 @@ function renderCalibrationQuestion() {
             renderCalibrationQuestion();
         }
 
-function endCalibrationQuest() {
-    const score = calibrationProgress.elaLevel;
-    let rank = "";
-    
-    // NWEA Parallelism: Sorting students into tiers based on diagnostic performance
-    if (score >= 8) {
-        gameState.user.elaLevel = 3; // Tier 3: Mastery/Elite
-        rank = "Elite Scholar";
-    } else if (score >= 4) {
-        gameState.user.elaLevel = 2; // Tier 2: Proficient
-        rank = "Skill Seeker";
-    } else {
-        gameState.user.elaLevel = 1; // Tier 1: Foundation
-        rank = "Novice Adventurer";
-    }
-
-    calibrationContent.classList.add('hidden');
-    elaLevelDisplay.innerHTML = `<span class="text-indigo-600 font-black tracking-tighter underline">${rank}</span>`;
-    calibrationResults.classList.remove('hidden');
-    saveProgress();
-}
+        function endCalibrationQuest() {
+            gameState.user.elaLevel = calibrationProgress.elaLevel;
+            calibrationContent.classList.add('hidden');
+            elaLevelDisplay.textContent = gameState.user.elaLevel >= 4 ? 'Proficient Analyzer' : 'Rookie Adventurer';
+            calibrationResults.classList.remove('hidden');
+            saveProgress();
+        }
 
 // --- Missions Logic ---
 function renderMissions() {
@@ -1989,7 +2682,7 @@ function startSurvival() {
 
 function renderSurvivalQuestion() {
     if (gameState.currentQuestionIndex >= gameState.survivalQueue.length) {
-        showModal('IMPOSSIBLE!', 'You have answered every single question in the database correctly. You are a Legend.', 'success');
+        showModal('IMPOSSIBLE!', 'You have answered every single question correctly. You are a Legend.', 'success');
         navigate('welcome-screen');
         return;
     }
@@ -2003,36 +2696,38 @@ function renderSurvivalQuestion() {
 
     // Text-to-Speech Setup
     const speakerBtn = `<button onclick="speakText('${currentItem.id}')" class="mb-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center gap-1">🔊 Read Aloud</button>`;
-    let textSource = currentItem.passage;
+    let textSource = currentItem.sources ? currentItem.sources[0].text : currentItem.passage;
     const ttsContent = `<div id="tts-content-${currentItem.id}" class="hidden">${textSource.replace(/<[^>]*>/g, '')}</div>`;
 
     // Render Passage
     gamePassage.innerHTML = `${speakerBtn}${ttsContent}<div class="prose dark:prose-invert max-w-none">${textSource}</div>`;
 
     // Render Question and Options
-    const options = currentItem.options;
+    // FIX: Explicitly check for currentItem.options OR currentItem.items[0].options
+    const options = currentItem.options || (currentItem.items && currentItem.items[0].options);
     
     gameQuestionsArea.innerHTML = `
         <div class="mb-4">
-            <p class="font-bold text-lg mb-2 text-red-500 uppercase tracking-widest">Diagnostic Level: ${currentItem.difficulty}</p>
-            <p class="mb-4 text-lg font-medium">${currentItem.stem}</p>
+            <p class="font-bold text-lg mb-2">Question ${gameState.missionScore + 1}</p>
+            <p class="mb-4 text-lg font-medium">${currentItem.stem || currentItem.items[0].stem}</p>
             <div id="options-container" class="space-y-3">
-                ${options.map(option => `
+                ${options ? options.map(option => `
                     <label class="flex items-start p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10 transition-all">
                         <input type="radio" name="survival-q" value="${option}" class="mt-1 mr-3 w-5 h-5 text-red-600">
                         <span class="flex-1 text-base text-gray-800 dark:text-gray-200">${option}</span>
-                    </label>`).join('')}
+                    </label>`).join('') : '<p class="text-red-500 font-bold">Error: Answer options not found for this item.</p>'}
             </div>
         </div>`;
 
     const btnContainer = document.querySelector('#game-play-screen .flex.justify-end');
-    btnContainer.innerHTML = `<button onclick="checkSurvivalAnswer('${currentItem.id}')" class="button bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">Submit Answer</button>`;
+    btnContainer.innerHTML = `<button onclick="checkSurvivalAnswer('${currentItem.id}')" class="button bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">Submit (Risk It!)</button>`;
 }
 
 async function checkSurvivalAnswer(itemId) {
     const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
     const selected = document.querySelector('input[name="survival-q"]:checked');
-    const correctAns = currentItem.correct_answer;
+    const correctAns = currentItem.correct_answer || currentItem.items[0].correct_answer;
+    const rationale = currentItem.rationale || currentItem.items[0].rationale;
     
     if(!selected) return;
 
@@ -2040,25 +2735,24 @@ async function checkSurvivalAnswer(itemId) {
         playSound('correct');
         gameState.missionScore++;
         gameState.currentQuestionIndex++;
-        await showModal('✅ MASTERY DEMONSTRATED', `<b>Correct!</b><br>${currentItem.rationale}`, 'success');
+        await showModal('SURVIVED!', `Correct. Streak: ${gameState.missionScore}`, 'success');
         renderSurvivalQuestion();
     } else {
         stopTimer();
         playSound('incorrect');
-        // HIGH-LEVEL TUTORING: Providing standard-aligned feedback before game over
-        await showModal('❌ SYSTEM ERROR', `
+        // HIGH-LEVEL TUTOR FIX: Show the rationale so the student learns WHY they were wrong
+        await showModal('💀 GAME OVER', `
             <div class="text-left">
-                <p class="text-red-500 font-bold mb-2 uppercase tracking-tight">Incorrect Response Detected.</p>
-                <p class="mb-4">The correct fix was: <b>${correctAns}</b></p>
-                <div class="p-4 bg-indigo-50 border-l-4 border-indigo-500 rounded text-xs text-indigo-900 leading-relaxed shadow-inner">
-                    <p class="font-bold mb-1 underline uppercase">Standard Analysis (${currentItem.standard}):</p>
-                    ${currentItem.rationale}
+                <p class="mb-2 text-red-600 font-bold">Incorrect Answer.</p>
+                <p class="mb-4 text-sm">The correct answer was: <b>${correctAns}</b></p>
+                <div class="p-3 bg-gray-100 rounded-lg text-xs italic">
+                    <b>Tutor Note:</b> ${rationale}
                 </div>
-                <p class="mt-4 text-[10px] text-gray-400 font-bold italic text-center uppercase">Corruption logged in Archive for required study session.</p>
             </div>
         `, 'error');
         
-        gameState.user.tokens += (gameState.missionScore * 5);
+        const tokens = gameState.missionScore * 5;
+        gameState.user.tokens += tokens;
         saveProgress();
         navigate('welcome-screen');
     }
