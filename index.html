@@ -189,7 +189,7 @@
             </div>
         </div>
 
-<div class="flex items-center gap-3">
+        <div class="flex items-center gap-3">
             <div class="flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/40 px-4 py-2 rounded-xl border border-yellow-200 dark:border-yellow-700/50 shadow-sm">
                 <span class="text-xl">🪙</span> 
                 <div class="flex flex-col items-start leading-none">
@@ -198,7 +198,7 @@
                 </div>
             </div>
 
-            <button id="theme-toggle-header" onclick="document.documentElement.classList.toggle('dark')" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300">
+            <button id="theme-toggle-header" onclick="document.getElementById('theme-toggle').click()" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
             </button>
         </div>
@@ -230,16 +230,17 @@
             <button onclick="generateReport()" class="button bg-gradient-to-br from-slate-600 to-slate-800 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-slate-500/20">
                 <span class="text-3xl block mb-2">🖨️</span>Teacher Report
             </button>
-<button id="archive-button" onclick="openArchive()" class="col-span-1 md:col-span-2 button bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 flex flex-col md:flex-row items-center justify-center gap-4 relative overflow-hidden group">
+            <button id="archive-button" onclick="openArchive()" class="col-span-1 md:col-span-2 button bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold py-6 px-6 rounded-2xl text-xl shadow-lg border border-red-400/20 flex flex-col md:flex-row items-center justify-center gap-4 relative overflow-hidden group">
                  <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                  <span class="text-4xl animate-pulse">⚠️</span> 
                  <span>Glitch Archive (Fix Mistakes & Study)</span>
             </button>
-<button id="reset-button" onclick="resetGame()" class="mt-8 text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors bg-white/50 px-4 py-2 rounded-lg">
-    Reset Save Data
-</button>
+        </div>
+        
+        <button id="reset-button" class="text-gray-500 hover:text-red-500 text-sm font-semibold transition-colors bg-white/50 px-4 py-2 rounded-lg">Reset Save Data</button>
+    </div>
 
-    </div> <div id="calibration-screen" class="screen hidden p-4 md:p-8 relative">
+<div id="calibration-screen" class="screen hidden p-4 md:p-8 relative">
             <button class="home-button absolute top-4 left-4 p-2 rounded-full bg-white shadow-md hover:bg-gray-100 transition-colors z-50">
                 <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-10v10a1 1 0 001 1h3M12 20v-5m0 0H8m4 0h4"></path></svg>
             </button>
@@ -1173,6 +1174,10 @@ const allMissions = [
     { id: 'm-gram2', title: 'Active vs Passive', description: 'Grammar: Voice', difficulty: 6, passageId: 'gram-voice-1', minLevel: 2 },
     { id: 'm-sat1', title: 'Ghost Army', description: 'Grammar: Punctuation', difficulty: 6, passageId: 'sat-gram-1', minLevel: 2 },
 
+// --- NEW LEVEL 3 CONTENT ---
+    { id: 'm-punc', title: 'The Interruption', description: 'Grammar: Ellipses & Dashes', difficulty: 5, passageId: 'punc-dash-1', minLevel: 3 },
+    { id: 'm-spell', title: 'The Lab Report', description: 'Spelling: Effect vs Affect', difficulty: 6, passageId: 'spell-eff-1', minLevel: 3 },
+    
     // --- NEW LEVEL 3 CONTENT ---
     { id: 'm-punc', title: 'The Interruption', description: 'Grammar: Ellipses & Dashes', difficulty: 5, passageId: 'punc-dash-1', minLevel: 3 },
     { id: 'm-spell', title: 'The Lab Report', description: 'Spelling: Effect vs Affect', difficulty: 6, passageId: 'spell-eff-1', minLevel: 3 },
@@ -1180,6 +1185,8 @@ const allMissions = [
     // --- NEW LEVEL 4 CONTENT ---
     { id: 'm-pov', title: 'Highway Debate', description: 'Info: Author\'s POV', difficulty: 7, passageId: 'pov-1', minLevel: 4 },
 
+    // --- NEW LEVEL 4 CONTENT ---
+    { id: 'm-pov', title: 'Highway Debate', description: 'Info: Author\'s POV', difficulty: 7, passageId: 'pov-1', minLevel: 4 },
     // --- LEVEL 3: LITERARY ANALYSIS ---
     { id: 'm-lit1', title: 'The Irony of Fate', description: 'Reading: Irony Types', difficulty: 7, passageId: 'lit-irony-1', minLevel: 3 },
     { id: 'm-lit2', title: 'House of Suspense', description: 'Reading: Creating Tension', difficulty: 6, passageId: 'lit-suspense-1', minLevel: 3 },
@@ -2190,36 +2197,12 @@ function updateUI() {
             if(saved) gameState.user = JSON.parse(saved); 
         }
 
-function resetGame() {
-    // 1. Confirm with the user
-    const confirmed = confirm("Are you sure? This deletes ALL progress, stickers, and levels!");
-    if (!confirmed) return;
-
-    // 2. Clear the physical storage immediately
-    localStorage.removeItem('elaGameProgress');
-
-    // 3. Reset the internal gameState.user object to match your init state
-    gameState.user = {
-        xp: 0,
-        level: 1,
-        elaLevel: 0,
-        tokens: 0,
-        badges: [],
-        history: [],
-        purchasedItems: [],
-        stickers: [],        // Important for the Sticker Book [cite: 103, 556]
-        missedQuestions: [], // Important for the Glitch Archive [cite: 458, 639]
-        standardsReport: {}  // Important for Teacher Reports [cite: 455, 576]
-    };
-
-    // 4. Update the visual elements on the screen
-    updateUI(); 
-
-    // 5. Force the page to go back to the home screen
-    navigate('welcome-screen');
-
-    alert("Game data has been successfully wiped.");
-}
+        function resetGame() {
+            localStorage.removeItem('elaGameProgress');
+            gameState.user = { xp: 0, level: 1, elaLevel: 0, tokens: 0, badges: [], history: [], purchasedItems: [] };
+            updateUI();
+            navigate('welcome-screen');
+        }
 
         function triggerConfetti() { if(typeof confetti !== 'undefined') confetti({ particleCount: 150, spread: 90 }); }
 
@@ -2753,22 +2736,13 @@ async function checkSurvivalAnswer(itemId) {
         }
 
         // --- ACCESSIBILITY: TEXT TO SPEECH ---
-function speakText(id) {
-    // 1. Try to find the specific text element
-    const textEl = document.getElementById(`tts-content-${id}`);
-    
-    // 2. Safety Check: If text doesn't exist, stop to prevent crash
-    if (!textEl) {
-        console.error("Text not found for ID:", id);
-        return;
-    }
-
-    // 3. Speak
-    const utterance = new SpeechSynthesisUtterance(textEl.innerText);
-    utterance.rate = 0.9; 
-    window.speechSynthesis.cancel(); // Stop any current speech
-    window.speechSynthesis.speak(utterance);
-}
+        function speakText(id) {
+            const text = document.getElementById(`tts-content-${id}`).innerText;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9; // Slightly slower for students
+            window.speechSynthesis.cancel(); // Stop previous
+            window.speechSynthesis.speak(utterance);
+        }
 
 // --- Init ---
         document.addEventListener('DOMContentLoaded', () => {
