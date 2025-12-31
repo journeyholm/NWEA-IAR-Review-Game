@@ -2681,94 +2681,82 @@ function startSurvival() {
         }
 
 function renderSurvivalQuestion() {
-            if (gameState.currentQuestionIndex >= gameState.survivalQueue.length) {
-                // They beat the whole game!
-                showModal('IMPOSSIBLE!', 'You have answered every single question in the database correctly. You are a Legend.', 'success');
-                navigate('welcome-screen');
-                return;
-            }
+    if (gameState.currentQuestionIndex >= gameState.survivalQueue.length) {
+        showModal('IMPOSSIBLE!', 'You have answered every single question correctly. You are a Legend.', 'success');
+        navigate('welcome-screen');
+        return;
+    }
 
-            const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
-            
-            // Setup Header
-            gameTitle.innerHTML = `<span class="text-red-600">💀 SURVIVAL MODE</span>`;
-            missionScoreDisplay.innerHTML = `${gameState.missionScore} <span class="text-xs">Streak</span>`;
-            missionTotalQuestions.innerHTML = "∞";
+    const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
+    
+    // Header Stats
+    gameTitle.innerHTML = `<span class="text-red-600">💀 SURVIVAL MODE</span>`;
+    missionScoreDisplay.innerHTML = `${gameState.missionScore} <span class="text-xs">Streak</span>`;
+    missionTotalQuestions.innerHTML = "∞";
 
-            // --- FIXED: READ ALOUD & PASSAGE RENDERING ---
-            // 1. Use 'currentItem.id', NOT 'missionItem' (which causes the crash)
-            const speakerBtn = `<button onclick="speakText('${currentItem.id}')" class="mb-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center gap-1">🔊 Read Aloud</button>`;
-            
-            // 2. Handle Text Source (Survival items store passage directly or in sources)
-            let textSource = currentItem.sources ? currentItem.sources[0].text : currentItem.passage;
-            
-            // 3. Create hidden text for the reader
-            const ttsContent = `<div id="tts-content-${currentItem.id}" class="hidden">${textSource.replace(/<[^>]*>/g, '')}</div>`;
+    // Text-to-Speech Setup
+    const speakerBtn = `<button onclick="speakText('${currentItem.id}')" class="mb-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded hover:bg-blue-200 flex items-center gap-1">🔊 Read Aloud</button>`;
+    let textSource = currentItem.sources ? currentItem.sources[0].text : currentItem.passage;
+    const ttsContent = `<div id="tts-content-${currentItem.id}" class="hidden">${textSource.replace(/<[^>]*>/g, '')}</div>`;
 
-            // 4. Build the Visual HTML
-            let passageHTML = "";
-            if (currentItem.sources) {
-                passageHTML = `<div class="p-4 bg-gray-50 dark:bg-gray-900 rounded border mb-2 text-sm">${currentItem.sources[0].text.substring(0, 200)}... <br><i>(Read full text in Study Mode)</i></div>`;
-            } else {
-                passageHTML = `<div class="prose dark:prose-invert max-w-none">${currentItem.passage}</div>`;
-            }
-            
-            // 5. Combine it all
-            gamePassage.innerHTML = `
-                ${speakerBtn}
-                ${ttsContent}
-                ${passageHTML}
-            `;
+    // Render Passage
+    gamePassage.innerHTML = `${speakerBtn}${ttsContent}<div class="prose dark:prose-invert max-w-none">${textSource}</div>`;
 
-            // Render Question (Standard)
-            gameQuestionsArea.innerHTML = `
-                <div class="mb-4">
-                    <p class="font-bold text-lg mb-2">Question ${gameState.missionScore + 1}</p>
-                    <p class="mb-4 text-lg font-medium">${currentItem.stem}</p>
-                    <div id="options-container" class="space-y-3"></div>
-                </div>`;
-
-            // Options
-            const optionsContainer = document.getElementById('options-container');
-            if (currentItem.type === 'MC') {
-                optionsContainer.innerHTML = currentItem.options.map(option => `
+    // Render Question and Options
+    // FIX: Explicitly check for currentItem.options OR currentItem.items[0].options
+    const options = currentItem.options || (currentItem.items && currentItem.items[0].options);
+    
+    gameQuestionsArea.innerHTML = `
+        <div class="mb-4">
+            <p class="font-bold text-lg mb-2">Question ${gameState.missionScore + 1}</p>
+            <p class="mb-4 text-lg font-medium">${currentItem.stem || currentItem.items[0].stem}</p>
+            <div id="options-container" class="space-y-3">
+                ${options ? options.map(option => `
                     <label class="flex items-start p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/10 transition-all">
-                        <input type="radio" name="survival-q" value="${option}" class="mt-1 mr-3 w-5 h-5 text-red-600 focus:ring-red-500">
+                        <input type="radio" name="survival-q" value="${option}" class="mt-1 mr-3 w-5 h-5 text-red-600">
                         <span class="flex-1 text-base text-gray-800 dark:text-gray-200">${option}</span>
-                    </label>`).join('');
-            }
+                    </label>`).join('') : '<p class="text-red-500 font-bold">Error: Answer options not found for this item.</p>'}
+            </div>
+        </div>`;
 
-            // Submit Button
-            const btnContainer = document.querySelector('#game-play-screen .flex.justify-end');
-            btnContainer.innerHTML = `<button onclick="checkSurvivalAnswer('${currentItem.id}')" class="button bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">Submit (Risk It!)</button>`;
-        }
+    const btnContainer = document.querySelector('#game-play-screen .flex.justify-end');
+    btnContainer.innerHTML = `<button onclick="checkSurvivalAnswer('${currentItem.id}')" class="button bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg">Submit (Risk It!)</button>`;
+}
 
 async function checkSurvivalAnswer(itemId) {
-            const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
-            const selected = document.querySelector('input[name="survival-q"]:checked');
-            
-            if(!selected) return;
+    const currentItem = gameState.survivalQueue[gameState.currentQuestionIndex];
+    const selected = document.querySelector('input[name="survival-q"]:checked');
+    const correctAns = currentItem.correct_answer || currentItem.items[0].correct_answer;
+    const rationale = currentItem.rationale || currentItem.items[0].rationale;
+    
+    if(!selected) return;
 
-            if (selected.value === currentItem.correct_answer) {
-                // Correct
-                playSound('correct');
-                gameState.missionScore++;
-                gameState.currentQuestionIndex++;
-                await showModal('SURVIVED!', `Correct. Streak: ${gameState.missionScore}`, 'success');
-                renderSurvivalQuestion();
-            } else {
-                // GAME OVER
-                stopTimer(); // <--- FIX: Stop the clock
-                playSound('incorrect');
-                await showModal('💀 GAME OVER', `You survived ${gameState.missionScore} rounds.<br>The correct answer was: <b>${currentItem.correct_answer}</b>`, 'error');
-                
-                // Reward Tokens based on streak
-                const tokens = gameState.missionScore * 5;
-                gameState.user.tokens += tokens;
-                saveProgress();
-                navigate('welcome-screen');
-            }
-        }
+    if (selected.value === correctAns) {
+        playSound('correct');
+        gameState.missionScore++;
+        gameState.currentQuestionIndex++;
+        await showModal('SURVIVED!', `Correct. Streak: ${gameState.missionScore}`, 'success');
+        renderSurvivalQuestion();
+    } else {
+        stopTimer();
+        playSound('incorrect');
+        // HIGH-LEVEL TUTOR FIX: Show the rationale so the student learns WHY they were wrong
+        await showModal('💀 GAME OVER', `
+            <div class="text-left">
+                <p class="mb-2 text-red-600 font-bold">Incorrect Answer.</p>
+                <p class="mb-4 text-sm">The correct answer was: <b>${correctAns}</b></p>
+                <div class="p-3 bg-gray-100 rounded-lg text-xs italic">
+                    <b>Tutor Note:</b> ${rationale}
+                </div>
+            </div>
+        `, 'error');
+        
+        const tokens = gameState.missionScore * 5;
+        gameState.user.tokens += tokens;
+        saveProgress();
+        navigate('welcome-screen');
+    }
+}
 
         // --- ACCESSIBILITY: TEXT TO SPEECH ---
         function speakText(id) {
