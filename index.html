@@ -494,361 +494,162 @@ const skillLessons = {
 // ======================================================
 
 const itemBank = [
-    // --- SECTION 1: CALIBRATION QUEST (DIAGNOSTICS) ---
+    // ==========================================
+    // TIER 1: ROOKIE (Foundational - 25 Questions)
+    // ==========================================
     {
-        type: 'calibration', id: 'cal-intro',
-        passage: "The Industrial Revolution was a period of scientific and commercial innovation that changed the world. However, it also led to overcrowded cities and poor working conditions for many.",
-        items: [{
-            id: 'cal-1', type: 'MC', standard: 'RI.8.1', difficulty: 3,
-            stem: 'Which statement is best supported by the passage?',
-            options: ['The Industrial Revolution only had positive effects.', 'Innovation came at a social cost.', 'Scientific progress stopped during this era.', 'Cities became less populated.'],
-            correct_answer: 'Innovation came at a social cost.',
-            rationale: 'The passage mentions "poor working conditions," indicating a social cost.'
-        }]
+        type: 'mission', id: 'rok-lit-confetti', genre: 'literature',
+        passage: "from Confetti Girl: 'Mom always had after-school projects waiting for me... Dad helps, but sometimes he makes a big mess. Like today. He's got flour, potato skins, and crumpled napkins on the counter... How mad can a girl be at a man who... wears a green frog apron that says KISS THE COOK and tube socks over his hands for potholders?'",
+        items: [
+            { id: 'rok1a', stem: "What is the meaning of 'sarcasm' as used in paragraph 18?", options: ["a remark indicating mockery and annoyance", "a response that is meant to be taken literally", "an answer that indicates confusion or skepticism", "an observation that is silly and childish"], correct_answer: "a remark indicating mockery and annoyance", rationale: "Paragraph 18 explains how the father is used to 'mockery' from his students and ignores the daughter's biting tone.", standard: "L.8.4", difficulty: 2 },
+            { id: 'rok1b', stem: "Which quotation from the passage helps clarify the meaning of sarcasm?", options: ["'Super... super... super something.'", "'It could have been super-duper or super-loop for all I care.'", "'So did I tell you we're having a book sale...?'", "'Yes, that's it. But I left it in my locker.'"], correct_answer: "'It could have been super-duper or super-loop for all I care.'", rationale: "This quote shows the narrator's dismissive and mocking attitude toward her father's academic interests.", standard: "L.8.4", difficulty: 3 },
+            { id: 'rok1c', stem: "What attitude does the narrator reveal by using the book as a coaster in paragraph 34?", options: ["worry about finishing schoolwork", "dishonesty in lying to her father", "carelessness with household chores", "resentment of her father's efforts to impose his interests"], correct_answer: "resentment of her father's efforts to impose his interests", rationale: "Using the book as a coaster is a symbolic act of rejecting her father's obsession with literature.", standard: "RL.8.1", difficulty: 3 },
+            { id: 'rok1d', stem: "Which detail shows that the father does not take himself too seriously?", options: ["He ignores his daughter's sarcasm", "He wears a green frog apron", "He asks about vocabulary words", "He searches for a copy of a novel"], correct_answer: "He wears a green frog apron", rationale: "Paragraph 11 describes him wearing a 'green frog apron' and 'tube socks' as potholders, showing self-deprecating humor.", standard: "RL.8.3", difficulty: 1 },
+            { id: 'rok1e', stem: "How does the author create tension in paragraph 26?", options: ["By describing the father's cooking", "By showing the father abandon his food to hunt for a book", "By having the daughter leave the table", "By mentioning the cold beans"], correct_answer: "By showing the father abandon his food to hunt for a book", rationale: "The daughter feels her father prioritizes 'books and vocabulary words' over her, creating emotional distance.", standard: "RL.8.1", difficulty: 3 },
+            { id: 'rok1f', stem: "The word 'coordinated' in paragraph 1 most nearly means...", options: ["graceful and skillful", "organized and neat", "social and outgoing", "loud and demanding"], correct_answer: "graceful and skillful", rationale: "The text explains she wasn't 'coordinated' with her left hand, making her painting look messy.", standard: "L.8.4", difficulty: 2 },
+            { id: 'rok1g', stem: "What does the father mean when he says 'super' is a prefix that means 'above and beyond'?", options: ["The words are very hard", "Prefixes can help determine meaning", "English class is unnecessary", "Vocabulary is the only thing that matters"], correct_answer: "Prefixes can help determine meaning", rationale: "He is teaching her a decoding strategy to understand complex words.", standard: "L.8.4.b", difficulty: 3 },
+            { id: 'rok1h', stem: "Which sentence best supports the idea that the father and daughter have 'rules'?", options: ["'Dad helps, but sometimes he makes a big mess.'", "'I cook while Dad cleans—that's our rule.'", "'Thought I'd give you a break.'", "'Everything's great until he asks about English.'"], correct_answer: "'I cook while Dad cleans—that's our rule.'", rationale: "This explicitly states the division of labor in their household.", standard: "RL.8.1", difficulty: 1 }
+        ]
     },
     {
-        type: 'calibration', id: 'cal-mid',
-        passage: "Maya felt a sense of <b>melancholy</b> as she watched the last leaves of autumn fall. The vibrant greens of summer were now just a memory, replaced by a grey, biting wind.",
-        items: [{
-            id: 'cal-2', type: 'MC', standard: 'L.8.4.a', difficulty: 5,
-            stem: 'What is the most likely meaning of "melancholy" as used in the text?',
-            options: ['Extreme excitement', 'A quiet sadness', 'Physical exhaustion', 'Sudden anger'],
-            correct_answer: 'A quiet sadness',
-            rationale: 'Contextual clues like "grey winds" and fading memories suggest sadness.'
-        }]
-    },
-    {
-        type: 'calibration', id: 'cal-high',
-        passage: "Proponents of renewable energy argue that infrastructure costs are offset by environmental health. Conversely, critics maintain that the grid is not yet equipped to handle variable wind and solar power.",
-        items: [{
-            id: 'cal-3', type: 'MC', standard: 'RI.8.8', difficulty: 8,
-            stem: 'How does the author structure the argument in this passage?',
-            options: ['By providing a solution to a technical problem.', 'By comparing two conflicting viewpoints.', 'By using a chronological history.', 'By dismissing the concerns of critics.'],
-            correct_answer: 'By comparing two conflicting viewpoints.',
-            rationale: 'The use of "Proponents argue" vs "Conversely, critics maintain" shows comparison.'
-        }]
+        type: 'mission', id: 'rok-lit-tortilla', genre: 'literature',
+        passage: "from Tortilla Sun: 'Clang cla-clang... I found Mom in the kitchen with a chisel and hammer, chipping away at the kitchen counter... I stormed off to my room and threw myself onto my bed. I ached inside. Like the feeling you get watching a lost balloon float far into the sky until it becomes an invisible nothing.'",
+        items: [
+            { id: 'rok2a', stem: "How do the phrases 'stormed off' and 'invisible nothing' in paragraph 35 contribute to the tone?", options: ["They show guilt and disappointment", "They emphasize growing hopelessness", "They reflect comforting daydreams", "They highlight independence"], correct_answer: "They emphasize growing hopelessness", rationale: "The imagery of a balloon disappearing into 'nothing' reflects the narrator's feeling of powerlessness.", standard: "RL.8.4", difficulty: 3 },
+            { id: 'rok2b', stem: "Which paragraph most directly reinforces the narrator's feeling of loss?", options: ["paragraph 32", "paragraph 37", "paragraph 38", "paragraph 39"], correct_answer: "paragraph 38", rationale: "In paragraph 38, the narrator scratches out the word 'opportunity' until it is a 'big blob of blue ink,' showing her rejection of the move.", standard: "RL.8.1", difficulty: 3 },
+            { id: 'rok2c', stem: "Which statement provides an objective summary of the passage?", options: ["A mother neglects her daughter for a degree", "A mother decides they will move to another country", "A girl learns she is being sent to New Mexico for the summer and becomes withdrawn", "A girl believes her father is a better parent"], correct_answer: "A girl learns she is being sent to New Mexico for the summer and becomes withdrawn", rationale: "The summary captures the main event (the summer move) and the daughter's emotional response.", standard: "RL.8.2", difficulty: 2 },
+            { id: 'rok2d', stem: "Why is the baseball important to the narrator in paragraph 46?", options: ["It is a valuable collectible", "It belonged to her father and makes her feel connected to him", "She intends to play a game in New Mexico", "She stole it to make her mother angry"], correct_answer: "It belonged to her father and makes her feel connected to him", rationale: "Holding the baseball allows her to grip onto a piece of her identity linked to her father.", standard: "RL.8.1", difficulty: 2 },
+            { id: 'rok2e', stem: "What does the narrator mean when she says New Mexico is 'worlds away' from California?", options: ["It is on another planet", "The culture and distance feel extreme and isolating", "She hates the desert", "She wants to live in a city"], correct_answer: "The culture and distance feel extreme and isolating", rationale: "She views the move as a total displacement from the life she knows.", standard: "L.8.5", difficulty: 3 },
+            { id: 'rok2f', stem: "The mother's response 'You're going to New Mexico and that's final' shows she is...", options: ["Angry and hateful", "Determined to finish her research", "Lazy and uncaring", "Forgetful"], correct_answer: "Determined to finish her research", rationale: "She is making a firm decision to enable her to finish her work in Costa Rica.", standard: "RL.8.3", difficulty: 2 },
+            { id: 'rok2g', stem: "What is implied by the mother's phone conversation in paragraph 17?", options: ["She is hiding a secret", "The move has been planned for a while", "She is talking to the narrator's father", "She is lost"], correct_answer: "The move has been planned for a while", rationale: "Izzy realizes the 'phone call made perfect sense' once she hears about the New Mexico plan.", standard: "RL.8.1", difficulty: 3 },
+            { id: 'rok2h', stem: "The narrator's story card about 'Gypsy' being tossed in a dungeon is an example of...", options: ["A flashback", "Parallelism with her own feelings", "A prediction of the future", "A historical fact"], correct_answer: "Parallelism with her own feelings", rationale: "She uses the story to process her own feelings of being 'trapped' by her mother's choices.", standard: "RL.8.6", difficulty: 3 },
+            { id: 'rok2i', stem: "Which word best describes the mother's tone in paragraph 45?", options: ["Demanding", "Muffled and pleading", "Cold and distant", "Excited and loud"], correct_answer: "Muffled and pleading", rationale: "The text says her voice was 'muffled' and she asks 'Would you please talk to me?'.", standard: "RL.8.4", difficulty: 2 }
+        ]
     },
 
-    // --- SECTION 2: TIER 1 - ROOKIE (DIFFICULTY 1-3) ---
+    // ==========================================
+    // TIER 2: SCHOLAR (Proficient - 25 Questions)
+    // ==========================================
     {
-        type: 'mission', genre: 'info_history',
-        passage: "The Pony Express delivered mail between the Atlantic and Pacific coasts in about 10 days using horse-mounted riders.",
-        items: [{
-            id: 'rok-hist-1', type: 'MC', standard: 'RI.8.1', difficulty: 2,
-            stem: 'What was the primary achievement of the Pony Express?',
-            options: ['Cheapest mail service.', 'Reduced travel time for mail.', 'Riders owned their horses.', 'Delivered only to the Pacific.'],
-            correct_answer: 'Reduced travel time for mail.',
-            rationale: 'It cut delivery time to 10 days.'
-        }]
+        type: 'mission', id: 'sch-borer-info', genre: 'informational',
+        passage: "from Emerald Ash Borer: 'The emerald ash borer is a small, green beetle... During its life cycle, EAB undergoes a complete metamorphosis. It starts as an egg, becomes a larva, then changes to become a pupa and then an adult... EAB is an insect that is not native to North America.'",
+        items: [
+            { id: 'sch1a', stem: "How does the author organize the information about the emerald ash borer?", options: ["providing general facts followed by a statement of a problem", "defining the problem followed by proposed action", "presenting a problem followed by a solution", "listing facts in order of importance"], correct_answer: "providing general facts followed by a statement of a problem", rationale: "The passage first defines the beetle and its life cycle before introducing the 'Problem' section in paragraph 5.", standard: "RI.8.5", difficulty: 5 },
+            { id: 'sch1b', stem: "How does paragraph 3 contribute to the organizational pattern?", options: ["showing significance of facts", "explaining how to prevent infestations", "providing scientific names of species", "contrasting the food sources of mature and immature EABs"], correct_answer: "contrasting the food sources of mature and immature EABs", rationale: "Paragraph 3 explains that larvae feed on phloem while adults feed on leaves.", standard: "RI.8.5", difficulty: 5 },
+            { id: 'sch1c', stem: "What is the meaning of 'established' as it is used in paragraph 5?", options: ["in a strong position permitting growth", "proven beyond a doubt", "well known and respected", "accepted as a rule or law"], correct_answer: "in a strong position permitting growth", rationale: "The text states the beetle is 'established' in several states, meaning it has successfully inhabited the area.", standard: "L.8.4", difficulty: 6 },
+            { id: 'sch1d', stem: "Based on the passage, what is one conclusion that can be drawn?", options: ["EAB habits are harmful to ash trees", "EAB is the most destructive buprestid", "EAB causes problems for homeowners", "Laws are needed to protect ash trees"], correct_answer: "EAB habits are harmful to ash trees", rationale: "Larvae feed on inner bark, which is vital for nutrient transport, effectively killing the tree.", standard: "RI.8.1", difficulty: 4 },
+            { id: 'sch1e', stem: "Which phrase helps the reader understand the meaning of 'established'?", options: ["'not native'", "'first found'", "'several years previous'", "'found in 12 states'"], correct_answer: "'found in 12 states'", rationale: "Widespread distribution across 12 states indicates the population has taken hold.", standard: "L.8.4", difficulty: 5 },
+            { id: 'sch1f', stem: "Why does the author include paragraph 5?", options: ["understand damage types", "understand why issue didn't exist in the previous century", "understand how EAB exists in trees", "understand where EAB travels next"], correct_answer: "understand why issue didn't exist in the previous century", rationale: "It explains the borer was first found in 2002 and likely arrived on woody packaging.", standard: "RI.8.1", difficulty: 7 },
+            { id: 'sch1g', stem: "Successive 'instars' refer to what according to the text?", options: ["Flight patterns", "Larval growth stages", "Mating rituals", "Winter nests"], correct_answer: "Larval growth stages", rationale: "Paragraph 2 explicitly defines instars as growth stages.", standard: "L.8.4.b", difficulty: 4 },
+            { id: 'sch1h', stem: "Movement of ash wood has been 'cited' as a likely means of spread. 'Cited' means...", options: ["Ignored", "Reversed", "Mentioned as evidence", "Canceled"], correct_answer: "Mentioned as evidence", rationale: "The text uses 'cited' to identify the cause of the spread.", standard: "L.8.4", difficulty: 5 }
+        ]
     },
     {
-        type: 'mission', genre: 'grammar_basics',
-        passage: "She <b>walked</b> to the store, <b>buys</b> a loaf of bread, and <b>returned</b> home.",
-        items: [{
-            id: 'rok-gram-1', type: 'MC', standard: 'L.8.1', difficulty: 3,
-            stem: 'Which word breaks the consistent verb tense?',
-            options: ['walked', 'buys', 'returned', 'store'],
-            correct_answer: 'buys',
-            rationale: 'Buys is present tense; others are past tense.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_poetry',
-        passage: "The fog comes / on little cat feet. / It sits looking / over harbor and city.",
-        items: [{
-            id: 'rok-poet-1', type: 'MC', standard: 'RL.8.4', difficulty: 2,
-            stem: 'What is the fog being compared to?',
-            options: ['A silent haunch', 'A harbor', 'A cat', 'A storm'],
-            correct_answer: 'A cat',
-            rationale: 'The metaphor "cat feet" draws a direct comparison.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_science',
-        passage: "Pollination is the act of transferring pollen grains to create offspring for the next generation.",
-        items: [{
-            id: 'rok-sci-2', type: 'MC', standard: 'RI.8.2', difficulty: 3,
-            stem: 'What is the central idea?',
-            options: ['Bees are necessary.', 'Pollination is key for plant reproduction.', 'Plants avoid offspring.', 'Anthers are large.'],
-            correct_answer: 'Pollination is key for plant reproduction.',
-            rationale: 'The text links pollination directly to creating the next generation.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_fable',
-        passage: "The tortoise moved slowly but surely, never stopping to rest, while the hare took a nap mid-race.",
-        items: [{
-            id: 'rok-lit-3', type: 'MC', standard: 'RL.8.2', difficulty: 2,
-            stem: 'What is the most likely theme of this story?',
-            options: ['Speed is everything.', 'Persistence leads to success.', 'Sleeping is healthy.', 'Racing is dangerous.'],
-            correct_answer: 'Persistence leads to success.',
-            rationale: 'The tortoise wins because he is steady and persistent.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_nature',
-        passage: "Deserts receive very little rainfall, yet many animals like the fennec fox have adapted to survive in extreme heat.",
-        items: [{
-            id: 'rok-sci-3', type: 'MC', standard: 'RI.8.1', difficulty: 3,
-            stem: 'What does the text imply about fennec foxes?',
-            options: ['They hate rain.', 'They have traits that help them in hot weather.', 'They are the only desert animals.', 'They prefer cold climates.'],
-            correct_answer: 'They have traits that help them in hot weather.',
-            rationale: 'The text states they "adapted to survive in extreme heat."'
-        }]
-    },
-    {
-        type: 'mission', genre: 'grammar_punctuation',
-        passage: "The student's books were scattered across the floor.",
-        items: [{
-            id: 'rok-gram-2', type: 'MC', standard: 'L.8.2', difficulty: 2,
-            stem: 'Why is an apostrophe used in the word "student\'s"?',
-            options: ['To show plural.', 'To show possession.', 'To show a contraction.', 'To show an exclamation.'],
-            correct_answer: 'To show possession.',
-            rationale: 'The apostrophe indicates the books belong to the student.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_health',
-        passage: "Washing your hands is the most effective way to prevent the spread of germs and stay healthy.",
-        items: [{
-            id: 'rok-info-2', type: 'MC', standard: 'RI.8.1', difficulty: 1,
-            stem: 'What is the main benefit of hand washing according to the text?',
-            options: ['It makes hands smell good.', 'It prevents germs from spreading.', 'It uses a lot of water.', 'It takes a long time.'],
-            correct_answer: 'It prevents germs from spreading.',
-            rationale: 'The text states it is the most effective way to prevent the spread of germs.'
-        }]
+        type: 'mission', id: 'sch-snow-info', genre: 'informational',
+        passage: "from 'A Beginner's Guide to Snowboarding': 'higher-end gear can give you much more control, which generally results in less falling... you need to figure out which direction you'll face when riding down the mountain also known as your stance... if your left foot is in front, you ride \"regular,\" and if your right foot is in front, you ride \"goofy.\"'",
+        items: [
+            { id: 'sch2a', stem: "In paragraph 3, how does the author connect professionals and amateurs?", options: ["suggesting both need high-quality equipment", "contrasting equipment types", "comparing equipment selection", "implying sales associates treat them differently"], correct_answer: "suggesting both need high-quality equipment", rationale: "The author argues higher-end gear provides more control and comfort even for beginners.", standard: "RI.8.3", difficulty: 5 },
+            { id: 'sch2b', stem: "Which sentence shows the author's purpose is to promote snowboarding?", options: ["'Snowboarding is fun and good for you.'", "'Basics are important to avoid bad habits.'", "'Go slow at first.'", "'Falling is part of learning.'"], correct_answer: "'Snowboarding is fun and good for you.'", rationale: "This statement highlights the positive aspects of the sport to encourage the reader.", standard: "RI.8.6", difficulty: 4 },
+            { id: 'sch2c', stem: "What does the author suggest about 'Goofy' stance?", options: ["It is for children", "It means riding with the right foot forward", "It is harder than regular", "It is only for surfing"], correct_answer: "It means riding with the right foot forward", rationale: "Paragraph 5 defines the goofy stance based on foot placement.", standard: "RI.8.1", difficulty: 4 },
+            { id: 'sch2d', stem: "Which detail supports the idea that snowboarding is physically demanding?", options: ["'Kids think you're cool'", "'Burn 500 calories an hour'", "'Local shop will hook you up'", "'Sunny with soft snow'"], correct_answer: "'Burn 500 calories an hour'", rationale: "High calorie burning indicates significant physical exertion.", standard: "RI.8.1", difficulty: 5 },
+            { id: 'sch2e', stem: "What is the 'bonus point' mentioned in paragraph 2?", options: ["Winning a race", "Having a hot tub", "Buying a new board", "Finding a cheap rental"], correct_answer: "Having a hot tub", rationale: "The author humorously suggests a hot tub is a major plus after a day of snowboarding.", standard: "RI.8.1", difficulty: 4 },
+            { id: 'sch2f', stem: "The author compares snowboarding to skiing to show that they are...", options: ["Almost identical", "Completely different", "Equally expensive", "Both dangerous"], correct_answer: "Completely different", rationale: "Paragraph 11 lists specific mechanical differences between the two sports.", standard: "RI.8.5", difficulty: 5 },
+            { id: 'sch2g', stem: "What advice is given for getting on and off a chairlift?", options: ["Jump early", "Ask the operator to slow it down", "Don't use the lift", "Hold onto a friend"], correct_answer: "Ask the operator to slow it down", rationale: "Paragraph 7 suggests slowing the chair to help beginners.", standard: "RI.8.1", difficulty: 4 },
+            { id: 'sch2h', stem: "The tone of this guide can best be described as...", options: ["Strict and angry", "Helpful and encouraging", "Sarcastic and mean", "Bored and detached"], correct_answer: "Helpful and encouraging", rationale: "The author shares personal tips and emphasizes that the reader will be 'just fine'.", standard: "RI.8.4", difficulty: 5 },
+            { id: 'sch2i', stem: "What is 'edge control' in the context of the passage?", options: ["A gear type", "Keeping the board from catching the snow", "Buying a specific boot", "Stopping at the edge of the hill"], correct_answer: "Keeping the board from catching the snow", rationale: "Paragraph 9 describes edge control as vital to starting out.", standard: "L.8.4", difficulty: 6 }
+        ]
     },
 
-    // --- SECTION 3: TIER 2 - SCHOLAR (DIFFICULTY 4-7) ---
+    // ==========================================
+    // TIER 3: LEGEND (Advanced - 25 Questions)
+    // ==========================================
     {
-        type: 'mission', genre: 'info_social',
-        passage: "Urbanization leads to the 'Heat Island Effect.' Buildings and roads absorb more heat than natural landscapes.",
-        items: [{
-            id: 'sch-soc-1', type: 'MC', standard: 'RI.8.3', difficulty: 5,
-            stem: 'Identify the cause-and-effect relationship.',
-            options: ['Cities melt roads.', 'Rural areas cool buildings.', 'Infrastructure absorption causes higher heat.', 'Heat increases population.'],
-            correct_answer: 'Infrastructure absorption causes higher heat.',
-            rationale: 'Heat absorption by roads/buildings causes the temperature spike.'
-        }]
+        type: 'mission', id: 'leg-elephant-trunk', genre: 'scientific',
+        passage: "from 'Elephants Can Lend a Helping Trunk': 'The pachyderms understand that they will fail at a task without a partner's assistance... Elephants now join an elite club of social cooperators... It's particularly striking that the elephants were able to \"inhibit pulling\" longer than chimpanzees do.'",
+        items: [
+            { id: 'leg1a', stem: "The key terms 'cognition' and 'cognitive' in paragraphs 1 and 4 refer to...", options: ["physical strength", "emotional expression", "mental awareness", "visual sensitivity"], correct_answer: "mental awareness", rationale: "The context of 'understanding' and 'recognizing' needs indicates a mental process.", standard: "RI.8.4", difficulty: 8 },
+            { id: 'leg1b', stem: "How does paragraph 4 contribute to the article's topic?", options: ["summarizes other animal research", "emphasizes that findings are original and important", "questions the assertion of researchers", "shows elephant study challenged previous work"], correct_answer: "emphasizes that findings are original and important", rationale: "Paragraph 4 includes quotes from other scientists who describe the experiment as 'clever'.", standard: "RI.8.5", difficulty: 9 },
+            { id: 'leg1c', stem: "How does the photograph help readers understand technical information?", options: ["illustrates pairs waiting", "demonstrates natural behavior", "clarifies how objects in the experiment were set up", "shows how the rope might slip"], correct_answer: "clarifies how objects in the experiment were set up", rationale: "The photo visualizes the PVC frame, rope, and net apparatus used in the task.", standard: "RI.8.7", difficulty: 8 },
+            { id: 'leg1d', stem: "What was the purpose of the 'hand signal' mahouts were given?", options: ["guaranteeing elephants made own choices", "keeping elephants calm", "preventing misunderstanding", "protecting researchers"], correct_answer: "guaranteeing elephants made own choices", rationale: "Using a signal the elephants couldn't see ensured the mahouts weren't cuing the animals to pull.", standard: "RI.8.8", difficulty: 10 },
+            { id: 'leg1e', stem: "The success rate chart builds on the passage by...", options: ["providing specific time release data", "confirming testing intervals", "showing rope length", "recording mahout distance"], correct_answer: "providing specific time release data", rationale: "The chart displays success percentages based on release intervals (s <= 25 and 26 <= s <= 45).", standard: "RI.8.7", difficulty: 9 },
+            { id: 'leg1f', stem: "The study showed elephants could 'inhibit pulling.' 'Inhibit' means...", options: ["Encourage", "Restrain or prevent", "Speed up", "Ignore"], correct_answer: "Restrain or prevent", rationale: "The elephants had to stop themselves from pulling until the partner arrived.", standard: "L.8.4", difficulty: 8 },
+            { id: 'leg1g', stem: "Why did the researchers use 'sliding tables' and 'rope'?", options: ["To play a game", "To require simultaneous effort from two animals", "To test physical strength", "To feed the animals quickly"], correct_answer: "To require simultaneous effort from two animals", rationale: "The table could only be moved if both ends of the rope were pulled together.", standard: "RI.8.1", difficulty: 8 },
+            { id: 'leg1h', stem: "What does the phrase 'elite club' imply about social cooperators?", options: ["They are wealthy", "The ability to cooperate is rare in the animal kingdom", "They live in Thailand", "They are all mammals"], correct_answer: "The ability to cooperate is rare in the animal kingdom", rationale: "Paragraph 1 states this level of cognition is 'rarely found in other species'.", standard: "L.8.5", difficulty: 9 }
+        ]
     },
     {
-        type: 'mission', genre: 'lit_prose',
-        passage: "Behind him lay the safety of the village; before him lay the <b>formidable</b> peaks of the Unseen Mountains.",
-        items: [{
-            id: 'sch-lit-1', type: 'MC', standard: 'L.8.4', difficulty: 6,
-            stem: 'What does "formidable" suggest about the mountains?',
-            options: ['Easy to climb.', 'Small.', 'Beautiful.', 'Intimidating and challenging.'],
-            correct_answer: 'Intimidating and challenging.',
-            rationale: 'Contextual danger (howling winds/abyss) supports "intimidating."'
-        }]
-    },
-    {
-        type: 'mission', genre: 'grammar_logic',
-        passage: "The judge's decision was <b>arbitrary</b>; he seemed to choose the winner based on his mood rather than the rules.",
-        items: [{
-            id: 'sch-gram-1', type: 'MC', standard: 'L.8.4', difficulty: 6,
-            stem: 'What does "arbitrary" mean in this context?',
-            options: ['Carefully planned.', 'Based on random choice.', 'Legally binding.', 'Highly respected.'],
-            correct_answer: 'Based on random choice.',
-            rationale: 'The text states he used "mood" rather than "rules."'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_tech',
-        passage: "If data contains human bias, AI will <b>perpetuate</b> those prejudices in its results.",
-        items: [{
-            id: 'sch-tech-1', type: 'MC', standard: 'RI.8.1', difficulty: 7,
-            stem: 'Summarize the warning about AI.',
-            options: ['AI is smarter than humans.', 'AI can continue human biases.', 'Datasets eliminate human input.', 'Prejudices are intentional.'],
-            correct_answer: 'AI can continue human biases.',
-            rationale: 'The word "perpetuate" means to continue the existing bias.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_mystery',
-        passage: "Detective Vance examined the <b>scant</b> evidence: a single muddy footprint and a broken latch.",
-        items: [{
-            id: 'sch-lit-2', type: 'MC', standard: 'L.8.4', difficulty: 5,
-            stem: 'What does the word "scant" imply about the evidence?',
-            options: ['There was a large amount.', 'It was very confusing.', 'There was very little of it.', 'It was clearly planted.'],
-            correct_answer: 'There was very little of it.',
-            rationale: 'The mention of only a footprint and a latch indicates a small amount.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_ecology',
-        passage: "Wetlands act as natural filters, trapping pollutants before they reach larger bodies of water.",
-        items: [{
-            id: 'sch-sci-1', type: 'MC', standard: 'RI.8.2', difficulty: 5,
-            stem: 'What is the primary function of wetlands described here?',
-            options: ['To provide a home for fish.', 'To clean water by filtering pollutants.', 'To cause flooding in rural areas.', 'To create bodies of water.'],
-            correct_answer: 'To clean water by filtering pollutants.',
-            rationale: 'The text explicitly states they "trap pollutants."'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_analysis_mid',
-        passage: "The protagonist's journey mirrors the changing seasons, beginning in the hopeful spring and ending in the cold, reflective winter.",
-        items: [{
-            id: 'sch-lit-3', type: 'MC', standard: 'RL.8.3', difficulty: 6,
-            stem: 'How does the setting contribute to the character development?',
-            options: ['It shows the character likes cold weather.', 'It symbolizes the character\'s growth and aging.', 'It has no effect on the character.', 'It makes the character want to travel.'],
-            correct_answer: 'It symbolizes the character\'s growth and aging.',
-            rationale: 'The mirroring of seasons typically symbolizes the stages of life or character development.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_civics',
-        passage: "The three branches of government ensure a system of checks and balances, preventing any one branch from becoming too powerful.",
-        items: [{
-            id: 'sch-civ-1', type: 'MC', standard: 'RI.8.3', difficulty: 4,
-            stem: 'What is the purpose of "checks and balances"?',
-            options: ['To speed up lawmaking.', 'To distribute power evenly.', 'To eliminate the need for a President.', 'To increase taxes.'],
-            correct_answer: 'To distribute power evenly.',
-            rationale: 'The text states it prevents any one branch from becoming too powerful.'
-        }]
-    },
-
-    // --- SECTION 4: TIER 3 - LEGEND (DIFFICULTY 8-10) ---
-    {
-        type: 'mission', genre: 'info_philosophy',
-        passage: "The Socratic Method involves cooperative dialogue to draw out underlying <b>presuppositions</b>.",
-        items: [{
-            id: 'leg-phil-1', type: 'MC', standard: 'L.8.4', difficulty: 9,
-            stem: 'Define "presuppositions" in this context.',
-            options: ['Final conclusions.', 'Assumptions held before dialogue.', 'Argument techniques.', 'Unanswerable questions.'],
-            correct_answer: 'Assumptions held before dialogue.',
-            rationale: 'The prefix "pre-" indicates these are held beforehand.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_classic',
-        passage: "It was the best of times, it was the worst of times; wisdom and foolishness.",
-        items: [{
-            id: 'leg-lit-1', type: 'MC', standard: 'RL.8.2', difficulty: 10,
-            stem: 'How does paradox establish the setting?',
-            options: ['Wisdom and foolishness are same.', 'Suggests extreme contradictions.', 'Best of times was flawless.', 'Ignores history.'],
-            correct_answer: 'Suggests extreme contradictions.',
-            rationale: 'Repeated opposites highlight a contradictory era.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_argument',
-        passage: "Critics argue costs rise for parents, but supporters point to district savings.",
-        items: [{
-            id: 'leg-arg-1', type: 'MC', standard: 'RI.8.8', difficulty: 9,
-            stem: 'How does the author evaluate the claims?',
-            options: ['Firmly sides against parents.', 'Prioritizes district savings.', 'Presents perspectives without resolution.', 'Utility costs are irrelevant.'],
-            correct_answer: 'Presents perspectives without resolution.',
-            rationale: 'The author balances both sides without choosing.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_tragedy',
-        passage: "The crown sat heavy, a circle of gold that felt more like a shackle of lead.",
-        items: [{
-            id: 'leg-lit-2', type: 'MC', standard: 'RL.8.4', difficulty: 8,
-            stem: 'How does the "shackle" metaphor impact tone?',
-            options: ['Triumph and wealth.', 'Regret and burden.', 'Physical weakness.', 'Fake materials.'],
-            correct_answer: 'Regret and burden.',
-            rationale: 'Linking power to a "shackle" emphasizes the burden of rule.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_science_advanced',
-        passage: "Quantum entanglement defies classical intuition, as particles remain <b>intrinsically</b> linked across vast distances.",
-        items: [{
-            id: 'leg-sci-1', type: 'MC', standard: 'L.8.4', difficulty: 9,
-            stem: 'What does "intrinsically" mean in this context?',
-            options: ['By accident.', 'At a fundamental level.', 'Occasionally.', 'With extreme effort.'],
-            correct_answer: 'At a fundamental level.',
-            rationale: 'The context of particle physics suggests an essential, built-in link.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_satire',
-        passage: "The politician promised to save the environment by building a parking lot on every forest, claiming it would hide the dirt.",
-        items: [{
-            id: 'leg-lit-3', type: 'MC', standard: 'RL.8.6', difficulty: 9,
-            stem: 'What is the most likely purpose of this satirical statement?',
-            options: ['To support construction projects.', 'To mock nonsensical environmental policies.', 'To teach about soil types.', 'To encourage forestation.'],
-            correct_answer: 'To mock nonsensical environmental policies.',
-            rationale: 'Satire uses irony to point out flaws—here, the absurdity of "saving" nature by paving it.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'info_rhetoric',
-        passage: "The orator's use of <b>anaphora</b>—repeating 'We shall' at the start of every sentence—galvanized the audience into a unified front.",
-        items: [{
-            id: 'leg-info-3', type: 'MC', standard: 'RI.8.6', difficulty: 8,
-            stem: 'What is the rhetorical effect of the repetition described?',
-            options: ['It makes the speech boring.', 'It creates a sense of urgency and unity.', 'It confuses the listeners.', 'It suggests the speaker has run out of ideas.'],
-            correct_answer: 'It creates a sense of urgency and unity.',
-            rationale: 'Repetition at the beginning of phrases (anaphora) is a classic tool to build emotional momentum and unity.'
-        }]
-    },
-    {
-        type: 'mission', genre: 'lit_theme_advanced',
-        passage: "In the end, the protagonist realized that the monster he had been hunting was merely a reflection of his own unresolved guilt.",
-        items: [{
-            id: 'leg-lit-4', type: 'MC', standard: 'RL.8.2', difficulty: 9,
-            stem: 'What does the "monster" symbolize in this passage?',
-            options: ['A literal beast.', 'The character\'s internal struggle.', 'A dangerous animal.', 'A misunderstood friend.'],
-            correct_answer: 'The character\'s internal struggle.',
-            rationale: 'The direct link between the monster and "unresolved guilt" makes it an internal symbol.'
-        }]
+        type: 'mission', id: 'leg-balabad-lit', genre: 'literature',
+        passage: "from The Seven Keys of Balabad: 'Bahauddin Shah stumbled through the darkened passageway... gripping the cold stone wall for balance... The old man wore a heavy iron key chain around his belt, and it weighed down on him in more ways than one. There was so little time!'",
+        items: [
+            { id: 'leg2a', stem: "Which sentence states a central idea of the passage?", options: ["Shah is lost and frightened", "Shah is the guardian of a secret for city survival", "The caverns are a hiding place", "Invaders are in hostile territory"], correct_answer: "Shah is the guardian of a secret for city survival", rationale: "Shah is on the 'most important mission of his life' carrying keys to protect his people.", standard: "RL.8.2", difficulty: 8 },
+            { id: 'leg2b', stem: "How does paragraph 1 help develop the plot?", options: ["creates admiration", "establishes conflict", "creates suspense via sensory details", "foreshadows rising action"], correct_answer: "creates suspense via sensory details", rationale: "Details like the 'darkened passageway' and 'thumping' heart build tension.", standard: "RL.8.5", difficulty: 8 },
+            { id: 'leg2c', stem: "What aspect of Shah's character is revealed throughout?", options: ["He does not give up in difficulty", "He takes his position seriously", "He is concerned for citizens", "He has confidence city is untouched"], correct_answer: "He takes his position seriously", rationale: "Shah's determination to reach the surface with the keys shows his dedication to his role.", standard: "RL.8.3", difficulty: 9 },
+            { id: 'leg2d', stem: "What inference can be made about Shah from paragraph 2?", options: ["He was too weak", "He felt a great responsibility", "He was worried about the weight", "He felt keys were a symbol of authority"], correct_answer: "He felt a great responsibility", rationale: "The keys weighing on him 'in more ways than one' refers to the heavy emotional burden of his task.", standard: "RL.8.1", difficulty: 9 },
+            { id: 'leg2e', stem: "The comparison of Shah's body to a 'falcon returning to his master's arm' implies...", options: ["He is fast", "He has an instinctive knowledge of the caves", "He is being controlled", "He wants to fly"], correct_answer: "He has an instinctive knowledge of the caves", rationale: "He knows 'every corner' and is naturally drawn to the exit.", standard: "L.8.5", difficulty: 9 },
+            { id: 'leg2f', stem: "The 'thud of cannon fire' in paragraph 9 indicates...", options: ["Construction", "An ongoing attack on the city", "A celebration", "A storm"], correct_answer: "An ongoing attack on the city", rationale: "The context of 'invaders' and 'outsiders' confirms a military conflict.", standard: "RL.8.1", difficulty: 8 },
+            { id: 'leg2g', stem: "What does 'Baladis are survivors' reveal about Shah's outlook?", options: ["He is hopeless", "He is resilient and optimistic about the future", "He wants to leave", "He is angry"], correct_answer: "He is resilient and optimistic about the future", rationale: "He believes his people will 'rebuild' even after destruction.", standard: "RL.8.3", difficulty: 9 },
+            { id: 'leg2h', stem: "Why was the tunnel exit a 'small shaft... straight up from the stone ceiling'?", options: ["It was a chimney", "To remain a secret hidden from outsiders", "It was broken", "To let in light"], correct_answer: "To remain a secret hidden from outsiders", rationale: "The text says 'you would never have seen it' if you didn't know where to look.", standard: "RL.8.1", difficulty: 8 }
+        ]
     }
 ];
 
 // --- SYNCED MISSION DATA ---
+// --- SYNCED MISSION DATA ---
 const allMissions = [
-    { id: 'm-history', title: 'The Root Cellar', description: 'Mastering RI.8.1: Citing Evidence', difficulty: 2, passageId: 'rok-hist-1', minLevel: 1 },
-    { id: 'm-grammar', title: 'Verb Vault', description: 'Mastering L.8.1: Verb Tense consistency', difficulty: 3, passageId: 'rok-gram-1', minLevel: 1 },
-    { id: 'm-social', title: 'Heat Island Effect', description: 'Mastering RI.8.3: Connections', difficulty: 5, passageId: 'sch-soc-1', minLevel: 1 },
-    { id: 'm-tech', title: 'AI Awareness', description: 'Mastering RI.8.1: Implicit Bias', difficulty: 7, passageId: 'sch-tech-1', minLevel: 2 },
-    { id: 'm-classic', title: 'Classic Paradox', description: 'Mastering RL.8.2: Theme Analysis', difficulty: 10, passageId: 'leg-lit-1', minLevel: 2 }
+    { id: 'm-confetti', title: 'The Root Cellar', description: 'Mastering RI.8.1: Citing Evidence (Confetti Girl)', difficulty: 2, passageId: 'rok-lit-confetti', minLevel: 1 },
+    { id: 'm-tortilla', title: 'Verb Vault', description: 'Mastering RL.8.2: Tone & Summary (Tortilla Sun)', difficulty: 3, passageId: 'rok-lit-tortilla', minLevel: 1 },
+    { id: 'm-borer', title: 'Heat Island Effect', description: 'Mastering RI.8.5: Text Structure (Emerald Borer)', difficulty: 5, passageId: 'sch-borer-info', minLevel: 1 },
+    { id: 'm-snow', title: 'AI Awareness', description: 'Mastering RI.8.6: Author Purpose (Snowboarding)', difficulty: 6, passageId: 'sch-snow-info', minLevel: 2 },
+    { id: 'm-elephants', title: 'Classic Paradox', description: 'Mastering RI.8.4: Scientific Analysis (Elephants)', difficulty: 8, passageId: 'leg-elephant-trunk', minLevel: 2 },
+    { id: 'm-balabad', title: 'Arachosia Keys', description: 'Mastering RL.8.2: Complex Plot (Balabad)', difficulty: 10, passageId: 'leg-balabad-lit', minLevel: 2 },
+    { id: 'final-exam', title: '🏆 THE FINAL GAUNTLET', description: 'Cumulative Exam: Levels 1-10. Double XP!', difficulty: 10, passageId: 'EXAM', minLevel: 3 }
 ];
 
 // --- MISSIONS HUB: ADAPTIVE TIERING ---
-function renderMissions() {
-    missionsList.innerHTML = '';
-    const rankTitle = gameState.user.elaLevel >= 3 ? 'Legend' : (gameState.user.elaLevel === 2 ? 'Scholar' : 'Rookie');
-    proficiencyDisplay.textContent = rankTitle;
+function renderMissionQuestion() {
+    // 1. Find the passage block
+    const missionItem = itemBank.find(zone => 
+        zone.id === gameState.currentMission.passageId || 
+        zone.genre === gameState.currentMission.id
+    );
     
-    // FILTER: Adaptive complexity based on Calibration Result
-    const availableMissions = allMissions.filter(m => {
-        const missionTier = m.difficulty <= 3 ? 1 : (m.difficulty <= 7 ? 2 : 3);
-        return Math.abs(missionTier - gameState.user.elaLevel) <= 1;
-    });
+    if (!missionItem) {
+        showModal("Error", "Mission content not found!", "error");
+        navigate('missions-screen');
+        return;
+    }
 
-    availableMissions.forEach(mission => {
-        const isLocked = gameState.user.level < mission.minLevel;
-        const diffColor = mission.difficulty > 7 ? 'text-red-500' : (mission.difficulty > 4 ? 'text-orange-500' : 'text-green-500');
-        const missionCard = document.createElement('div');
-        
-        if (isLocked) {
-            missionCard.className = `bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 shadow border-2 border-dashed border-gray-300 dark:border-gray-700 flex flex-col items-center text-center opacity-60`;
-            missionCard.innerHTML = `<h3 class="text-lg font-bold text-gray-400">Level ${mission.minLevel} Required</h3><p class="text-sm text-gray-400 mb-4">${mission.title}</p>`;
-        } else {
-            missionCard.className = `bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-indigo-100 dark:border-indigo-900 flex flex-col hover:border-indigo-500 transition-all transform hover:-translate-y-1 cursor-pointer`;
-            missionCard.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-tighter">LVL ${mission.minLevel}+</span>
-                    <span class="${diffColor} text-xs font-bold">Difficulty: ${mission.difficulty}/10</span>
-                </div>
-                <h3 class="text-xl font-bold mb-1 text-gray-800 dark:text-gray-100">${mission.title}</h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">${mission.description}</p>
-                <button class="start-mission-btn w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-colors" data-mission-id="${mission.id}">BEGIN QUEST ⚔️</button>`;
-        }
-        missionsList.appendChild(missionCard);
-    });
-
-    // Check if the boss card function exists before calling to prevent errors
-    if (typeof appendBossCardToMissions === "function") {
-        appendBossCardToMissions();
+    // 2. Identify the specific question in the set
+    const currentItem = missionItem.items[gameState.currentQuestionIndex];
+    
+    // 3. If no more questions in this set, end the mission
+    if (!currentItem) { 
+        endMission(missionItem.items.length); 
+        return; 
     }
     
-    navigate('missions-screen');
+    // 4. Update UI
+    gameTitle.textContent = gameState.currentMission.title;
+    missionScoreDisplay.innerHTML = `${gameState.missionScore}`;
+    missionTotalQuestions.textContent = missionItem.items.length;
+
+    gamePassage.innerHTML = `<p class="font-bold mb-2 text-lg text-indigo-600 uppercase tracking-tight">Reading Passage</p>
+                             <div class="prose dark:prose-invert max-w-none font-serif">${missionItem.passage}</div>`;
+
+    gameQuestionsArea.innerHTML = `
+        <div class="mb-4">
+            <p class="font-bold text-sm text-indigo-500 uppercase mb-1">Question ${gameState.currentQuestionIndex + 1} of ${missionItem.items.length}</p>
+            <p class="mb-4 text-xl font-semibold leading-snug">${currentItem.stem}</p>
+            <div id="options-container" class="space-y-3">
+                ${currentItem.options.map(opt => `
+                    <label class="flex items-start p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 cursor-pointer hover:bg-indigo-50 transition-all">
+                        <input type="radio" name="mission-q" value="${opt}" class="mt-1 mr-3 w-5 h-5">
+                        <span class="flex-1 text-base">${opt}</span>
+                    </label>`).join('')}
+            </div>
+        </div>`;
+
+    renderSubmitButton(currentItem, missionItem.items.length);
 }
 
 // --- NEW BOSS BATTLE DATA ---
@@ -1344,7 +1145,7 @@ async function checkMissionAnswer(currentItem, total, btn) {
     const isCorrect = selected.value === currentItem.correct_answer;
     btn.disabled = true;
 
-    // --- RIGOR FIX: Save data for the Review Screen ---
+    // --- RIGOR: Save data for the Review Screen ---
     gameState.missionHistoryData.push({
         question: currentItem.stem,
         userAnswer: selected.value,
@@ -1370,27 +1171,48 @@ async function checkMissionAnswer(currentItem, total, btn) {
     } else {
         gameState.streak = 0;
         if(!gameState.user.missedQuestions) gameState.user.missedQuestions = [];
-        // Add unique ID for Archive purging
         gameState.user.missedQuestions.push({...currentItem, id: 'glitch-' + Date.now()});
         await showModal('Incorrect', currentItem.rationale, 'error');
+    }
+
+    // --- TIER SCALING ENGINE: Check accuracy after 5 questions ---
+    const currentAccuracy = gameState.missionScore / (gameState.currentQuestionIndex + 1);
+
+    if (gameState.currentQuestionIndex >= 4 && currentAccuracy >= 0.90) {
+        if (gameState.user.elaLevel < 3) {
+            gameState.user.elaLevel++;
+            showModal("TIER PROMOTION", "Your accuracy is elite. New high-level missions unlocked!", "success");
+            saveProgress();
+        }
+    } else if (gameState.currentQuestionIndex >= 4 && currentAccuracy <= 0.40) {
+        if (gameState.user.elaLevel > 1) {
+            gameState.user.elaLevel--;
+            showModal("DIFFICULTY ADJUSTED", "System recalibrating to provide foundational support.", "info");
+            saveProgress();
+        }
     }
 
     gameState.currentQuestionIndex++;
     renderMissionQuestion();
 }
 
+// --- RESTORE: Missing function to create the submit button ---
+function renderSubmitButton(currentItem, total) {
+    const container = document.querySelector('#game-play-screen .flex.justify-end');
+    if(!container) return;
+    container.innerHTML = '';
+    const btn = document.createElement('button');
+    btn.className = 'button bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg';
+    btn.textContent = 'Submit Answer';
+    btn.onclick = () => checkMissionAnswer(currentItem, total, btn);
+    container.appendChild(btn);
+}
+
 function endMission(total) {
     const timeTaken = stopTimer(); 
-    const accuracy = gameState.missionScore / total;
+    const accuracy = total > 0 ? gameState.missionScore / total : 0;
     const xpEarned = Math.round(accuracy * 100);
-    
-    // Calculate Speed Bonus
-    const avgTimePerQ = timeTaken / total;
-    let speedBonus = 0;
-    if(avgTimePerQ < 20) speedBonus = 20; 
-    else if(avgTimePerQ < 40) speedBonus = 10;
-
-    let tokensEarned = (gameState.missionScore * 15) + speedBonus;
+    let tokensEarned = (gameState.missionScore * 15);
 
     gameState.user.tokens += tokensEarned;
     addXp(xpEarned);
@@ -1405,9 +1227,7 @@ function endMission(total) {
 
     saveProgress();
     updateUI();
-    
-    // Call the review function with all the data
-    renderReview(total, xpEarned, tokensEarned, speedBonus, timeTaken);
+    renderReview(total, xpEarned, tokensEarned, 0, timeTaken);
 }
 
 function renderReview(total, xp, tokens, speedBonus, timeTaken) {
@@ -1669,6 +1489,9 @@ function validateMissionContent() {
     let missingContent = [];
 
     allMissions.forEach(mission => {
+        // Special case: Skip validation for the dynamic Final Exam
+        if (mission.passageId === 'EXAM') return;
+
         // Search logic must match renderMissionQuestion exactly
         const hasContent = itemBank.find(zone => 
             zone.id === mission.passageId || 
@@ -1683,8 +1506,6 @@ function validateMissionContent() {
 
     if (missingContent.length > 0) {
         console.error("❌ DEPLOYMENT ERROR: The following missions are missing academic content in itemBank:", missingContent);
-        // Optional: Alert the developer during testing
-        // alert("Developer Alert: Missing content for " + missingContent.join(", "));
     } else {
         console.log("✅ All Missions Validated: Ready for student deployment.");
     }
@@ -1852,34 +1673,35 @@ async function checkBossAnswer(part, selectedIndex) {
 }// --- STICKER BOOK: COLLECTION DISPLAY ---
 function renderStickerBook() {
     const progressScreen = document.getElementById('progress-screen');
-    // We will reuse the progress screen but add a sticker grid
     const stickerAreaId = 'sticker-collection-grid';
     let stickerGrid = document.getElementById(stickerAreaId);
     
+    // If the grid doesn't exist, create it once
     if (!stickerGrid) {
         const wrapper = document.createElement('div');
+        wrapper.className = "mt-10 pt-10 border-t border-gray-200 dark:border-gray-700";
         wrapper.innerHTML = `
-            <h3 class="text-2xl font-bold mt-8 mb-4">My Stickers</h3>
-            <div id="${stickerAreaId}" class="grid grid-cols-4 md:grid-cols-8 gap-4 p-6 bg-white/50 dark:bg-black/20 rounded-2xl border border-white/20"></div>
+            <h3 class="text-3xl font-black mb-6 text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-purple-600">MY STICKER COLLECTION</h3>
+            <div id="${stickerAreaId}" class="grid grid-cols-4 md:grid-cols-8 gap-4 p-8 bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-3xl border-2 border-dashed border-purple-300 dark:border-purple-900/50"></div>
         `;
         progressScreen.appendChild(wrapper);
         stickerGrid = document.getElementById(stickerAreaId);
     }
 
+    // Populate the grid
     stickerGrid.innerHTML = '';
-    if (gameState.user.stickers.length === 0) {
-        stickerGrid.innerHTML = '<p class="col-span-full text-center text-gray-500 italic py-4">No stickers collected yet. Visit the Shop!</p>';
+    if (!gameState.user.stickers || gameState.user.stickers.length === 0) {
+        stickerGrid.innerHTML = '<p class="col-span-full text-center text-gray-400 italic py-8">Your sticker book is empty! Head to the Shop to buy packs. 🛍️</p>';
     } else {
         gameState.user.stickers.forEach(emoji => {
             const div = document.createElement('div');
-            div.className = "text-4xl p-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center transform hover:scale-110 transition-transform";
+            div.className = "text-5xl p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center transform hover:scale-125 hover:rotate-6 transition-all cursor-default select-none";
             div.textContent = emoji;
             stickerGrid.appendChild(div);
         });
     }
     
-    // Update history table too
-    renderMissionHistory();
+    renderMissionHistory(); // Keep the table updated too
     navigate('progress-screen');
 }
 
@@ -1895,6 +1717,46 @@ function renderMissionHistory() {
     `).join('');
 }
 
+// --- SHOP SYSTEM: RENDER & PURCHASE LOGIC ---
+function renderShop() {
+    const list = document.getElementById('shop-items-list');
+    const displayTokens = document.getElementById('token-display');
+    
+    if (list) {
+        list.innerHTML = '';
+        shopItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `${item.color} rounded-2xl p-6 shadow-xl border border-white/20 flex flex-col justify-between transform hover:scale-[1.02] transition-all text-white`;
+            card.innerHTML = `
+                <div>
+                    <h3 class="text-2xl font-black mb-1 drop-shadow-md">${item.name}</h3>
+                    <p class="text-xs opacity-90 font-medium leading-tight mb-4">${item.description}</p>
+                </div>
+                <button onclick="buyItem('${item.id}')" class="w-full bg-white/20 hover:bg-white/40 backdrop-blur-md text-white font-black py-3 rounded-xl border border-white/30 shadow-lg transition-colors">
+                    COST: ${item.cost} 🪙
+                </button>
+            `;
+            list.appendChild(card);
+        });
+    }
+
+    if (displayTokens) displayTokens.textContent = gameState.user.tokens;
+    navigate('shop-screen');
+}
+
+async function buyItem(itemId) {
+    const item = shopItems.find(i => i.id === itemId);
+    if (gameState.user.tokens >= item.cost) {
+        gameState.user.tokens -= item.cost;
+        updateUI();
+        // Execute the item's specific action (e.g., opening a pack or adding a skip ticket)
+        await item.action();
+        saveProgress();
+        if(document.getElementById('token-display')) document.getElementById('token-display').textContent = gameState.user.tokens;
+    } else {
+        showModal('Insufficient Funds', 'You need more tokens! Complete missions to earn more.', 'error');
+    }
+}
 // --- INIT ---
 document.addEventListener('DOMContentLoaded', () => {
     loadProgress();
@@ -1905,7 +1767,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('start-calibration-button').onclick = startCalibrationQuest;
     document.getElementById('missions-button').onclick = renderMissions;
-    document.getElementById('shop-button').onclick = () => { navigate('shop-screen'); };
+document.getElementById('shop-button').onclick = renderShop;
     document.getElementById('progress-button').onclick = renderStickerBook;
     
     // Update Mission Hub to use the Safe Start logic
