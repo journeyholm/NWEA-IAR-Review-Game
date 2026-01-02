@@ -1097,6 +1097,72 @@ const itemBank = [
             { id: 'dic4', stem: "What part of speech is 'resign'?", options: ["Verb", "Noun", "Adjective", "Adverb"], correct_answer: "Verb", rationale: "Identified in the entry.", standard: "L.8.4.c", difficulty: 1 },
             { id: 'dic5', stem: "Synonym check: Which word best replaces 'resigned' in the passage context?", options: ["Accepted", "Quit", "Signed", "Fought"], correct_answer: "Accepted", rationale: "Matching the meaning of Definition 4.", standard: "L.8.5", difficulty: 4 }
         ]
+    },
+
+    // =================================================================
+    // SECTION 7: TECHNICAL DIAGRAMS (RI.8.7) - The "Visual" Gap
+    // =================================================================
+    {
+        id: 'tech-elephant-diagram',
+        passage: `<h3 class="text-xl font-bold mb-2">Technical Analysis: The Apparatus</h3>
+        <p class="mb-4">The study tested cooperation using a "loose-string" apparatus. The diagram below illustrates the setup used to test whether elephants could coordinate their actions.</p>
+        
+        <div class="border-2 border-gray-800 p-6 bg-gray-50 rounded-xl mb-6 relative">
+            <div class="flex justify-between mb-8 text-sm font-bold text-gray-600 uppercase">
+                <span>Lane 1 (Elephant A)</span>
+                <span>Lane 2 (Elephant B)</span>
+            </div>
+            
+            <div class="h-4 w-full bg-gray-300 border-y-2 border-dashed border-gray-500 flex items-center justify-center mb-4">
+                <span class="text-[10px] font-black tracking-widest text-gray-500">MESH BARRIER</span>
+            </div>
+
+            <div class="relative h-20 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-center shadow-inner">
+                <div class="absolute w-full h-2 bg-red-500 rounded-full top-1/2 transform -translate-y-1/2"></div>
+                <div class="absolute w-48 h-12 bg-white border-4 border-gray-700 shadow-xl flex items-center justify-center z-10">
+                    <span class="font-black text-gray-800">SLIDING TABLE (Food)</span>
+                </div>
+            </div>
+            <p class="text-xs text-center mt-2 italic">Figure 1. The rope is threaded through the table. If one end is pulled without the other, the rope pulls free.</p>
+        </div>
+
+        <p class="mb-4"><b>Procedure:</b> The table is placed out of reach. The elephants must pull both ends of the rope simultaneously to slide the table toward the barrier.</p>`,
+        items: [
+            { id: 'dia1', stem: "Based on Figure 1, what happens if Elephant A pulls the rope before Elephant B arrives?", options: ["The rope unthreads and the table stays stuck.", "The table moves to Elephant A.", "The rope breaks.", "The barrier falls down."], correct_answer: "The rope unthreads and the table stays stuck.", rationale: "Visualizing the mechanism: the rope is 'threaded' loosely, so pulling one side pulls the rope out.", standard: "RI.8.7", difficulty: 5 },
+            { id: 'dia2', stem: "What is the purpose of the 'Mesh Barrier' shown in the diagram?", options: ["To prevent the elephants from grabbing the food directly without using the tool.", "To separate the two elephants.", "To hide the food.", "To protect the researchers."], correct_answer: "To prevent the elephants from grabbing the food directly without using the tool.", rationale: "Understanding experimental controls via visual layout.", standard: "RI.8.3", difficulty: 4 },
+            { id: 'dia3', stem: "How does the diagram clarify the text description of 'cooperation'?", options: ["It visually demonstrates that the task is physically impossible for a single subject.", "It shows how much the elephants weigh.", "It shows what food they ate.", "It shows the color of the rope."], correct_answer: "It visually demonstrates that the task is physically impossible for a single subject.", rationale: "Advantages of using diagrams.", standard: "RI.8.7", difficulty: 6 },
+            { id: 'dia4', stem: "If the table were bolted to the floor, how would that invalidate the experiment?", options: ["The elephants could not demonstrate 'pulling' behavior to get a reward.", "It would be too heavy.", "The rope would break.", "The elephants would climb it."], correct_answer: "The elephants could not demonstrate 'pulling' behavior to get a reward.", rationale: "Evaluating the apparatus function.", standard: "RI.8.5", difficulty: 6 },
+            { id: 'dia5', stem: "The caption 'Figure 1' helps the reader:", options: ["Connect the visual representation to the specific concept of the 'loose-string' mechanism.", "Know what page it is.", "Read faster.", "Ignore the picture."], correct_answer: "Connect the visual representation to the specific concept of the 'loose-string' mechanism.", rationale: "Text feature function.", standard: "RI.8.5", difficulty: 2 }
+        ]
+    },
+    {
+        id: 'tech-map-route',
+        passage: `<h3 class="text-xl font-bold mb-2">Visual Literacy: The Pony Express Route</h3>
+        <p class="mb-4">The text states that the Pony Express reduced mail delivery time from 24 days to 10 days. The map below shows the terrain challenges riders faced.</p>
+        
+        <div class="bg-amber-50 p-6 rounded-xl border-2 border-amber-200 mb-6 relative overflow-hidden">
+            <div class="absolute top-4 right-4 bg-white/80 p-2 text-[10px] border border-gray-400">
+                <b>Legend:</b><br>⛰️ Mountains<br>🏜️ Desert<br>💧 River
+            </div>
+            
+            <div class="flex justify-between items-center text-sm font-bold mt-8 mb-4 relative z-10">
+                <div class="text-center">St. Joseph<br>(Start)</div>
+                <div class="h-1 bg-gray-400 flex-1 mx-2 relative">
+                    <div class="absolute -top-6 left-1/4 text-center">⛰️<br><span class="text-[8px]">Rockies</span></div>
+                    <div class="absolute -top-6 left-1/2 text-center">🏜️<br><span class="text-[8px]">Great Basin</span></div>
+                    <div class="absolute -top-6 left-3/4 text-center">⛰️<br><span class="text-[8px]">Sierra Nevada</span></div>
+                </div>
+                <div class="text-center">Sacramento<br>(End)</div>
+            </div>
+            <p class="text-xs text-center text-gray-500 italic">Total Distance: ~1,900 Miles</p>
+        </div>`,
+        items: [
+            { id: 'map1', stem: "Based on the map, which geographic feature likely posed the greatest obstacle near the end of the route (Sacramento)?", options: ["The Sierra Nevada Mountains", "The Great Basin Desert", "The Mississippi River", "St. Joseph"], correct_answer: "The Sierra Nevada Mountains", rationale: "Locating specific details on a map relative to the 'End' point.", standard: "RI.8.7", difficulty: 3 },
+            { id: 'map2', stem: "How does the map support the text's claim that riders faced 'grueling conditions'?", options: ["It shows specific varied terrains (mountains, deserts) they had to traverse.", "It shows the date.", "It shows the price of mail.", "It shows the horses."], correct_answer: "It shows specific varied terrains (mountains, deserts) they had to traverse.", rationale: "Synthesizing visual evidence with textual claims.", standard: "RI.8.7", difficulty: 5 },
+            { id: 'map3', stem: "If a rider broke down in the 'Great Basin', where would they be on the journey?", options: ["Roughly halfway.", "At the very start.", "At the very end.", "In the ocean."], correct_answer: "Roughly halfway.", rationale: "Interpreting spatial relationships.", standard: "RI.8.7", difficulty: 4 },
+            { id: 'map4', stem: "The 'Legend' is necessary to:", options: ["Decode the symbols used on the map.", "Make the map look official.", "List the names of the riders.", "Show the time."], correct_answer: "Decode the symbols used on the map.", rationale: "Function of text features.", standard: "RI.8.5", difficulty: 2 },
+            { id: 'map5', stem: "Contrast: A graph shows numbers; this map primarily shows:", options: ["Spatial/Geographic relationships.", "Time.", "Money.", "Population."], correct_answer: "Spatial/Geographic relationships.", rationale: "Understanding medium differences.", standard: "RI.8.7", difficulty: 4 }
+        ]
     }
 ];
 
@@ -1154,7 +1220,10 @@ const allMissions = [
     { id: 'm-analogy', title: 'Word Forge', description: 'L.8.5: Analogies & Nuance', minLevel: 3, passageId: 'voc-analogy-forge', sticker: '🔨' },
 
     { id: 'm-drama', title: 'The Verdict', description: 'RL.8.5: Stage Directions', minLevel: 3, passageId: 'lit-drama-court', sticker: '🎭' },
-    { id: 'm-dict', title: 'The Lexicon', description: 'L.8.4.c: Dictionary Skills', minLevel: 3, passageId: 'voc-dict-entry', sticker: '📖' }
+    { id: 'm-dict', title: 'The Lexicon', description: 'L.8.4.c: Dictionary Skills', minLevel: 3, passageId: 'voc-dict-entry', sticker: '📖' },
+
+    { id: 'm-tech-diag', title: 'Lab Schematics', description: 'RI.8.7: Technical Diagrams', minLevel: 4, passageId: 'tech-elephant-diagram', sticker: '📐' },
+    { id: 'm-tech-map', title: 'Route 66', description: 'RI.8.7: Map Analysis', minLevel: 4, passageId: 'tech-map-route', sticker: '🗺️' }
 ];
 
         // --- DASHBOARD & NAVIGATION ---
