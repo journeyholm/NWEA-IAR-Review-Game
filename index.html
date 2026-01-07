@@ -403,19 +403,19 @@ window.switchGuideTab = function(tabName) {
     document.getElementById('guide-tab-content-play').classList.add('hidden');
     document.getElementById('guide-tab-content-standards').classList.add('hidden');
     
-    // Reset buttons
-    document.getElementById('guide-btn-play').className = "flex-1 py-2 text-gray-500 border-b-2 border-transparent font-bold hover:text-indigo-500";
-    document.getElementById('guide-btn-standards').className = "flex-1 py-2 text-gray-500 border-b-2 border-transparent font-bold hover:text-indigo-500";
+    // Reset buttons to gray
+    document.getElementById('guide-btn-play').className = "flex-1 py-3 text-gray-400 border-b-4 border-transparent font-bold hover:text-indigo-500 text-sm uppercase tracking-widest transition-all";
+    document.getElementById('guide-btn-standards').className = "flex-1 py-3 text-gray-400 border-b-4 border-transparent font-bold hover:text-indigo-500 text-sm uppercase tracking-widest transition-all";
 
-    // Activate selected
+    // Activate selected button (Purple)
     document.getElementById(`guide-tab-content-${tabName}`).classList.remove('hidden');
-    document.getElementById(`guide-btn-${tabName}`).className = "flex-1 py-2 text-indigo-600 border-b-4 border-indigo-600 font-black uppercase tracking-widest";
+    document.getElementById(`guide-btn-${tabName}`).className = "flex-1 py-3 text-indigo-600 border-b-4 border-indigo-600 font-black uppercase tracking-widest text-sm";
 };
 
 // 2. The Main Function
 function showDirections() {
     // Generate Standards List Dynamically from your allMissions array
-    let standardsHtml = '<div class="space-y-4 text-left h-64 overflow-y-auto pr-2">';
+    let standardsHtml = '<div class="space-y-6 text-left h-80 overflow-y-auto pr-2 custom-scrollbar">';
     
     // Group by Level (Sector)
     for (let level = 1; level <= 5; level++) {
@@ -424,25 +424,31 @@ function showDirections() {
             let sectorName = level === 1 ? "Foundations" : (level === 2 ? "Intermediate" : (level === 3 ? "Advanced" : (level === 4 ? "Mastery" : "The Core")));
             
             standardsHtml += `
-                <div class="bg-gray-50 dark:bg-gray-700 p-3 rounded-xl">
-                    <h4 class="font-black text-indigo-600 dark:text-indigo-300 uppercase text-xs mb-2">Sector ${level}: ${sectorName}</h4>
-                    <ul class="space-y-2">
+                <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-600">
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-black text-indigo-600 dark:text-indigo-400 uppercase text-xs tracking-widest">Sector ${level}: ${sectorName}</h4>
+                        <span class="bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 text-[10px] font-bold px-2 py-1 rounded-full border border-indigo-200 dark:border-indigo-700">${sectorMissions.length} Modules</span>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2">
             `;
             
             sectorMissions.forEach(m => {
                 // Split description to get Standard ID (e.g., "RL.8.1")
                 const parts = m.description.split(':');
                 const stdId = parts[0] || "Gen";
-                const desc = parts[1] || m.description;
+                const desc = parts[1] || "";
                 
                 standardsHtml += `
-                    <li class="text-xs flex justify-between items-center border-b border-gray-200 dark:border-gray-600 pb-1 last:border-0">
-                        <span class="font-bold text-gray-700 dark:text-gray-200">${m.title}</span>
-                        <span class="bg-white dark:bg-gray-800 px-2 py-0.5 rounded border text-[10px] font-mono">${stdId}</span>
-                    </li>`;
+                    <div class="flex items-center justify-between text-xs bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-100 dark:border-gray-700 hover:border-indigo-300 transition-colors">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-gray-700 dark:text-gray-200">${m.title}</span>
+                            <span class="text-[10px] text-gray-400 truncate w-48">${desc}</span>
+                        </div>
+                        <span class="bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded text-[10px] font-mono font-bold text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600">${stdId}</span>
+                    </div>`;
             });
             
-            standardsHtml += `</ul></div>`;
+            standardsHtml += `</div></div>`;
         }
     }
     standardsHtml += '</div>';
@@ -450,32 +456,42 @@ function showDirections() {
     // Build the Modal Content with Tabs
     const msg = `
         <div class="w-full">
-            <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
-                <button id="guide-btn-play" onclick="switchGuideTab('play')" class="flex-1 py-2 text-indigo-600 border-b-4 border-indigo-600 font-black uppercase tracking-widest">How to Play</button>
-                <button id="guide-btn-standards" onclick="switchGuideTab('standards')" class="flex-1 py-2 text-gray-500 border-b-2 border-transparent font-bold hover:text-indigo-500">Standards Map</button>
+            <div class="flex border-b border-gray-200 dark:border-gray-700 mb-6">
+                <button id="guide-btn-play" onclick="switchGuideTab('play')" class="flex-1 py-3 text-indigo-600 border-b-4 border-indigo-600 font-black uppercase tracking-widest text-sm">Protocol Guide</button>
+                <button id="guide-btn-standards" onclick="switchGuideTab('standards')" class="flex-1 py-3 text-gray-400 border-b-4 border-transparent font-bold hover:text-indigo-500 text-sm uppercase tracking-widest transition-all">Standards Map</button>
             </div>
 
-            <div id="guide-tab-content-play" class="text-left space-y-3 text-sm h-64 overflow-y-auto pr-2">
-                <p><b>🎯 Purpose:</b> Master Grade 8 Standards to defeat the "System Glitch" and fill your Sticker Book.</p>
-                <hr class="border-gray-100 dark:border-gray-700">
-                <div class="grid grid-cols-1 gap-2">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg border border-blue-100">
-                        <span class="font-bold text-blue-700 dark:text-blue-300">🧙‍♂️ Calibration</span>
-                        <p class="text-xs mt-1">Take this diagnostic test first! It analyzes your skill level and assigns you a Rank.</p>
+            <div id="guide-tab-content-play" class="text-left space-y-4 text-sm h-80 overflow-y-auto pr-2 custom-scrollbar">
+                
+                <div class="bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                    <h3 class="font-black text-indigo-700 dark:text-indigo-300 uppercase mb-1 flex items-center gap-2"><span class="text-lg">🎯</span> The Objective</h3>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">A logic virus has corrupted the system. Complete <b>Missions</b> to repair the database. Master all 5 Sectors to confront the <span class="text-red-500 font-bold">System Core</span>.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <span class="text-2xl mb-2 block">🔥</span>
+                        <h4 class="font-bold text-gray-800 dark:text-white text-xs uppercase tracking-wide">Combo System</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-snug">Answer correctly in a row to build your streak. <br><b class="text-indigo-500">3x Streak = 3x Token earnings.</b> Don't miss!</p>
                     </div>
-                    <div class="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg border border-green-100">
-                        <span class="font-bold text-green-700 dark:text-green-300">📜 Missions</span>
-                        <p class="text-xs mt-1">Travel through 5 Sectors. Each mission targets a specific skill (Reading, Writing, Research).</p>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <span class="text-2xl mb-2 block">🛍️</span>
+                        <h4 class="font-bold text-gray-800 dark:text-white text-xs uppercase tracking-wide">The Supply Depot</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-snug">Spend Tokens on rare Stickers, new Avatars, and Gameplay Power-ups like <b class="text-blue-500">Time Freeze</b>.</p>
                     </div>
-                    <div class="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg border border-red-100">
-                        <span class="font-bold text-red-700 dark:text-red-300">💀 The Gauntlet</span>
-                        <p class="text-xs mt-1">Survival mode. Answer random questions until you miss one. High risk, high XP rewards.</p>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <span class="text-2xl mb-2 block">💀</span>
+                        <h4 class="font-bold text-gray-800 dark:text-white text-xs uppercase tracking-wide">The Gauntlet</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-snug">Endless survival mode. Questions get harder. One wrong answer ends the run. <b class="text-red-500">High Risk = High XP.</b></p>
                     </div>
-                    <div class="bg-pink-50 dark:bg-pink-900/20 p-2 rounded-lg border border-pink-100">
-                        <span class="font-bold text-pink-700 dark:text-pink-300">⚠️ Glitch Archive</span>
-                        <p class="text-xs mt-1">Review your mistakes. Fix the "glitch" to regain lost points.</p>
+                    <div class="bg-white dark:bg-gray-800 p-3 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                        <span class="text-2xl mb-2 block">⚠️</span>
+                        <h4 class="font-bold text-gray-800 dark:text-white text-xs uppercase tracking-wide">Glitch Archive</h4>
+                        <p class="text-[11px] text-gray-500 mt-1 leading-snug">Missed questions are stored here. Re-attempt them to "patch" the system and regain lost XP.</p>
                     </div>
                 </div>
+
+                <p class="text-center text-[10px] font-mono text-gray-400 mt-4 uppercase tracking-widest">System Version 9.0 // Ready for input.</p>
             </div>
 
             <div id="guide-tab-content-standards" class="hidden">
