@@ -81,6 +81,67 @@
         font-size: 1.2rem;
         line-height: 1.8;
     }
+
+    /* COMBO ANIMATIONS */
+@keyframes firePulse {
+    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); transform: scale(1); }
+    70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); transform: scale(1.05); }
+    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); transform: scale(1); }
+}
+.combo-active {
+    animation: firePulse 2s infinite;
+    border-color: #f59e0b !important; /* Amber color */
+    background: #fffbeb !important;
+}
+
+/* BOSS HEALTH BAR ANIMATIONS */
+        .boss-container {
+            position: relative;
+            background: #1e1b4b; /* Dark Navy */
+            border: 4px solid #ef4444; /* Red Border */
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+        .health-fill {
+            height: 2.5rem;
+            background: linear-gradient(90deg, #b91c1c 0%, #ef4444 100%);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .health-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(0,0,0,0.1) 10px,
+                rgba(0,0,0,0.1) 20px
+            );
+        }
+
+        #sticker-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)) !important;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        /* MOBILE OPTIMIZATIONS */
+    * { 
+        -webkit-tap-highlight-color: transparent; /* Removes the gray box when tapping */
+        touch-action: manipulation; /* Removes the 300ms delay on clicks */
+    }
+    body { 
+        overscroll-behavior-y: none; /* Stops the screen from bouncing on scroll */
+        user-select: none; /* Prevents text highlighting */
+        -webkit-user-select: none;
+    }
+    /* Re-enable text selection for specific areas if needed */
+    .selectable-text { user-select: text; -webkit-user-select: text; }
 </style>
 
 </head>
@@ -315,23 +376,25 @@
 
     <script>
 let gameState = {
-            currentScreen: 'welcome',
-            currentZone: 1, // <--- ADD THIS LINE
-            currentMission: null,
-            // ... rest of your state ...
-            currentQuestionIndex: 0,
-            missionScore: 0,
-            consecutiveCorrect: 0,
-            currentShopTab: 'avatars',
-            user: {
-                xp: 0, level: 1, elaLevel: 1, tokens: 0, history: [],
-                missedQuestions: [], stickers: [], avatar: '🧙‍♂️', 
-                inventory: { lens: 0, freezer: 0, shield: 0 },
-                standardsReport: {}
-            }
-        };
+    currentScreen: 'welcome',
+    currentZone: 1,
+    currentMission: null,
+    currentQuestionIndex: 0,
+    missionScore: 0,
+    consecutiveCorrect: 0,
+    currentShopTab: 'avatars',
+    survivalQueue: [],
+    missionAnswers: {}, // Stores answers for review
+    user: {
+        xp: 0, level: 1, elaLevel: 1, tokens: 0, history: [],
+        missedQuestions: [], stickers: [], avatars: ['a1', 'a2', 'a3'], // Default owned avatars 
+        inventory: { lens: 0, freezer: 0, shield: 0 },
+        standardsReport: {},
+        completedIds: [],
+        missionBestScores: {} // <--- ADD THIS NEW LINE HERE
+    }
+};
 
-// Add this function anywhere inside your <script> tags
 // --- NEW DIRECTIONS & STANDARDS SYSTEM ---
 
 // 1. Logic to switch tabs inside the modal
@@ -425,82 +488,57 @@ function showDirections() {
 }
 
 const shopCatalog = {
-            avatars: [
-                { id: 'av_ninja', name: 'Word Ninja', icon: '🥷', cost: 200, type: 'avatar' },
-                { id: 'av_robot', name: 'Logic Bot', icon: '🤖', cost: 500, type: 'avatar' },
-                { id: 'av_alien', name: 'Cosmic Scholar', icon: '👽', cost: 1000, type: 'avatar' },
-                { id: 'av_poet', name: 'Cyber Poet', icon: '✍️', cost: 1500, type: 'avatar' },
-                { id: 'av_sorcerer', name: 'Syntax Sorcerer', icon: '🧙‍♂️', cost: 3500, type: 'avatar' },
-                { id: 'av_king', name: 'Lit Regent', icon: '👑', cost: 7500, type: 'avatar' },
-                { id: 'av_detective', name: 'Text Detective', icon: '🕵️‍♀️', cost: 1200, type: 'avatar' },
-                { id: 'av_dino', name: 'Dino Reader', icon: '🦖', cost: 2500, type: 'avatar' },
-                { id: 'av_ghost', name: 'Ghost Writer', icon: '👻', cost: 3000, type: 'avatar' },
-                { id: 'av_cat', name: 'Cool Cat', icon: '😎', cost: 5000, type: 'avatar' }
-            ],
-            stickers: [
-                { id: 'st_crate', name: 'Mystery Box', description: 'Contains 1 Random Sticker!', icon: '🎁', cost: 150, type: 'crate' },
-                // STATUS
-                { id: 'st_fire', name: 'Fire Streak', icon: '🔥', cost: 300, type: 'sticker' },
-                { id: 'st_brain', name: 'Brain Power', icon: '🧠', cost: 500, type: 'sticker' },
-                { id: 'st_gem', name: 'Syntax Gem', icon: '💎', cost: 800, type: 'sticker' },
-                { id: 'st_star', name: 'Super Star', icon: '⭐', cost: 1000, type: 'sticker' },
-                { id: 'st_100', name: '100% Club', icon: '💯', cost: 1200, type: 'sticker' },
-                // ANIMALS
-                { id: 'st_panda', name: 'Panda Pal', icon: '🐼', cost: 400, type: 'sticker' },
-                { id: 'st_koala', name: 'Koala Typer', icon: '🐨', cost: 400, type: 'sticker' },
-                { id: 'st_lion', name: 'Lion Heart', icon: '🦁', cost: 600, type: 'sticker' },
-                { id: 'st_uni', name: 'Unicorn', icon: '🦄', cost: 900, type: 'sticker' },
-                { id: 'st_octo', name: 'Octo-Mind', icon: '🐙', cost: 1000, type: 'sticker' },
-                { id: 'st_fox', name: 'Clever Fox', icon: '🦊', cost: 450, type: 'sticker' },
-                { id: 'st_tiger', name: 'Tiger Eye', icon: '🐯', cost: 650, type: 'sticker' },
-                { id: 'st_monk', name: 'Code Monkey', icon: '🐵', cost: 350, type: 'sticker' },
-                { id: 'st_sloth', name: 'Slow & Steady', icon: '🦥', cost: 300, type: 'sticker' },
-                { id: 'st_owl', name: 'Wise Owl', icon: '🦉', cost: 550, type: 'sticker' },
-                // FOOD
-                { id: 'st_pizza', name: 'Study Snack', icon: '🍕', cost: 250, type: 'sticker' },
-                { id: 'st_taco', name: 'Brain Food', icon: '🌮', cost: 250, type: 'sticker' },
-                { id: 'st_donut', name: 'Sweet Success', icon: '🍩', cost: 300, type: 'sticker' },
-                { id: 'st_cookie', name: 'Smart Cookie', icon: '🍪', cost: 300, type: 'sticker' },
-                { id: 'st_burg', name: 'Cheeseburger', icon: '🍔', cost: 350, type: 'sticker' },
-                { id: 'st_fries', name: 'Salty Fries', icon: '🍟', cost: 200, type: 'sticker' },
-                { id: 'st_sushi', name: 'Sushi Roll', icon: '🍣', cost: 500, type: 'sticker' },
-                { id: 'st_ice', name: 'Chill Cone', icon: '🍦', cost: 250, type: 'sticker' },
-                { id: 'st_pop', name: 'Movie Night', icon: '🍿', cost: 300, type: 'sticker' },
-                { id: 'st_apple', name: 'Teacher Pet', icon: '🍎', cost: 150, type: 'sticker' },
-                // SPOOKY
-                { id: 'st_skull', name: 'Dead Wrong', icon: '💀', cost: 666, type: 'sticker' },
-                { id: 'st_alien', name: 'Area 51', icon: '🛸', cost: 1500, type: 'sticker' },
-                { id: 'st_game', name: 'Gamer Mode', icon: '🎮', cost: 2000, type: 'sticker' },
-                { id: 'st_ghost', name: 'Boo!', icon: '👻', cost: 700, type: 'sticker' },
-                { id: 'st_zom', name: 'Brain Eater', icon: '🧟', cost: 750, type: 'sticker' },
-                { id: 'st_bat', name: 'Night Wing', icon: '🦇', cost: 400, type: 'sticker' },
-                { id: 'st_pump', name: 'Jack-O', icon: '🎃', cost: 500, type: 'sticker' },
-                { id: 'st_web', name: 'Web Master', icon: '🕸️', cost: 450, type: 'sticker' },
-                { id: 'st_robot', name: 'Domo Arigato', icon: '🤖', cost: 800, type: 'sticker' },
-                { id: 'st_ninja', name: 'Stealth Mode', icon: '🥷', cost: 850, type: 'sticker' },
-                // SCHOOL
-                { id: 'st_book', name: 'Book Worm', icon: '📚', cost: 200, type: 'sticker' },
-                { id: 'st_pen', name: 'Mightier Pen', icon: '✏️', cost: 150, type: 'sticker' },
-                { id: 'st_lap', name: 'Tech Whiz', icon: '💻', cost: 1000, type: 'sticker' },
-                { id: 'st_bulb', name: 'Bright Idea', icon: '💡', cost: 300, type: 'sticker' },
-                { id: 'st_grad', name: 'Scholar', icon: '🎓', cost: 2000, type: 'sticker' },
-                { id: 'st_globe', name: 'Explorer', icon: '🌎', cost: 400, type: 'sticker' },
-                { id: 'st_scope', name: 'Scientist', icon: '🔬', cost: 600, type: 'sticker' },
-                // LEGENDARY
-                { id: 'st_rocket', name: 'NWEA Rocket', icon: '🚀', cost: 2500, type: 'sticker' },
-                { id: 'st_trophy', name: 'IAR MVP', icon: '🏆', cost: 5000, type: 'sticker' },
-                { id: 'st_crown', name: 'Vocab King', icon: '👑', cost: 7500, type: 'sticker' },
-                { id: 'st_dragon', name: 'Mythic Dragon', icon: '🐉', cost: 10000, type: 'sticker' },
-                { id: 'st_diam', name: 'Flawless', icon: '💍', cost: 8000, type: 'sticker' },
-                { id: 'st_medal', name: 'Gold Medal', icon: '🥇', cost: 4500, type: 'sticker' },
-                { id: 'st_cast', name: 'Fortress', icon: '🏰', cost: 6000, type: 'sticker' }
-            ],
-            items: [
-                { id: 'item_lens', name: 'Logic Lens', description: 'Removes one wrong answer.', icon: '🔎', cost: 150, type: 'consumable', key: 'lens' },
-                { id: 'item_freezer', name: 'Time Freezer', description: 'Resets the mission clock.', icon: '❄️', cost: 300, type: 'consumable', key: 'freezer' },
-                { id: 'item_shield', name: 'Streak Saver', description: 'One extra life in Gauntlet.', icon: '🛡️', cost: 600, type: 'consumable', key: 'shield' }
-            ]
-        };
+        avatars: [
+            // SYSTEM THEMED (The "Serious" ones)
+            { id: 'a1', name: 'The Glitch', icon: '👾', cost: 500, type: 'avatar' },
+            { id: 'a2', name: 'Cyber Punk', icon: '🤖', cost: 300, type: 'avatar' },
+            { id: 'a3', name: 'The Brain', icon: '🧠', cost: 250, type: 'avatar' },
+            
+            // FANTASY & FUN (The "Fun" ones)
+            { id: 'a4', name: 'Wizard', icon: '🧙‍♂️', cost: 200, type: 'avatar' },
+            { id: 'a5', name: 'Ninja', icon: '🥷', cost: 200, type: 'avatar' },
+            { id: 'a6', name: 'Royalty', icon: '👑', cost: 1000, type: 'avatar' },
+            { id: 'a7', name: 'Detective', icon: '🕵️', cost: 150, type: 'avatar' },
+            { id: 'a8', name: 'Artist', icon: '🎨', cost: 150, type: 'avatar' },
+            
+            // ANIMALS
+            { id: 'a9', name: 'Cool Cat', icon: '😼', cost: 100, type: 'avatar' },
+            { id: 'a10', name: 'Panda', icon: '🐼', cost: 100, type: 'avatar' },
+            { id: 'a11', name: 'Dragon', icon: '🐲', cost: 500, type: 'avatar' },
+            { id: 'a12', name: 'Ghost', icon: '👻', cost: 300, type: 'avatar' }
+        ],
+        stickers: [
+            // SPECIALS
+            { id: 's1', name: 'Mystery Crate', icon: '❓', cost: 200, type: 'crate', description: 'Contains 1 Random Rare Sticker' },
+            { id: 's_rare', name: 'The Diamond', icon: '💎', cost: 1000, type: 'sticker' },
+            { id: 's_trophy', name: 'Gold Cup', icon: '🏆', cost: 800, type: 'sticker' },
+
+            // RETRO & TECH
+            { id: 's2', name: 'Holo-Disk', icon: '💿', cost: 100, type: 'sticker' },
+            { id: 's3', name: 'Retro Game', icon: '🕹️', cost: 150, type: 'sticker' },
+            { id: 's4', name: 'Controller', icon: '🎮', cost: 150, type: 'sticker' },
+            { id: 's5', name: 'Headphones', icon: '🎧', cost: 100, type: 'sticker' },
+            
+            // FOOD COURT
+            { id: 's6', name: 'Pizza Slice', icon: '🍕', cost: 50, type: 'sticker' },
+            { id: 's7', name: 'Burger', icon: '🍔', cost: 50, type: 'sticker' },
+            { id: 's8', name: 'Donut', icon: '🍩', cost: 50, type: 'sticker' },
+            { id: 's9', name: 'Taco', icon: '🌮', cost: 50, type: 'sticker' },
+            { id: 's10', name: 'Ice Cream', icon: '🍦', cost: 75, type: 'sticker' },
+
+            // RANDOM FUN
+            { id: 's11', name: 'Cool Cat', icon: '😎', cost: 125, type: 'sticker' },
+            { id: 's12', name: 'Alien Head', icon: '👽', cost: 300, type: 'sticker' },
+            { id: 's13', name: 'Unicorn', icon: '🦄', cost: 400, type: 'sticker' },
+            { id: 's14', name: 'Rainbow', icon: '🌈', cost: 100, type: 'sticker' },
+            { id: 's15', name: 'Fire', icon: '🔥', cost: 200, type: 'sticker' }
+        ],
+        items: [
+            { id: 'i1', name: 'Focus Lens', icon: '🔍', cost: 50, type: 'consumable', key: 'lens', description: 'Removes 2 wrong answers' },
+            { id: 'i2', name: 'Time Freeze', icon: '❄️', cost: 75, type: 'consumable', key: 'freezer', description: 'Resets the question timer' },
+            { id: 'i3', name: 'Logic Shield', icon: '🛡️', cost: 100, type: 'consumable', key: 'shield', description: 'Blocks one wrong answer penalty' }
+        ]
+    };
 
 const itemBank = [
     // =================================================================
@@ -607,20 +645,6 @@ const itemBank = [
     // =================================================================
     // SECTION 2: EXPANDED INFORMATIONAL TEXTS (RI)
     // =================================================================
-    {
-        id: 'inf-ash-borer',
-        passage: `<h3 class="text-xl font-bold mb-2">The Green Invader: Emerald Ash Borer</h3>
-        <p class="mb-4"><b>1. The Arrival</b><br>The emerald ash borer (EAB) is not a welcome guest. This metallic-green beetle, native to Asia, likely arrived in the United States hidden inside wood packing materials used for shipping. It was first detected in Michigan in 2002, but scientists believe it had been arriving unnoticed for a decade prior. Since then, it has spread to 35 states, leaving a trail of destruction in its wake.</p>
-        <p class="mb-4"><b>2. The Method of Destruction</b><br>While the adult beetles cause only minor damage by nibbling on foliage, the larvae are the true killers. After hatching, they bore underneath the bark of ash trees, chewing winding tunnels (known as galleries) that disrupt the tree's ability to transport water and nutrients. Effectively, the larvae strangle the tree from the inside out. Tens of millions of ash trees have already succumbed to this invasion, threatening urban forests and timber industries alike.</p>
-        <p class="mb-4"><b>3. The Biology</b><br>The EAB undergoes "complete metamorphosis." The life cycle consists of four stages: egg, larva, pupa, and adult. The entire cycle takes one to two years depending on the climate. Because the beetle is not native to North America, it has few natural predators here to keep its population in check, allowing it to multiply exponentially.</p>`,
-        items: [
-            { id: 'ab1', stem: "How is the text structured?", options: ["By logical sub-topics (Arrival, Impact, Biology).", "Chronological order only.", "Problem and Solution.", "Fictional story."], correct_answer: "By logical sub-topics (Arrival, Impact, Biology).", rationale: "<b>Lesson: Text Structure.</b> The author uses bold headings (Arrival, Destruction, Biology) to categorize information. This is a 'Topical' or 'Categorical' structure, not a simple timeline.", standard: "RI.8.5", difficulty: 3 },
-            { id: 'ab2', stem: "<b>Part A:</b> Why is the EAB considered such a significant threat?", options: ["The larvae destroy the tree's internal nutrient transport system.", "The adults eat all the leaves.", "They bite humans.", "They carry diseases to pets."], correct_answer: "The larvae destroy the tree's internal nutrient transport system.", rationale: "<b>Lesson: Identifying Causation.</b> The text explains that the tunnels 'disrupt the tree's ability to transport water.' This internal strangulation is the cause of death, not the leaf-eating adults.", standard: "RI.8.2", difficulty: 5 },
-            { id: 'ab3', stem: "<b>Part B:</b> Which quote supports Part A?", options: ["'...chewing winding tunnels that disrupt the tree's ability to transport water...'", "'...nibbling on foliage...'", "'...metallic-green beetle...'", "'...arrived in the United States...'"], correct_answer: "'...chewing winding tunnels that disrupt the tree's ability to transport water...'", rationale: "<b>Lesson: Evidence Matching.</b> This quote directly explains the mechanism of the threat identified in Part A. It links the physical action (chewing tunnels) to the fatal result (disrupting transport).", standard: "RI.8.1", difficulty: 4 },
-            { id: 'ab9', stem: "The word 'galleries' in Paragraph 2 refers to:", options: ["Tunnels chewed by larvae.", "Art museums.", "Tree branches.", "Leaves."], correct_answer: "Tunnels chewed by larvae.", rationale: "<b>Lesson: Context Clues.</b> The text says 'chewing winding tunnels (known as galleries).' The phrase 'known as' creates a direct definition in the text. You don't need a dictionary; the author tells you the answer.", standard: "L.8.4", difficulty: 5 },
-            { id: 'ab10', stem: "Which stage of the life cycle is most destructive?", options: ["Larva", "Adult", "Egg", "Pupa"], correct_answer: "Larva", rationale: "<b>Lesson: Detail Retrieval.</b> Paragraph 2 explicitly states: 'the larvae are the true killers.' Scanning for keywords like 'killer' or 'damage' leads you to this answer.", standard: "RI.8.1", difficulty: 3 }
-        ]
-    },
     {
 id: 'inf-snow-sand',
         passage: `<h3 class="text-xl font-bold mb-2">Paired Texts: Extreme Boarding</h3>
@@ -1169,6 +1193,8 @@ id: 'inf-snow-sand',
         ]
     },
 
+    
+
     // NEW MISSION: RESEARCH SIMULATION (W.8.7 - Selecting Sources)
     // =================================================================
     {
@@ -1189,73 +1215,765 @@ id: 'inf-snow-sand',
             { id: 'rs4', stem: "If you needed to broaden your research to include 'Economic Costs,' which search term would be best?", options: ["NASA budget 1960s vs USSR", "Space rockets cost", "Microchip price", "Neil Armstrong salary"], correct_answer: "NASA budget 1960s vs USSR", rationale: "<b>Lesson: Search Terms.</b> 'NASA budget' directly targets the economic aspect of the race.", standard: "W.8.8", difficulty: 5 },
             { id: 'rs5', stem: "Which information from Source 3 would be most valuable?", options: ["Data on how smaller computers allowed rockets to be lighter.", "The color of the rockets.", "The name of the author.", "The font used."], correct_answer: "Data on how smaller computers allowed rockets to be lighter.", rationale: "<b>Lesson: Data Extraction.</b> The weight/efficiency of rockets is the specific 'impact' your research question is asking for.", standard: "RI.8.1", difficulty: 5 }
         ]
+    },
+
+    {
+        id: 'hist-bessie-coleman',
+        passage: `<h3 class="text-xl font-bold mb-2">Historical File: Bessie Coleman</h3>
+        <p class="mb-4"><b>Source:</b> <i>Harlem Renaissance Lives</i> (Released Item F1421)</p>
+        <p class="mb-4">Coleman, Bessie (1892-1926), aviator, was born in Atlanta, Texas. She was seven when her father left his family to return to the Indian Territory (Oklahoma). The Coleman household was Baptist, and Bessie was an avid reader who became particularly interested in Booker T. Washington and Harriet Tubman. After high school, she studied for one semester at Langston Industrial College.</p>
+        <p class="mb-4">Between 1912 and 1917, Coleman joined her brothers in Chicago, working as a manicurist. In 1917, she married Claude Glenn. It was during this time that her brother Johnny related World War I stories to her about women flying planes in France. She decided that this would be her ambition.</p>
+        <p class="mb-4">Coleman was rejected by American aviation schools because of her race and sex. Robert Abbott, founder of the <i>Chicago Defender</i>, suggested she study aviation in France. Coleman learned French and sailed to Paris in 1920. She was the first African American woman to earn a pilot's license (1921).</p>
+        <p class="mb-4">Upon returning to the U.S., she realized she needed more training to make a living. She returned to Europe to study stunt flying. In 1923, her engine stalled, and she crashed, suffering a broken leg and ribs. During her recuperation, she went on the lecture circuit. Newspapers reported she planned to establish a commercial passenger flight service. By 1924, she was performing at air shows in Texas and Massachusetts, widely known for her military-style flying outfit.</p>`,
+        items: [
+            { 
+                id: 'bes1', 
+                stem: "<b>TIMELINE CHALLENGE:</b> Which sequence correctly orders the events of Bessie Coleman's life?", 
+                options: [
+                    "1. Brother tells war stories -> 2. Rejected by US schools -> 3. Earns license in France -> 4. Becomes stunt pilot",
+                    "1. Rejected by US schools -> 2. Becomes stunt pilot -> 3. Brother tells war stories -> 4. Earns license in France",
+                    "1. Earns license in France -> 2. Brother tells war stories -> 3. Rejected by US schools -> 4. Becomes stunt pilot",
+                    "1. Brother tells war stories -> 2. Becomes stunt pilot -> 3. Earns license in France -> 4. Rejected by US schools"
+                ], 
+                correct_answer: "1. Brother tells war stories -> 2. Rejected by US schools -> 3. Earns license in France -> 4. Becomes stunt pilot", 
+                rationale: "<b>Lesson: Sequencing (RI.8.3).</b> The text establishes cause-and-effect: The brother's stories (Cause) led to her ambition. She applied to US schools but was rejected (Obstacle). This led her to France to get her license (Solution), after which she returned to become a stunt pilot.", 
+                standard: "RI.8.3", 
+                difficulty: 5 
+            },
+            { 
+                id: 'bes2', 
+                stem: "<b>EVIDENCE MATCH:</b> Which textual detail best supports the goal: <i>'Own a Commercial Airline Business'</i>?", 
+                options: [
+                    "\"Newspapers reported that she planned to establish a commercial passenger flight service.\"",
+                    "\"Coleman then sought to become an accomplished stunt and exhibition pilot.\"",
+                    "\"She thrilled crowds and became widely known for her flying outfit.\"",
+                    "\"She studied manicuring at Burnham's School of Beauty Culture.\""
+                ], 
+                correct_answer: "\"Newspapers reported that she planned to establish a commercial passenger flight service.\"", 
+                rationale: "<b>Lesson: Citing Evidence (RI.8.1).</b> To prove she wanted to own a business, you must find the quote that explicitly mentions a 'commercial passenger flight service.'", 
+                standard: "RI.8.1", 
+                difficulty: 4 
+            },
+            { 
+                id: 'bes3', 
+                stem: "Why did Coleman likely go on the 'lecture circuit' after her crash in 1923?", 
+                options: [
+                    "To maintain her income and fame while she physically recovered.",
+                    "She was afraid to fly again.",
+                    "She wanted to become a teacher.",
+                    "She was ordered to do so by the government."
+                ], 
+                correct_answer: "To maintain her income and fame while she physically recovered.", 
+                rationale: "<b>Lesson: Inference (RI.8.3).</b> The text says she lectured 'during her recuperation.' Since she couldn't fly (her job) due to broken bones, lecturing was a way to stay relevant and earn money until she could fly again.", 
+                standard: "RI.8.3", 
+                difficulty: 6 
+            },
+            { 
+                id: 'bes4', 
+                stem: "What role did Robert Abbott play in Coleman's success?", 
+                options: [
+                    "He suggested the alternative path (France) that allowed her to bypass American discrimination.",
+                    "He taught her how to fly.",
+                    "He built her first airplane.",
+                    "He was her brother who told her war stories."
+                ], 
+                correct_answer: "He suggested the alternative path (France) that allowed her to bypass American discrimination.", 
+                rationale: "<b>Lesson: Key Individuals (RI.8.3).</b> When American schools rejected her, Abbott provided the crucial advice ('study in France') that solved her problem.", 
+                standard: "RI.8.3", 
+                difficulty: 3 
+            },
+            { 
+                id: 'bes5', 
+                stem: "The author includes the detail about her 'military-style flying outfit' to show:", 
+                options: [
+                    "Her showmanship and how she crafted a public persona.",
+                    "That she was actually in the army.",
+                    "That it was cold in the plane.",
+                    "That she liked the color green."
+                ], 
+                correct_answer: "Her showmanship and how she crafted a public persona.", 
+                rationale: "<b>Lesson: Author's Purpose (RI.8.6).</b> Coleman wasn't in the military. She wore the uniform to look 'official' and daring, helping her become 'widely known' (famous) with the crowds.", 
+                standard: "RI.8.6", 
+                difficulty: 5 
+            },
+
+            {
+        id: 'info-snowboarding',
+        passage: `<h3 class="text-xl font-bold mb-2">A Beginner's Guide to Snowboarding</h3>
+        <p class="mb-4"><b>Source:</b> <i>U.S. News & World Report</i> (Released Item F1525)</p>
+        <p class="mb-4">So, are you getting as excited for the season as I am? Not only is snowboarding fun, but it's good for you, too. You can burn up to 400 or 500 calories an hour, and you work your entire body. I'm talking your legs (glutes, hamstrings, calves and especially your quads, as well as your core and back muscles). Snowboarding with your family is also a fun way to stay active and connected this winter.</p>
+        <p class="mb-4">The best situation is learning on a mountain that's not pure ice and isn't too intimidating. Start by taking a few lessons or go with a friend who's a great teacher—and very patient. Hopefully this same friend also has extra gear for you and can show you the ropes for a day or two. If not, you can rent equipment at the mountain; they do a great job of telling you everything you need to get started.</p>
+        <p class="mb-4">It's also worth mentioning that skiing and snowboarding are completely different. Skiers have four edges and two poles, and their legs face forward. Snowboarders, on the other hand, have two edges and no poles, and our legs face sideways.</p>`,
+        items: [
+            { 
+                id: 'snow1', 
+                stem: "In paragraph 3, how does the author mainly distinguish snowboarding from skiing?", 
+                options: [
+                    "By contrasting the equipment (poles vs. no poles) and body positioning.",
+                    "By stating that skiing is harder to learn.",
+                    "By suggesting that snowboarding burns more calories.",
+                    "By claiming that skiing is more dangerous."
+                ], 
+                correct_answer: "By contrasting the equipment (poles vs. no poles) and body positioning.", 
+                rationale: "<b>Lesson: Comparisons & Distinctions (RI.8.3).</b> The text explicitly contrasts the two: 'Skiers have four edges and two poles... Snowboarders... have two edges and no poles, and our legs face sideways.'", 
+                standard: "RI.8.3", 
+                difficulty: 3 
+            },
+            { 
+                id: 'snow2', 
+                stem: "Which piece of evidence best supports the idea that beginners should rely on experts or rental shops for gear?", 
+                options: [
+                    "\"...they do a great job of telling you everything you need to get started.\"",
+                    "\"You can burn up to 400 or 500 calories an hour.\"",
+                    "\"Snowboarding with your family is also a fun way to stay active.\"",
+                    "\"Skiers have four edges and two poles.\""
+                ], 
+                correct_answer: "\"...they do a great job of telling you everything you need to get started.\"", 
+                rationale: "<b>Lesson: Citing Evidence (RI.8.1).</b> This quote directly supports the connection between the novice (beginner) and the professional knowledge available at the rental shop.", 
+                standard: "RI.8.1", 
+                difficulty: 2 
+            }
+        ]
+    },
+    {
+        id: 'hist-senate-records',
+        passage: `<h3 class="text-xl font-bold mb-2">Saving Senate Records (1814)</h3>
+        <p class="mb-4"><b>Source:</b> <i>Released Item FF429365088</i></p>
+        <p class="mb-4">On a sweltering August day in 1814, word reached the Capitol that British forces had swept aside the defending American army at Bladensburg, Maryland, and would occupy Washington by dusk. The documentary record of the Senate's earliest years might have gone up in flames had it not been for the quick action of a 24-year-old clerk named Lewis Machen.</p>
+        <p class="mb-4">Since 1789, Secretary of the Senate Samuel Otis had safeguarded the records. But Otis died in April 1814, leaving the collection vulnerable. Machen devised a plan. Assisted by a messenger named Tobias Simpson, Machen commandeered a wagon and began loading it with Senate papers. "I engaged in removing... all the Books and papers... which I considered of more value," he recalled.</p>
+        <p class="mb-4">Machen headed southeast toward a family farm in Maryland. The Senate documents were safe. Decades later, in 1934, Congress established the National Archives to permanently protect such records.</p>`,
+        items: [
+            { 
+                id: 'sen1', 
+                stem: "<b>SEQUENCE ANALYSIS:</b> Which option correctly orders the events that led to the preservation of the documents?", 
+                options: [
+                    "1. Samuel Otis dies -> 2. British invade -> 3. Machen commandeers wagon -> 4. Documents moved to Maryland",
+                    "1. British invade -> 2. Documents moved to Maryland -> 3. Samuel Otis dies -> 4. Machen commandeers wagon",
+                    "1. Machen commandeers wagon -> 2. Samuel Otis dies -> 3. British invade -> 4. Documents moved to Maryland",
+                    "1. Documents moved to Maryland -> 2. British invade -> 3. Samuel Otis dies -> 4. Machen commandeers wagon"
+                ], 
+                correct_answer: "1. Samuel Otis dies -> 2. British invade -> 3. Machen commandeers wagon -> 4. Documents moved to Maryland", 
+                rationale: "<b>Lesson: Process & History (RH.6-8.3).</b> Otis dying (April) left the records unguarded. The invasion (August) created the threat. Machen then took the wagon (Action) and moved them to safety (Result).", 
+                standard: "RH.6-8.3", 
+                difficulty: 6 
+            },
+            { 
+                id: 'sen2', 
+                stem: "What is the author's main purpose in mentioning the specific date 'August 1814' and the 'sweltering' weather?", 
+                options: [
+                    "To establish the urgent and difficult context of the rescue mission.",
+                    "To show that summer is the best time to move documents.",
+                    "To blame the weather for the British invasion.",
+                    "To suggest that Lewis Machen was on vacation."
+                ], 
+                correct_answer: "To establish the urgent and difficult context of the rescue mission.", 
+                rationale: "<b>Lesson: Setting & Context (RH.6-8.1).</b> The details emphasize the chaotic, hot, and desperate conditions under which Machen had to act quickly.", 
+                standard: "RH.6-8.1", 
+                difficulty: 5 
+            }
+        ]
+    },
+
+    {
+        id: 'sci-plate-tectonics',
+        passage: `<h3 class="text-xl font-bold mb-2">Plate Tectonics: Moving and Shaking</h3>
+        <p class="mb-4"><b>Source:</b> <i>National Geographic</i> (Released Item 5730_A)</p>
+        <p class="mb-4">The plates make up Earth's outer shell, called the lithosphere. Churning currents in the molten rocks below propel them along like a jumble of conveyor belts in disrepair. Most geologic activity stems from the interplay where the plates meet or divide.</p>
+        <p class="mb-4"><b>Convergent Boundaries:</b> Where plates serving landmasses collide, the crust crumples and buckles into mountain ranges. India and Asia crashed about 55 million years ago, slowly giving rise to the Himalaya, the highest mountain system on Earth. As the mash-up continues, the mountains get higher. Mount Everest, the highest point on Earth, may be a tiny bit taller tomorrow than it is today.</p>
+        <p class="mb-4"><b>Divergent Boundaries:</b> In the oceans, magma from deep in the Earth's mantle rises toward the surface and pushes apart two or more plates. Mountains and volcanoes rise along the seam. The process renews the ocean floor and widens the giant basins.</p>
+        <p class="mb-4"><b>Transform Boundaries:</b> The San Andreas Fault in California is an example of a transform boundary, where two plates grind past each other. These boundaries don't produce spectacular features like mountains, but the halting motion often triggers large earthquakes.</p>`,
+        items: [
+            { 
+                id: 'plate1', 
+                stem: "Which sentence from the article is based on a <b>reasoned judgment</b> rather than a strictly verifiable fact?", 
+                options: [
+                    "\"Mount Everest, the highest point on Earth, may be a tiny bit taller tomorrow than it is today.\"",
+                    "\"The plates make up Earth's outer shell, called the lithosphere.\"",
+                    "\"The San Andreas Fault in California is an example of a transform boundary.\"",
+                    "\"Six of the majors are named for the continents embedded within them.\""
+                ], 
+                correct_answer: "\"Mount Everest, the highest point on Earth, may be a tiny bit taller tomorrow than it is today.\"", 
+                rationale: "<b>Lesson: Fact vs. Judgment (RST.6-8.8).</b> Most sentences here are facts (names, definitions). The statement about Everest being taller 'tomorrow' is a scientific prediction/judgment based on the evidence that the crash is continuing.", 
+                standard: "RST.6-8.8", 
+                difficulty: 5 
+            },
+            { 
+                id: 'plate2', 
+                stem: "According to the text, what is the primary cause of the motion of Earth's plates?", 
+                options: [
+                    "Churning currents in the molten rocks below the lithosphere.",
+                    "The weight of the oceans pushing down on the crust.",
+                    "The gravitational pull of the moon.",
+                    "The formation of the San Andreas Fault."
+                ], 
+                correct_answer: "Churning currents in the molten rocks below the lithosphere.", 
+                rationale: "<b>Lesson: Cause & Effect (RST.6-8.1).</b> The text explicitly compares the 'churning currents' to 'conveyor belts' that propel the plates along.", 
+                standard: "RST.6-8.1", 
+                difficulty: 3 
+            }
+        ]
+    },
+    {
+        id: 'sci-elephants',
+        passage: `<h3 class="text-xl font-bold mb-2">Elephants Can Lend a Helping Trunk</h3>
+        <p class="mb-4"><b>Source:</b> <i>Science Magazine</i> (Released Item VH057675)</p>
+        <p class="mb-4">Elephants know when they need a helping hand—or rather, trunk. That's the conclusion of a study that tested the cooperative skills of Asian elephants in Thailand. Joshua Plotnik, a behavioral ecologist, adapted a classic experiment from the 1930s meant for chimps. Two animals are presented with food that can only be reached by pulling a rope. The catch: The rope is threaded through the platform so that if only one pulls, the rope comes loose and the food remains out of reach. They must pull together.</p>
+        <p class="mb-4">The elephants learned quickly. In one variation, the partner elephant was released 45 seconds after the first. The first elephant would wait at the fence, holding its end of the rope but not pulling, until the partner arrived. \"They learned to do this faster than the chimpanzees,\" says Plotnik. \"They would stand there holding their end of the rope, just waiting.\" This suggests they understood that the partner was necessary for success.</p>`,
+        items: [
+            { 
+                id: 'ele1', 
+                stem: "<b>EXPERIMENTAL SEQUENCE:</b> Which option correctly orders the steps of the experiment described in the text?", 
+                options: [
+                    "1. Set up apparatus -> 2. Release elephants simultaneously -> 3. Delay release of partner -> 4. Observe waiting behavior",
+                    "1. Observe waiting behavior -> 2. Delay release of partner -> 3. Set up apparatus -> 4. Release elephants simultaneously",
+                    "1. Delay release of partner -> 2. Set up apparatus -> 3. Release elephants simultaneously -> 4. Observe waiting behavior",
+                    "1. Set up apparatus -> 2. Observe waiting behavior -> 3. Release elephants simultaneously -> 4. Delay release of partner"
+                ], 
+                correct_answer: "1. Set up apparatus -> 2. Release elephants simultaneously -> 3. Delay release of partner -> 4. Observe waiting behavior", 
+                rationale: "<b>Lesson: Scientific Process (RST.6-8.3).</b> The text implies a logical flow: First, the tool (rope/platform) is built. Then they test the basic task (pulling together). Then they introduce the variable (the delay). Finally, they observe the result (the waiting).", 
+                standard: "RST.6-8.3", 
+                difficulty: 6 
+            },
+            { 
+                id: 'ele2', 
+                stem: "Why does the author mention chimpanzees in paragraph 2?", 
+                options: [
+                    "To highlight the elephants' superior patience and cognitive speed in this specific task.",
+                    "To suggest that chimpanzees are smarter than elephants.",
+                    "To show that the experiment was originally designed for humans.",
+                    "To explain why the rope broke."
+                ], 
+                correct_answer: "To highlight the elephants' superior patience and cognitive speed in this specific task.", 
+                rationale: "<b>Lesson: Comparisons (RST.6-8.9).</b> The text says they learned 'faster than the chimpanzees' and inhibited pulling longer, emphasizing the elephants' impressive intelligence.", 
+                standard: "RST.6-8.9", 
+                difficulty: 4 
+            }
+        ]
+    },
+    {
+        id: 'sci-ash-borer',
+        passage: `<h3 class="text-xl font-bold mb-2">The Emerald Ash Borer</h3>
+        <p class="mb-4"><b>Source:</b> <i>Dept. of Energy & Environmental Protection</i> (Released Item X0804)</p>
+        <p class="mb-4">The emerald ash borer (EAB) is a small, green beetle belonging to a family known as the buprestids, or metallic wood boring beetles. Adult EABs are between 0.3 to 0.55 inches in length—small by most standards but large compared to other buprestids.</p>
+        <p class="mb-4">During its life cycle, EAB undergoes a complete metamorphosis. It starts as an egg, becomes a larva (grub), changes to a pupa, and finally an adult. The larvae feed on the phloem (inner bark) and cambium of the tree, which is what causes the damage.</p>
+        <p class="mb-4">EAB is not native to North America. It was first found in 2002 near Detroit, Michigan. It likely arrived on woody packaging materials. Movement of ash wood, particularly firewood and logs, has been cited as a likely means by which EAB has spread to 12 states. Strict regulations have been initiated to prevent moving these materials from infested areas.</p>`,
+        items: [
+            { 
+                id: 'eab1', 
+                stem: "Why does the author include the detail that EAB was 'first found in 2002' and 'not native to North America'?", 
+                options: [
+                    "To explain why the infestation is a relatively new and rapidly spreading problem.",
+                    "To prove that beetles cannot survive in cold weather.",
+                    "To suggest that the beetle was created in a laboratory.",
+                    "To argue that ash trees are not native to North America."
+                ], 
+                correct_answer: "To explain why the infestation is a relatively new and rapidly spreading problem.", 
+                rationale: "<b>Lesson: Author's Purpose (RST.6-8.6).</b> By establishing that it isn't native and arrived recently (2002), the author explains why strict regulations are needed now—it's an invasive species spreading unchecked.", 
+                standard: "RST.6-8.6", 
+                difficulty: 5 
+            },
+            { 
+                id: 'eab2', 
+                stem: "According to the text, which human activity has most assisted the EAB in its spread?", 
+                options: [
+                    "Moving firewood, logs, and nursery stock from place to place.",
+                    "Planting too many ash trees in cities.",
+                    "Using metallic pesticides.",
+                    "Building wooden houses."
+                ], 
+                correct_answer: "Moving firewood, logs, and nursery stock from place to place.", 
+                rationale: "<b>Lesson: Cause & Effect (RST.6-8.1).</b> The text explicitly states: 'Movement of ash... in the form of firewood... has been cited as a likely means by which EAB has been assisted in its spread.'", 
+                standard: "RST.6-8.1", 
+                difficulty: 2 
+            }
+        ]
+    },
+
+    {
+        id: 'sci-edison',
+        passage: `<h3 class="text-xl font-bold mb-2">The Incredible Talking Machine</h3>
+        <p class="mb-4"><b>Source:</b> <i>Released Item VF891434</i></p>
+        <p class="mb-4">The invention of the phonograph made Thomas Edison world-famous, but it took him years to understand what it did best. In 1877, Edison and his assistants invented the first machine for recording and playing back sounds. They thought it would be used to reproduce the human voice, perhaps as a 'voice writer' or 'portable teacher,' but they had no clear idea of its exact purpose.</p>
+        <p class="mb-4">Edison once said, \"Anything that won't sell, I don't want to invent.\" But he was a better inventor than salesman. He disapproved of popular music, dismissing jazz as something for \"the nuts.\" Eventually, competitors like the Victor Talking Machine Co. emerged. Victor built a stable of musical stars, while Edison refused to pay the royalties necessary to recruit them.</p>
+        <p class="mb-4">In the 1920s, Edison refused to adopt radio, disliking its sound quality. By the time he relented, it was too late. His company ceased production shortly after the 1929 stock market crash.</p>`,
+        items: [
+            { 
+                id: 'ed1', 
+                stem: "Which statement best explains the irony of Edison's connection to the music industry?", 
+                options: [
+                    "He invented the technology that made recorded music possible, yet he personally disliked popular music.",
+                    "He loved jazz music but couldn't invent a machine to play it.",
+                    "He was a better salesman than he was an inventor.",
+                    "He made millions of dollars from radio sales in 1920."
+                ], 
+                correct_answer: "He invented the technology that made recorded music possible, yet he personally disliked popular music.", 
+                rationale: "<b>Lesson: Connections & Distinctions (RST.6-8.1).</b> The text highlights the conflict: He created the machine (phonograph) but hated the content (jazz/dance music) that made it popular.", 
+                standard: "RST.6-8.1", 
+                difficulty: 5 
+            },
+            { 
+                id: 'ed2', 
+                stem: "What caused Edison's company to fall behind competitors like the Victor Talking Machine Co.?", 
+                options: [
+                    "Edison's refusal to pay royalties for musical stars.",
+                    "Edison's machine was too expensive to build.",
+                    "The Victor machine was the first to use electricity.",
+                    "Edison retired before the company was successful."
+                ], 
+                correct_answer: "Edison's refusal to pay royalties for musical stars.", 
+                rationale: "<b>Lesson: Cause & Effect (RI.8.3).</b> The text explicitly states: 'Victor built a stable of notable musical artists. Edison remained unwilling to pay royalty advances necessary to recruit stars.'", 
+                standard: "RI.8.3", 
+                difficulty: 4 
+            }
+        ]
+    },
+        ]
     }
 ]; // <--- CLOSING BRACKET for the itemBank array
 
 const allMissions = [
-    // SECTOR 1: FOUNDATIONS (Level 1)
-    { id: 'm-confetti', title: 'The Root Cellar', description: 'RL.8.1: Confetti Girl Protocols', minLevel: 1, passageId: 'rok-lit-confetti', sticker: '📚' },
-    { id: 'm-tortilla', title: 'The Lost Balloon', description: 'RL.8.4: Tortilla Sun Metaphors', minLevel: 1, passageId: 'rok-lit-tortilla', sticker: '🎈' },
-    { id: 'm-borer', title: 'Beetle Invasion', description: 'RI.8.5: Ash Borer Structure', minLevel: 1, passageId: 'inf-ash-borer', sticker: '🪲' },
-    { id: 'm-snow', title: 'Boarder Protocol', description: 'RI.8.9: Comparative Boarding', minLevel: 1, passageId: 'inf-snow-sand', sticker: '🏂' },
-    { id: 'm-grammar', title: 'The Editor\'s Desk', description: 'L.8.1: Grammar Gauntlet', minLevel: 1, passageId: 'lang-editor-desk', sticker: '📝' },
-    { id: 'm-silver', title: 'Garbage King', description: 'RL.8.5: Silverstein\'s Hyperbole', minLevel: 1, passageId: 'lit-silver-garbage', sticker: '🗑️' },
+        // ==========================================
+        // SECTOR 1: FOUNDATIONS (Level 1)
+        // Focus: Key Ideas, Vocab, Basic Grammar
+        // ==========================================
+        { 
+            id: 'm-confetti', 
+            passageId: 'rok-lit-confetti', 
+            title: 'The Root Cellar', 
+            description: 'RL.8.1: Inference Engine', 
+            minLevel: 1, 
+            sticker: '📚' 
+        },
+        { 
+            id: 'm-snow', 
+            passageId: 'info-snowboarding', // UPDATED to New Passage
+            title: 'Alpine Protocol', 
+            description: 'RI.8.3: Comparative Analysis', 
+            minLevel: 1, 
+            sticker: '🏂' 
+        },
+        { 
+            id: 'm-grammar', 
+            passageId: 'lang-editor-desk', 
+            title: 'The Editor\'s Desk', 
+            description: 'L.8.1: Grammar Gauntlet', 
+            minLevel: 1, 
+            sticker: '📝' 
+        },
+        { 
+            id: 'm-tortilla', 
+            passageId: 'rok-lit-tortilla', 
+            title: 'The Lost Balloon', 
+            description: 'RL.8.4: Metaphor Logic', 
+            minLevel: 1, 
+            sticker: '🎈' 
+        },
+        { 
+            id: 'm-silver', 
+            passageId: 'lit-silver-garbage', 
+            title: 'Garbage King', 
+            description: 'RL.8.5: Hyperbole Scanner', 
+            minLevel: 1, 
+            sticker: '🗑️' 
+        },
 
-    // SECTOR 2: INTERMEDIATE (Level 2)
-    { id: 'm-logic', title: 'Pachyderm Logic', description: 'RI.8.8: Elephant Empathy Research', minLevel: 2, passageId: 'inf-elephant-master', sticker: '🐘' },
-    { id: 'm-keys', title: 'Balabad Secrets', description: 'RL.8.3: Keeper of Keys', minLevel: 2, passageId: 'lit-balabad-matrix', sticker: '🗝️' },
-    { id: 'm-road', title: 'Yellow Woods', description: 'RL.8.4: Poetry & Frost', minLevel: 2, passageId: 'lit-frost-road', sticker: '🍂' },
-    { id: 'm-vocab', title: 'The Root Lab', description: 'L.8.4: Latin & Greek Roots', minLevel: 2, passageId: 'voc-roots-lab', sticker: '🧪' },
-    { id: 'm-dickinson', title: 'Soul Perch', description: 'RL.8.2: Dickinson\'s Hope', minLevel: 2, passageId: 'lit-dickinson-hope', sticker: '🕊️' },
-    { id: 'm-paw', title: 'Three Wishes', description: 'RL.8.3: Mood & Tension', minLevel: 2, passageId: 'lit-jacobs-paw', sticker: '🐒' },
-    { id: 'm-tagore', title: 'Paper Boats', description: 'RL.8.6: Tagore\'s Voice', minLevel: 2, passageId: 'lit-tagore-boats', sticker: '⛵' },
-    { id: 'm-write', title: 'The Newsroom', description: 'W.8.2: Editing Strategy', minLevel: 2, passageId: 'wrt-urban-garden', sticker: '📰' },
-    { id: 'm-punct', title: 'Code Breaker', description: 'L.8.2: Punctuation Lab', minLevel: 2, passageId: 'lang-punct-lab', sticker: '📟' },
-    { id: 'm-func', title: 'The Warranty', description: 'RI.8.5: Functional Text', minLevel: 2, passageId: 'func-warranty', sticker: '📜' },
+        // ==========================================
+        // SECTOR 2: INTERMEDIATE (Level 2)
+        // Focus: Poetry, Structure, Historical Sequence
+        // ==========================================
+        { 
+            id: 'm-senate', 
+            passageId: 'hist-senate-records', // NEW IAR MISSION
+            title: 'The Archive', 
+            description: 'RH.6-8.3: Process Sequence', 
+            minLevel: 2, 
+            sticker: '📜' 
+        },
+        { 
+            id: 'm-logic', 
+            passageId: 'inf-elephant-master', 
+            title: 'Pachyderm Logic', 
+            description: 'RI.8.8: Empathy Research', 
+            minLevel: 2, 
+            sticker: '🐘' 
+        },
+        { 
+            id: 'm-keys', 
+            passageId: 'lit-balabad-matrix', 
+            title: 'Balabad Secrets', 
+            description: 'RL.8.3: Keeper of Keys', 
+            minLevel: 2, 
+            sticker: '🗝️' 
+        },
+        { 
+            id: 'm-road', 
+            passageId: 'lit-frost-road', 
+            title: 'Yellow Woods', 
+            description: 'RL.8.4: Poetry & Frost', 
+            minLevel: 2, 
+            sticker: '🍂' 
+        },
+        { 
+            id: 'm-vocab', 
+            passageId: 'voc-roots-lab', 
+            title: 'The Root Lab', 
+            description: 'L.8.4: Latin & Greek Roots', 
+            minLevel: 2, 
+            sticker: '🧪' 
+        },
+        { 
+            id: 'm-dickinson', 
+            passageId: 'lit-dickinson-hope', 
+            title: 'Soul Perch', 
+            description: 'RL.8.2: Dickinson\'s Hope', 
+            minLevel: 2, 
+            sticker: '🕊️' 
+        },
+        { 
+            id: 'm-paw', 
+            passageId: 'lit-jacobs-paw', 
+            title: 'Three Wishes', 
+            description: 'RL.8.3: Mood & Tension', 
+            minLevel: 2, 
+            sticker: '🐒' 
+        },
+        { 
+            id: 'm-tagore', 
+            passageId: 'lit-tagore-boats', 
+            title: 'Paper Boats', 
+            description: 'RL.8.6: Tagore\'s Voice', 
+            minLevel: 2, 
+            sticker: '⛵' 
+        },
+        { 
+            id: 'm-write', 
+            passageId: 'wrt-urban-garden', 
+            title: 'The Newsroom', 
+            description: 'W.8.2: Editing Strategy', 
+            minLevel: 2, 
+            sticker: '📰' 
+        },
+        { 
+            id: 'm-punct', 
+            passageId: 'lang-punct-lab', 
+            title: 'Code Breaker', 
+            description: 'L.8.2: Punctuation Lab', 
+            minLevel: 2, 
+            sticker: '📟' 
+        },
+        { 
+            id: 'm-func', 
+            passageId: 'func-warranty', 
+            title: 'The Warranty', 
+            description: 'RI.8.5: Functional Text', 
+            minLevel: 2, 
+            sticker: '🛡️' 
+        },
 
-    // SECTOR 3: ADVANCED (Level 3)
-    { id: 'm-captain', title: 'Port of Call', description: 'RL.8.2: Whitman & Lincoln', minLevel: 3, passageId: 'lit-whitman-captain', sticker: '⚓' },
-    { id: 'm-wild', title: 'Northern Pride', description: 'RL.8.3: Call of the Wild', minLevel: 3, passageId: 'lit-london-wild', sticker: '🐾' },
-    { id: 'm-wild-boot', title: 'Lost Boot', description: 'RI.8.3: Memoir Resilience', minLevel: 3, passageId: 'bio-strayed-wild', sticker: '🥾' },
-    { id: 'm-bio', title: 'Freedom Reader', description: 'RI.8.3: Narrative Nonfiction', minLevel: 3, passageId: 'bio-douglass', sticker: '🕯️' },
-    { id: 'm-tech', title: 'Drone Manual', description: 'RI.8.5: Technical Procedures', minLevel: 3, passageId: 'tech-drone-manual', sticker: '🚁' },
-    { id: 'm-conflict', title: 'The Zoo Debate', description: 'RI.8.9: Conflicting Views', minLevel: 3, passageId: 'inf-conflict-zoo', sticker: '🦁' },
-    { id: 'm-satire', title: 'Mystery Loaf', description: 'RL.8.6: Satire & Tone', minLevel: 3, passageId: 'lit-satire-lunch', sticker: '🤢' },
-    { id: 'm-idiom', title: 'Idiom Island', description: 'L.8.5: Figurative Language', minLevel: 3, passageId: 'lit-idiom-trip', sticker: '🏝️' },
-    { id: 'm-shakur', title: 'Concrete Rose', description: 'RL.8.4: Tupac\'s Symbolism', minLevel: 3, passageId: 'lit-shakur-rose', sticker: '🌹' },
-    { id: 'm-lottery', title: 'The Black Box', description: 'RL.8.6: Irony & Tradition', minLevel: 3, passageId: 'lit-jackson-lottery', sticker: '🪨' },
+        // ==========================================
+        // SECTOR 3: ADVANCED (Level 3)
+        // Focus: Science Standards, Complex History, Argument
+        // ==========================================
+        { 
+            id: 'm-tectonic', 
+            passageId: 'sci-plate-tectonics', // NEW IAR MISSION
+            title: 'Seismic Shift', 
+            description: 'RST.6-8.8: Fact vs. Judgment', 
+            minLevel: 3, 
+            sticker: '🌋' 
+        },
+        { 
+            id: 'm-bessie', 
+            passageId: 'hist-bessie-coleman', // NEW IAR MISSION
+            title: 'The Aviator', 
+            description: 'RI.8.3: Historical Sequence', 
+            minLevel: 3, 
+            sticker: '✈️' 
+        },
+        { 
+            id: 'm-captain', 
+            passageId: 'lit-whitman-captain', 
+            title: 'Port of Call', 
+            description: 'RL.8.2: Whitman & Lincoln', 
+            minLevel: 3, 
+            sticker: '⚓' 
+        },
+        { 
+            id: 'm-wild', 
+            passageId: 'lit-london-wild', 
+            title: 'Northern Pride', 
+            description: 'RL.8.3: Call of the Wild', 
+            minLevel: 3, 
+            sticker: '🐾' 
+        },
+        { 
+            id: 'm-wild-boot', 
+            passageId: 'bio-strayed-wild', 
+            title: 'Lost Boot', 
+            description: 'RI.8.3: Memoir Resilience', 
+            minLevel: 3, 
+            sticker: '🥾' 
+        },
+        { 
+            id: 'm-bio', 
+            passageId: 'bio-douglass', 
+            title: 'Freedom Reader', 
+            description: 'RI.8.3: Narrative Nonfiction', 
+            minLevel: 3, 
+            sticker: '🕯️' 
+        },
+        { 
+            id: 'm-tech', 
+            passageId: 'tech-drone-manual', 
+            title: 'Drone Manual', 
+            description: 'RI.8.5: Technical Procedures', 
+            minLevel: 3, 
+            sticker: '🚁' 
+        },
+        { 
+            id: 'm-conflict', 
+            passageId: 'inf-conflict-zoo', 
+            title: 'The Zoo Debate', 
+            description: 'RI.8.9: Conflicting Views', 
+            minLevel: 3, 
+            sticker: '🦁' 
+        },
+        { 
+            id: 'm-satire', 
+            passageId: 'lit-satire-lunch', 
+            title: 'Mystery Loaf', 
+            description: 'RL.8.6: Satire & Tone', 
+            minLevel: 3, 
+            sticker: '🤢' 
+        },
+        { 
+            id: 'm-idiom', 
+            passageId: 'lit-idiom-trip', 
+            title: 'Idiom Island', 
+            description: 'L.8.5: Figurative Language', 
+            minLevel: 3, 
+            sticker: '🏝️' 
+        },
+        { 
+            id: 'm-shakur', 
+            passageId: 'lit-shakur-rose', 
+            title: 'Concrete Rose', 
+            description: 'RL.8.4: Tupac\'s Symbolism', 
+            minLevel: 3, 
+            sticker: '🌹' 
+        },
+        { 
+            id: 'm-lottery', 
+            passageId: 'lit-jackson-lottery', 
+            title: 'The Black Box', 
+            description: 'RL.8.6: Irony & Tradition', 
+            minLevel: 3, 
+            sticker: '🪨' 
+        },
+        { 
+            id: 'm-analogy', 
+            passageId: 'voc-analogy-forge', 
+            title: 'Word Forge', 
+            description: 'L.8.5: Analogies & Nuance', 
+            minLevel: 3, 
+            sticker: '🔨' 
+        },
+        { 
+            id: 'm-drama', 
+            passageId: 'lit-drama-court', 
+            title: 'The Verdict', 
+            description: 'RL.8.5: Stage Directions', 
+            minLevel: 3, 
+            sticker: '🎭' 
+        },
+        { 
+            id: 'm-dict', 
+            passageId: 'voc-dict-entry', 
+            title: 'The Lexicon', 
+            description: 'L.8.4.c: Dictionary Skills', 
+            minLevel: 3, 
+            sticker: '📖' 
+        },
+        { 
+            id: 'm-tone', 
+            passageId: 'lit-tone-shift', 
+            title: 'Tone Tuner', 
+            description: 'RL.8.4: Word Nuance', 
+            minLevel: 3, 
+            sticker: '🎨' 
+        },
 
-    // SECTOR 4: MASTERY (Level 4)
-    { id: 'm-heart', title: 'Dreadful Paces', description: 'RL.8.6: Gothic Reliability', minLevel: 4, passageId: 'lit-poe-heart', sticker: '💓' },
-    { id: 'm-cask', title: 'The Catacombs', description: 'RL.8.6: Unreliable Narrator', minLevel: 4, passageId: 'lit-poe-cask', sticker: '🧱' },
-    { id: 'm-argue', title: 'The Debate Stage', description: 'RI.8.8: Argument & Claims', minLevel: 4, passageId: 'arg-school-start', sticker: '⚖️' },
-    { id: 'm-media', title: 'Shark Signal', description: 'RI.8.7: Video vs Text', minLevel: 4, passageId: 'media-shark-week', sticker: '🦈' },
-    { id: 'm-cross', title: 'Storm Chaser', description: 'RL.8.5: Poem vs Prose', minLevel: 4, passageId: 'cross-storm-view', sticker: '🌪️' },
-    { id: 'm-research', title: 'The Fact Checker', description: 'W.8.7: Source Selection', minLevel: 4, passageId: 'res-source-select', sticker: '🗂️' },
+        // ==========================================
+        // SECTOR 4: MASTERY (Level 4)
+        // Focus: Gothic Lit, Scientific Experiment, Media
+        // ==========================================
+        { 
+            id: 'm-elephant', 
+            passageId: 'sci-elephants', // NEW IAR MISSION
+            title: 'The Trunk Lab', 
+            description: 'RST.6-8.3: Experiment Steps', 
+            minLevel: 4, 
+            sticker: '🧪' 
+        },
+        { 
+            id: 'm-heart', 
+            passageId: 'lit-poe-heart', 
+            title: 'Dreadful Paces', 
+            description: 'RL.8.6: Gothic Reliability', 
+            minLevel: 4, 
+            sticker: '💓' 
+        },
+        { 
+            id: 'm-cask', 
+            passageId: 'lit-poe-cask', 
+            title: 'The Catacombs', 
+            description: 'RL.8.6: Unreliable Narrator', 
+            minLevel: 4, 
+            sticker: '🧱' 
+        },
+        { 
+            id: 'm-argue', 
+            passageId: 'arg-school-start', 
+            title: 'The Debate Stage', 
+            description: 'RI.8.8: Argument & Claims', 
+            minLevel: 4, 
+            sticker: '⚖️' 
+        },
+        { 
+            id: 'm-media', 
+            passageId: 'media-shark-week', 
+            title: 'Shark Signal', 
+            description: 'RI.8.7: Video vs Text', 
+            minLevel: 4, 
+            sticker: '🦈' 
+        },
+        { 
+            id: 'm-cross', 
+            passageId: 'cross-storm-view', 
+            title: 'Storm Chaser', 
+            description: 'RL.8.5: Poem vs Prose', 
+            minLevel: 4, 
+            sticker: '🌪️' 
+        },
+        { 
+            id: 'm-research', 
+            passageId: 'res-source-select', 
+            title: 'The Fact Checker', 
+            description: 'W.8.7: Source Selection', 
+            minLevel: 4, 
+            sticker: '🗂️' 
+        },
+        { 
+            id: 'm-data-sleep', 
+            passageId: 'data-sleep-study', 
+            title: 'Sleep Lab Data', 
+            description: 'RI.8.7: Interpreting Tables', 
+            minLevel: 4, 
+            sticker: '📊' 
+        },
+        { 
+            id: 'm-data-trees', 
+            passageId: 'data-invasive-species', 
+            title: 'Forest Stats', 
+            description: 'RI.8.7: Graph Analysis', 
+            minLevel: 4, 
+            sticker: '📉' 
+        },
+        { 
+            id: 'm-fallacy', 
+            passageId: 'arg-fallacy-speech', 
+            title: 'The Campaign', 
+            description: 'RI.8.8: Logical Fallacies', 
+            minLevel: 4, 
+            sticker: '🗳️' 
+        },
+        { 
+            id: 'm-summary', 
+            passageId: 'inf-pony-express', 
+            title: 'The Briefing', 
+            description: 'RI.8.2: Objective Summary', 
+            minLevel: 4, 
+            sticker: '🐎' 
+        },
+        { 
+            id: 'm-tech-diag', 
+            passageId: 'tech-elephant-diagram', 
+            title: 'Lab Schematics', 
+            description: 'RI.8.7: Technical Diagrams', 
+            minLevel: 4, 
+            sticker: '📐' 
+        },
+        { 
+            id: 'm-tech-map', 
+            passageId: 'tech-map-route', 
+            title: 'Route 66', 
+            description: 'RI.8.7: Map Analysis', 
+            minLevel: 4, 
+            sticker: '🗺️' 
+        },
+        { 
+            id: 'm-dual-core', 
+            passageId: 'comp-lit-paired', 
+            title: 'Dual Core', 
+            description: 'RL.8.9: Paired Fiction', 
+            minLevel: 4, 
+            sticker: '♊' 
+        },
+        { 
+            id: 'm-ev-rank', 
+            passageId: 'ev-quality-lab', 
+            title: 'Evidence Ranker', 
+            description: 'RI.8.8: Anecdotal vs. Data', 
+            minLevel: 4, 
+            sticker: '⚖️' 
+        },
 
-    // SECTOR 5: THE CORE (Boss)
-    { id: 'm-compare', title: 'Myth vs. Machine', description: 'RL.8.9: Modern Prometheus', minLevel: 5, passageId: 'lit-myth-remix', sticker: '⚡' },
-    { id: 'm-rhet', title: 'The Podium', description: 'L.8.5: Rhetorical Devices', minLevel: 5, passageId: 'rhet-speech-liberty', sticker: '🎙️' },
-    { id: 'm-boss', title: '🔴 SYSTEM CORE', description: 'BOSS: The Preamble', minLevel: 5, passageId: 'boss-constitution', sticker: '🏛️' },
-
-    // Add these to SECTOR 4 or 5
-    { id: 'm-data-sleep', title: 'Sleep Lab Data', description: 'RI.8.7: Interpreting Tables', minLevel: 4, passageId: 'data-sleep-study', sticker: '📊' },
-    { id: 'm-data-trees', title: 'Forest Stats', description: 'RI.8.7: Graph Analysis', minLevel: 4, passageId: 'data-invasive-species', sticker: '📉' },
-
-    { id: 'm-fallacy', title: 'The Campaign', description: 'RI.8.8: Logical Fallacies', minLevel: 4, passageId: 'arg-fallacy-speech', sticker: '🗳️' },
-    { id: 'm-summary', title: 'The Briefing', description: 'RI.8.2: Objective Summary', minLevel: 4, passageId: 'inf-pony-express', sticker: '🐎' },
-    { id: 'm-analogy', title: 'Word Forge', description: 'L.8.5: Analogies & Nuance', minLevel: 3, passageId: 'voc-analogy-forge', sticker: '🔨' },
-
-    { id: 'm-drama', title: 'The Verdict', description: 'RL.8.5: Stage Directions', minLevel: 3, passageId: 'lit-drama-court', sticker: '🎭' },
-    { id: 'm-dict', title: 'The Lexicon', description: 'L.8.4.c: Dictionary Skills', minLevel: 3, passageId: 'voc-dict-entry', sticker: '📖' },
-
-    { id: 'm-tech-diag', title: 'Lab Schematics', description: 'RI.8.7: Technical Diagrams', minLevel: 4, passageId: 'tech-elephant-diagram', sticker: '📐' },
-    { id: 'm-tech-map', title: 'Route 66', description: 'RI.8.7: Map Analysis', minLevel: 4, passageId: 'tech-map-route', sticker: '🗺️' },
-
-    { id: 'm-dual-core', title: 'Dual Core', description: 'RL.8.9: Paired Fiction', minLevel: 4, passageId: 'comp-lit-paired', sticker: '♊' },
-    { id: 'm-ev-rank', title: 'Evidence Ranker', description: 'RI.8.8: Anecdotal vs. Data', minLevel: 4, passageId: 'ev-quality-lab', sticker: '⚖️' },
-    { id: 'm-tone', title: 'Tone Tuner', description: 'RL.8.4: Word Nuance', minLevel: 3, passageId: 'lit-tone-shift', sticker: '🎨' }
-];
+        // ==========================================
+        // SECTOR 5: THE CORE (Level 5)
+        // Focus: Technology, Synthesis, The Boss
+        // ==========================================
+        { 
+            id: 'm-edison', 
+            passageId: 'sci-edison', // NEW IAR MISSION
+            title: 'Frequency Lab', 
+            description: 'RST.6-8.1: Tech History', 
+            minLevel: 5, 
+            sticker: '📻' 
+        },
+        { 
+            id: 'm-compare', 
+            passageId: 'lit-myth-remix', 
+            title: 'Myth vs. Machine', 
+            description: 'RL.8.9: Modern Prometheus', 
+            minLevel: 5, 
+            sticker: '⚡' 
+        },
+        { 
+            id: 'm-rhet', 
+            passageId: 'rhet-speech-liberty', 
+            title: 'The Podium', 
+            description: 'L.8.5: Rhetorical Devices', 
+            minLevel: 5, 
+            sticker: '🎙️' 
+        },
+        { 
+            id: 'm-borer', 
+            passageId: 'sci-ash-borer', // UPDATED to New Passage & Moved to Level 5
+            title: 'Bio-Threat', 
+            description: 'RST.6-8.6: Invasive Species', 
+            minLevel: 5, 
+            sticker: '🪲' 
+        },
+        // THE BOSS
+        { 
+            id: 'm-boss', 
+            passageId: 'boss-constitution', 
+            title: '🔴 SYSTEM CORE', 
+            description: 'BOSS: The Preamble', 
+            minLevel: 5, 
+            sticker: '🏛️' 
+        }
+    ];
 
         // --- DASHBOARD & NAVIGATION ---
         function navigate(screenId) {
@@ -1335,67 +2053,168 @@ function selectNextQuestion(mData) {
             renderShop();
         }
 
-        function renderShop() {
-            const grid = document.getElementById('shop-grid');
-            grid.innerHTML = '';
-            document.getElementById('shop-token-display').textContent = gameState.user.tokens;
-            shopCatalog[gameState.currentShopTab].forEach(item => {
-                const isOwned = (item.type === 'avatar' && gameState.user.history.some(h => h.boughtId === item.id)) || 
-                               (item.type === 'sticker' && gameState.user.stickers.includes(item.icon));
-                const card = document.createElement('div');
-                card.className = `item-card bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-lg flex flex-col items-center text-center`;
-                card.innerHTML = `<div class="text-6xl mb-6 bg-gray-50 dark:bg-gray-900 w-24 h-24 flex items-center justify-center rounded-2xl shadow-inner">${item.icon}</div><h3 class="text-xl font-bold dark:text-white mb-1 uppercase tracking-tighter">${item.name}</h3><p class="text-sm text-gray-500 mb-6 h-10">${item.description || 'Exclusive collectible.'}</p><button onclick="buyItem('${item.id}')" class="w-full button font-black py-4 rounded-2xl ${isOwned ? 'bg-gray-300 dark:bg-gray-700 text-gray-400' : 'bg-yellow-500 text-yellow-950 shadow-md'}" ${isOwned ? 'disabled' : ''}>${isOwned ? 'OWNED' : '💰 ' + item.cost}</button>`;
-                grid.appendChild(card);
-            });
-            navigate('shop-screen');
+function renderShop() {
+    // 1. Update the Token Counter in the Shop Header
+    const tokenDisplay = document.getElementById('shop-token-display');
+    if (tokenDisplay) tokenDisplay.textContent = gameState.user.tokens;
+
+    // 2. Target the existing Grid in your HTML
+    const grid = document.getElementById('shop-grid');
+    if (!grid) {
+        console.error("Error: 'shop-grid' element not found.");
+        return;
+    }
+    grid.innerHTML = '';
+
+    // 3. Determine which Tab is active (Avatars, Stickers, or Items)
+    const tab = gameState.currentShopTab || 'avatars';
+    
+    // 4. Update Tab Buttons Visuals
+    ['avatars', 'stickers', 'items'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if(btn) {
+            if(t === tab) {
+                btn.className = "px-6 py-3 font-bold uppercase tracking-widest border-b-4 border-pink-500 text-pink-600";
+            } else {
+                btn.className = "px-6 py-3 font-bold uppercase tracking-widest text-gray-400 hover:text-pink-400";
+            }
         }
+    });
+
+    const items = shopCatalog[tab];
+
+    // 5. Render the items for that tab
+    if (items && items.length > 0) {
+        items.forEach(item => {
+            // Check Ownership
+            let isOwned = false;
+            let quantity = 0;
+
+            if (tab === 'avatars') {
+                isOwned = gameState.user.avatars.includes(item.id);
+            } else if (tab === 'stickers') {
+                // Crates are never "owned" (you can always buy more)
+                if (item.type !== 'crate') {
+                    isOwned = gameState.user.stickers.includes(item.icon);
+                }
+            } else if (tab === 'items') {
+                // Items show quantity instead of "Owned"
+                quantity = gameState.user.inventory[item.key] || 0;
+            }
+
+            // Visual Styles
+            const btnClass = isOwned 
+                ? 'bg-slate-100 dark:bg-slate-800 opacity-60 cursor-not-allowed border-slate-200' 
+                : 'bg-white dark:bg-slate-800 border-pink-500 shadow-[0_4px_0_0_rgba(236,72,153,1)] hover:translate-y-1 hover:shadow-none cursor-pointer';
+
+            // Card HTML
+            const card = document.createElement('div');
+            card.className = `${btnClass} border-2 rounded-2xl p-4 flex flex-col items-center justify-between transition-all relative group h-40`;
+            
+            // Click Logic
+            if (!isOwned || item.type === 'crate') {
+                card.onclick = () => buyItem(item.id);
+            }
+
+            // Content
+            let statusLabel = "";
+            if (isOwned && item.type !== 'crate') statusLabel = '<span class="text-green-500 font-bold">OWNED</span>';
+            else if (tab === 'items') statusLabel = `<span class="text-indigo-500 font-bold">${item.cost} 🪙 (Have: ${quantity})</span>`;
+            else statusLabel = `<span class="text-pink-600 font-bold">${item.cost} 🪙</span>`;
+
+            card.innerHTML = `
+                <div class="text-4xl mb-2">${item.icon}</div>
+                <div class="text-center w-full">
+                    <div class="font-bold text-xs uppercase tracking-wider text-slate-700 dark:text-slate-300 truncate w-full mb-1">
+                        ${item.name}
+                    </div>
+                    <div class="font-mono text-xs">
+                        ${statusLabel}
+                    </div>
+                </div>
+                ${isOwned && item.type !== 'crate' ? '<div class="absolute top-2 right-2 text-green-500 text-lg">✓</div>' : ''}
+            `;
+
+            grid.appendChild(card);
+        });
+    } else {
+        grid.innerHTML = `<div class="col-span-full text-center text-gray-400 py-10 italic">No items found in this section.</div>`;
+    }
+
+    // 6. Navigate to the screen
+    navigate('shop-screen');
+}
 
 async function buyItem(id) {
-            const allItems = [...shopCatalog.avatars, ...shopCatalog.stickers, ...shopCatalog.items];
-            const item = allItems.find(i => i.id === id);
+            // Find item in any category
+            let item = null;
+            let category = '';
+            
+            for (const cat in shopCatalog) {
+                const found = shopCatalog[cat].find(i => i.id === id);
+                if (found) {
+                    item = found;
+                    category = cat;
+                    break;
+                }
+            }
 
-            if(gameState.user.tokens >= item.cost) {
-                // MYSTERY CRATE LOGIC
+            if (!item) return;
+
+            if (gameState.user.tokens < item.cost) {
+                await showModal("Insufficient Funds", "You need more Tokens to purchase this item.", 'error');
+                return;
+            }
+
+            // CHECK OWNERSHIP (Prevent double buying avatars/stickers)
+            if (category === 'avatars' && gameState.user.avatars.includes(item.id)) {
+                await showModal("Already Owned", "You already have this avatar!", 'info');
+                return;
+            }
+            if (category === 'stickers' && item.type !== 'crate' && gameState.user.stickers.includes(item.icon)) {
+                await showModal("Already Owned", "You already have this sticker!", 'info');
+                return;
+            }
+
+            // DEDUCT COST
+            gameState.user.tokens -= item.cost;
+
+            // HANDLE PURCHASE TYPES
+            if (category === 'avatars') {
+                gameState.user.avatars.push(item.id);
+                await showModal("Purchase Successful", `Avatar <b>${item.name}</b> added to profile!`, 'success');
+            } 
+            else if (category === 'stickers') {
                 if (item.type === 'crate') {
-                    // Find stickers the user does NOT have yet
-                    const unowned = shopCatalog.stickers.filter(s => s.type === 'sticker' && !gameState.user.stickers.includes(s.icon));
+                    // CRATE LOGIC: Pick a random sticker they don't have
+                    const allShopStickers = shopCatalog.stickers.filter(s => s.type !== 'crate');
+                    const unowned = allShopStickers.filter(s => !gameState.user.stickers.includes(s.icon));
                     
                     if (unowned.length === 0) {
-                        await showModal("Sold Out", "You have collected every single sticker! Amazing!", 'info');
+                        gameState.user.tokens += item.cost; // Refund
+                        await showModal("Sold Out", "You already own all shop stickers!", 'info');
                         return;
                     }
-
-                    gameState.user.tokens -= item.cost;
-                    // Pick a random prize
+                    
                     const prize = unowned[Math.floor(Math.random() * unowned.length)];
                     gameState.user.stickers.push(prize.icon);
-                    
                     triggerConfetti();
-                    await showModal("Mystery Crate Opened!", `You found a Rare Sticker:<br><br><span style="font-size: 4rem;">${prize.icon}</span><br><b>${prize.name}</b>`, 'success');
+                    await showModal("CRATE OPENED!", `You found: <span class="text-4xl">${prize.icon}</span><br><b>${prize.name}</b>`, 'success');
+                } else {
+                    // STANDARD STICKER LOGIC
+                    gameState.user.stickers.push(item.icon);
+                    await showModal("Purchase Successful", `Sticker added to collection!`, 'success');
                 }
-                // STANDARD ITEM LOGIC
-                else {
-                    gameState.user.tokens -= item.cost;
-                    if(item.type === 'avatar') { 
-                        gameState.user.avatar = item.icon; 
-                        gameState.user.history.push({ boughtId: item.id });
-                    }
-                    else if(item.type === 'sticker') { 
-                        gameState.user.stickers.push(item.icon);
-                    }
-                    else if(item.type === 'consumable') { 
-                        gameState.user.inventory[item.key]++;
-                    }
-                    triggerConfetti();
-                    await showModal("Sync Success", `${item.name} added to protocol.`, 'success');
-                }
-                
-                renderShop(); 
-                updateUI(); 
-                saveProgress();
-            } else { 
-                await showModal("Insufficient Funds", "Complete objectives to earn credits.", 'error');
+            } 
+            else if (category === 'items') {
+                if (!gameState.user.inventory[item.key]) gameState.user.inventory[item.key] = 0;
+                gameState.user.inventory[item.key]++;
+                await showModal("Item Acquired", `<b>${item.name}</b> added to inventory.`, 'success');
             }
+
+            saveProgress();
+            updateUI();
+            renderShop(); // Refresh shop to update buttons
         }
 
         // --- MISSIONS ---
@@ -1427,10 +2246,18 @@ function renderMissions() {
         return;
     }
 
+    // Safety check for data
+    if (!gameState.user.completedIds) gameState.user.completedIds = [];
+    if (!gameState.user.missionBestScores) gameState.user.missionBestScores = {};
+
     zoneMissions.forEach(m => {
         const isLocked = gameState.user.level < m.minLevel;
-        const isCompleted = gameState.user.stickers.includes(m.sticker);
+        const isCompleted = gameState.user.completedIds.includes(m.id);
+        const hasSticker = gameState.user.stickers.includes(m.sticker);
         const isBoss = m.id === 'm-boss';
+        
+        // RETRIEVE SCORE
+        const bestScore = gameState.user.missionBestScores[m.id] || null;
 
         const card = document.createElement('button');
         
@@ -1440,6 +2267,8 @@ function renderMissions() {
             baseClass += isLocked 
                 ? "bg-slate-800 border-slate-700 text-slate-500 opacity-80" 
                 : "bg-gradient-to-br from-red-600 to-rose-700 border-red-500 text-white shadow-[0_8px_0_0_#9f1239]";
+        } else if (isCompleted) {
+            baseClass += "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-400 dark:border-emerald-600 shadow-[0_4px_0_0_#10b981] dark:shadow-none";
         } else {
             baseClass += isLocked
                 ? "bg-slate-50 border-slate-200 text-slate-400 opacity-70"
@@ -1447,8 +2276,20 @@ function renderMissions() {
         }
         
         card.className = baseClass;
+        
         const icon = isCompleted ? '✅' : (isLocked ? '🔒' : (isBoss ? '👹' : '📍'));
-        const stickerDisplay = isCompleted ? `<div class="absolute top-4 right-4 text-4xl drop-shadow-md animate-pulse-slow">${m.sticker}</div>` : '';
+        const stickerDisplay = hasSticker ? `<div class="absolute top-4 right-4 text-4xl drop-shadow-md animate-pulse-slow">${m.sticker}</div>` : '';
+        
+        // SCORE DISPLAY LOGIC
+        // If we have a score, show it. If not, but it's completed, show "Done".
+        let scoreHtml = '';
+        if (isCompleted) {
+             if (bestScore) {
+                 scoreHtml = `<span class="ml-2 bg-white/50 dark:bg-black/20 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700">Score: ${bestScore}</span>`;
+             } else {
+                 scoreHtml = `<span class="ml-2 bg-emerald-200/50 px-2 py-1 rounded text-[10px] font-black uppercase tracking-widest text-emerald-700">Done</span>`;
+             }
+        }
 
         card.innerHTML = `
             ${stickerDisplay}
@@ -1463,8 +2304,11 @@ function renderMissions() {
             </div>
             
             <div class="mt-6 pt-4 border-t ${isBoss ? 'border-white/20' : 'border-slate-100 dark:border-slate-700'} flex justify-between items-center">
-                <span class="text-2xl">${icon}</span>
-                ${!isLocked && !isCompleted ? '<span class="text-xs font-black uppercase tracking-widest text-indigo-500 group-hover:translate-x-1 transition-transform">Start →</span>' : ''}
+                <div class="flex items-center">
+                    <span class="text-2xl">${icon}</span>
+                    ${scoreHtml}
+                </div>
+                ${!isLocked ? '<span class="text-xs font-black uppercase tracking-widest text-indigo-500 group-hover:translate-x-1 transition-transform">' + (isCompleted ? 'Replay ↺' : 'Start →') + '</span>' : ''}
             </div>
         `;
 
@@ -1474,155 +2318,305 @@ function renderMissions() {
     navigate('missions-screen');
 }
 
-        function startMission(id) {
-            gameState.currentMission = allMissions.find(m => m.id === id);
-            gameState.currentQuestionIndex = 0;
-            gameState.missionScore = 0;
-            gameState.consecutiveCorrect = 0;
-            navigate('game-play-screen');
-            startTimer(); 
-            renderInventory();
-            renderMissionQ();
-        }
+function startMission(id) {
+    gameState.currentMission = allMissions.find(m => m.id === id);
+    gameState.currentQuestionIndex = 0;
+    gameState.missionScore = 0;
+    gameState.consecutiveCorrect = 0;
+    
+    // NEW: Track answers for the Back Button functionality
+    gameState.missionAnswers = {}; // Stores { 0: 'Option A', 1: 'Option B' }
+    
+    navigate('game-play-screen');
+    startTimer(); 
+    renderInventory();
+    renderMissionQ();
+}
 
 function renderMissionQ() {
             const mData = itemBank.find(i => i.id === gameState.currentMission.passageId);
-            const q = selectNextQuestion(mData);
             
-            // Check if mission is done
-            if (!q || gameState.currentQuestionIndex >= 10) { endMission(10); return; }
+            // FIXED: Use the ACTUAL number of questions in the passage, no arbitrary limit
+            const realTotal = mData.items.length;
+
+            // Safety check for end of mission
+            if (gameState.currentQuestionIndex >= realTotal) { 
+                endMission(realTotal); 
+                return; 
+            }
+
+            const q = mData.items[gameState.currentQuestionIndex];
             
+            // Update Header Stats
             document.getElementById('game-title').textContent = gameState.currentMission.title;
             document.getElementById('mission-score-display').textContent = gameState.missionScore;
             
             // Render Passage
-            document.getElementById('game-passage').innerHTML = `<div class="dark:text-white"><b class="uppercase tracking-widest text-indigo-500 text-[10px]">Reference Matrix:</b><br>${mData.passage}</div>`;
+            document.getElementById('game-passage').innerHTML = `
+                <div class="mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
+                    <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded">Source Material</span>
+                </div>
+                <div class="font-serif text-lg leading-loose text-slate-800 dark:text-slate-200">
+                    ${mData.passage}
+                </div>
+            `;
             
-            // --- NEW: RANDOMIZE OPTIONS ---
-            // Create a copy of options and shuffle them so A/B/C/D is different every time
+            // Review Mode Check
+            const previousAnswer = gameState.missionAnswers[gameState.currentQuestionIndex];
+            const isReviewMode = previousAnswer !== undefined;
+
+            // Randomize Options
             const displayOptions = [...q.options].sort(() => Math.random() - 0.5);
 
+            // --- BOSS HEALTH BAR LOGIC ---
+            const isBoss = gameState.currentMission.id === 'm-boss';
+            let topVisuals = '';
+
+            if (isBoss) {
+                // Calculate Health %
+                const currentHP = realTotal - gameState.currentQuestionIndex;
+                const percentHP = (currentHP / realTotal) * 100;
+                
+                topVisuals = `
+                    <div class="boss-container">
+                        <div class="flex justify-between px-4 py-2 absolute w-full z-10">
+                            <span class="font-black text-white uppercase tracking-widest drop-shadow-md">⚠️ GLITCH ENTITY</span>
+                            <span class="font-mono font-bold text-white drop-shadow-md">${currentHP} / ${realTotal}</span>
+                        </div>
+                        <div class="health-fill" style="width: ${percentHP}%"></div>
+                    </div>
+                `;
+            } else {
+                // STANDARD UI + COMBO BAR
+                let streakBadge = '';
+                if (gameState.consecutiveCorrect >= 2) {
+                    streakBadge = `
+                        <div class="mb-4 bg-amber-100 border-l-4 border-amber-500 p-3 flex justify-between items-center animate-pulse">
+                            <span class="font-black text-amber-700 uppercase tracking-widest">
+                                🔥 Streak: ${gameState.consecutiveCorrect}
+                            </span>
+                            <span class="text-xs font-bold text-amber-600">
+                                ${gameState.consecutiveCorrect >= 3 ? '3x Multiplier!' : '2x Multiplier!'}
+                            </span>
+                        </div>
+                    `;
+                }
+
+                topVisuals = `
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded">STD: ${q.standard}</span>
+                        <div class="flex gap-3">
+                            <span class="text-xs font-black uppercase tracking-widest text-indigo-500">
+                                Q: ${gameState.currentQuestionIndex + 1} / ${realTotal}
+                            </span>
+                            <span class="text-xs font-black uppercase tracking-widest ${q.difficulty > 6 ? 'text-red-500' : 'text-green-500'}">
+                                Level ${q.difficulty}
+                            </span>
+                        </div>
+                    </div>
+                    ${streakBadge}
+                `;
+            }
+
             document.getElementById('game-questions-area').innerHTML = `
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-[10px] font-black uppercase text-gray-400">Standard: ${q.standard}</p>
-                    ${getDifficultyTag(q.difficulty)}
-                </div>
-                <p class="font-bold text-lg mb-6 dark:text-white">${q.stem}</p>
+                ${topVisuals}
+
+                <h3 class="text-xl font-bold mb-8 text-slate-800 dark:text-white leading-snug">
+                    ${isReviewMode ? '<span class="text-xs text-amber-500 uppercase tracking-widest block mb-2">Reviewing Past Log</span>' : ''}
+                    ${q.stem}
+                </h3>
+                
                 <div class="space-y-3">
-                    ${displayOptions.map(o => `
-                        <label class="flex items-center p-4 border rounded-xl bg-white dark:bg-gray-700 cursor-pointer transition-all hover:bg-gray-50">
-                            <input type="radio" name="mq" value="${o.replace(/"/g, '&quot;')}" class="mr-3 w-5 h-5"> 
-                            <span class="dark:text-white">${o}</span>
-                        </label>
-                    `).join('')}
+                    ${displayOptions.map((o) => {
+                        let itemClass = "group relative flex items-center p-4 border-2 rounded-2xl transition-all ";
+                        let checkIcon = "";
+                        
+                        if (isReviewMode) {
+                            if (o === q.correct_answer) {
+                                itemClass += "border-green-500 bg-green-50 dark:bg-green-900/20 dark:border-green-500";
+                                checkIcon = "✅";
+                            } else if (o === previousAnswer) {
+                                itemClass += "border-red-500 bg-red-50 dark:bg-red-900/20 dark:border-red-500";
+                                checkIcon = "❌";
+                            } else {
+                                itemClass += "border-slate-100 dark:border-slate-800 opacity-50";
+                            }
+                        } else {
+                            itemClass += "border-slate-200 dark:border-slate-700 cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700";
+                        }
+
+                        return `
+                        <label class="${itemClass}">
+                            <input type="radio" name="mq" value="${o.replace(/"/g, '&quot;')}" class="peer sr-only" ${isReviewMode ? 'disabled' : ''}>
+                            ${!isReviewMode ? `
+                            <div class="w-6 h-6 rounded-full border-2 border-slate-300 peer-checked:border-indigo-600 peer-checked:bg-indigo-600 mr-4 flex-shrink-0 flex items-center justify-center text-white text-xs opacity-0 peer-checked:opacity-100 transition-all">✓</div>
+                            ` : `<div class="mr-4">${checkIcon}</div>`}
+                            <span class="font-medium text-slate-600 dark:text-slate-300 peer-checked:text-indigo-700 dark:peer-checked:text-indigo-300">${o}</span>
+                        </label>`;
+                    }).join('')}
                 </div>
-                <button onclick="checkMQ()" class="w-full mt-8 bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg uppercase tracking-widest hover:bg-indigo-700 transition-all">Submit Protocol</button>
+                
+                <div class="flex gap-4 mt-8">
+                    <button onclick="navQuestion(-1)" class="btn-3d flex-1 bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-200 font-bold py-4 rounded-xl shadow-[0_4px_0_0_#94a3b8] uppercase tracking-widest text-sm hover:brightness-110 ${gameState.currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed' : ''}" ${gameState.currentQuestionIndex === 0 ? 'disabled' : ''}>← Back</button>
+                    ${isReviewMode ? `
+                        <button onclick="navQuestion(1)" class="btn-3d flex-[2] bg-amber-500 text-white font-black py-4 rounded-xl shadow-[0_4px_0_0_#d97706] uppercase tracking-widest text-sm hover:brightness-110">Return to Current →</button>
+                    ` : `
+                        <button onclick="checkMQ()" class="btn-3d flex-[2] bg-indigo-600 text-white font-black py-4 rounded-xl shadow-[0_4px_0_0_#3730a3] uppercase tracking-widest text-sm hover:brightness-110">Submit Analysis</button>
+                    `}
+                </div>
             `;
         }
 
-async function checkMQ() {
-    // 1. Get the user's selection
-    const sel = document.querySelector('input[name="mq"]:checked');
-    if (!sel) return;
-
-    // 2. Identify the current question
-    const mData = itemBank.find(i => i.id === gameState.currentMission.passageId);
-    const q = selectNextQuestion(mData);
-
-    // 3. Check correctness
-    const isCorrect = sel.value === q.correct_answer;
-
-    // 4. Update Standards Report
-    if (!gameState.user.standardsReport[q.standard]) {
-        gameState.user.standardsReport[q.standard] = { correct: 0, total: 0 };
+// Helper to handle Back/Forward navigation
+function navQuestion(dir) {
+    const newIndex = gameState.currentQuestionIndex + dir;
+    // Prevent going back before 0 or forward beyond what we have actually answered
+    // (We only allow going "Forward" if we are in review mode and returning to the latest blank question)
+    
+    // Simplification: We allow navigation freely up to the "highest reached" question
+    // But since we increment index automatically on submit, the "highest" is implicitly (Object.keys(gameState.missionAnswers).length)
+    
+    const maxIndex = Object.keys(gameState.missionAnswers).length;
+    
+    if (newIndex >= 0 && newIndex <= maxIndex) {
+        gameState.currentQuestionIndex = newIndex;
+        renderMissionQ();
     }
-    gameState.user.standardsReport[q.standard].total++;
-
-    if (isCorrect) {
-        gameState.user.standardsReport[q.standard].correct++;
-        gameState.missionScore++;
-        gameState.consecutiveCorrect++;
-
-        // Rank Up Logic (3 in a row)
-        if (gameState.consecutiveCorrect >= 3 && gameState.user.elaLevel < 3) {
-            gameState.user.elaLevel++;
-            gameState.consecutiveCorrect = 0;
-            triggerConfetti();
-            await showModal("SYNC OVERDRIVE", "Rank Up! Intelligence evolved.", 'success');
-        } else {
-            await showModal("Verified", q.rationale, 'success');
-        }
-    } else {
-        gameState.consecutiveCorrect = 0;
-        // Rank Down Logic
-        if (q.difficulty <= 4 && gameState.user.elaLevel > 1) {
-            gameState.user.elaLevel--;
-            await showModal("Recalibration", "Efficiency drop detected. Rank reduced.", 'info');
-        }
-        gameState.user.missedQuestions.push(q);
-        await showModal("Logic Conflict", q.rationale, 'error');
-    }
-
-    // 5. FORCE MOVE NEXT
-    gameState.currentQuestionIndex++;
-    renderMissionQ();
 }
 
-async function endMission(total) {
-            const xp = Math.round((gameState.missionScore / total) * 100);
-            gameState.user.tokens += gameState.missionScore * 25;
-            addXp(xp);
-            gameState.user.history.push({ missionTitle: gameState.currentMission.title, score: `${gameState.missionScore}/${total}`, date: new Date().toLocaleDateString() });
-            
-            // S-Rank Check
-            if(gameState.missionScore === total && !gameState.user.stickers.includes(gameState.currentMission.sticker)) {
-                gameState.user.stickers.push(gameState.currentMission.sticker);
-                triggerConfetti(); 
-                await showModal("SYNCHRONIZED", `S-Rank achieved! Earned: ${gameState.currentMission.sticker}`, 'success');
+async function checkMQ() {
+            const sel = document.querySelector('input[name="mq"]:checked');
+            if (!sel) return;
+
+            // Save answer for review
+            gameState.missionAnswers[gameState.currentQuestionIndex] = sel.value;
+
+            const mData = itemBank.find(i => i.id === gameState.currentMission.passageId);
+            const q = selectNextQuestion(mData);
+            const isCorrect = sel.value === q.correct_answer;
+
+            // Update Standards Report
+            if (!gameState.user.standardsReport[q.standard]) {
+                gameState.user.standardsReport[q.standard] = { correct: 0, total: 0 };
             }
-            
-            saveProgress(); 
-            updateUI();
+            gameState.user.standardsReport[q.standard].total++;
 
-            // --- NEW: SECTOR CHAINING LOGIC ---
-            // Find current mission index
-            const currentIdx = allMissions.findIndex(m => m.id === gameState.currentMission.id);
-            // Look at the next mission in the array
-            const nextMission = allMissions[currentIdx + 1];
-            
-            // Check if next mission exists AND is in the same Sector (Level)
-            const hasNextInSector = nextMission && nextMission.minLevel === gameState.currentMission.minLevel;
+            if (isCorrect) {
+                gameState.user.standardsReport[q.standard].correct++;
+                gameState.missionScore++;
+                gameState.consecutiveCorrect++;
+                
+                // --- COMBO LOGIC ---
+                let multiplier = 1;
+                let comboMsg = "Verified";
+                
+                if (gameState.consecutiveCorrect >= 3) {
+                    multiplier = 3;
+                    comboMsg = "🔥 OVERDRIVE (3x Tokens)";
+                    triggerConfetti();
+                } else if (gameState.consecutiveCorrect === 2) {
+                    multiplier = 2;
+                    comboMsg = "⚡ FLOW STATE (2x Tokens)";
+                }
+                
+                const earned = 10 * multiplier; 
+                gameState.user.tokens += earned;
 
-            let msg = `Rewards: +${xp} XP | +${gameState.missionScore * 25} Tokens`;
-            if (hasNextInSector) msg += "<br><br><b>Sector Link Established... Next Objective Ready.</b>";
+                // Rank Up Logic
+                if (gameState.consecutiveCorrect >= 5 && gameState.user.elaLevel < 3) {
+                    gameState.user.elaLevel++;
+                    gameState.consecutiveCorrect = 0; 
+                    await showModal("SYSTEM UPGRADE", "Rank Up! Intelligence evolved.", 'success');
+                } else {
+                    await showModal(comboMsg, `${q.rationale}<br><br><b class="text-amber-600">+${earned} Tokens</b>`, 'success');
+                }
 
-            await showModal("Mission End", msg, 'success');
-
-            if (hasNextInSector) {
-                // Automatically start the next mission
-                startMission(nextMission.id);
             } else {
-                // If Sector is done, go back to map
-                navigate('missions-screen');
+                // Combo Breaker
+                if (gameState.consecutiveCorrect > 1) {
+                    await showModal("COMBO BROKEN", "Streak lost. Resetting multipliers.", 'error');
+                }
+                gameState.consecutiveCorrect = 0;
+                
+                if (q.difficulty <= 4 && gameState.user.elaLevel > 1) {
+                    gameState.user.elaLevel--;
+                    await showModal("Recalibration", "Efficiency drop detected. Rank reduced.", 'info');
+                }
+                gameState.user.missedQuestions.push(q);
+                await showModal("Logic Conflict", q.rationale, 'error');
             }
+
+            gameState.currentQuestionIndex++;
+            renderMissionQ();
         }
+
+async function endMission(total) {
+    const xp = Math.round((gameState.missionScore / total) * 100);
+    gameState.user.tokens += gameState.missionScore * 25;
+    addXp(xp);
+    
+    gameState.user.history.push({ missionTitle: gameState.currentMission.title, score: `${gameState.missionScore}/${total}`, date: new Date().toLocaleDateString() });
+
+    // Mark as Complete
+    if (!gameState.user.completedIds) gameState.user.completedIds = [];
+    if (!gameState.user.completedIds.includes(gameState.currentMission.id)) {
+        gameState.user.completedIds.push(gameState.currentMission.id);
+    }
+
+    // Save Best Score
+    if (!gameState.user.missionBestScores) gameState.user.missionBestScores = {};
+    
+    const currentVal = gameState.missionScore;
+    const prevStr = gameState.user.missionBestScores[gameState.currentMission.id];
+    const prevVal = prevStr ? parseInt(prevStr.split('/')[0]) : -1;
+
+    // Update if new score is better or equal
+    if (currentVal >= prevVal) {
+        gameState.user.missionBestScores[gameState.currentMission.id] = `${gameState.missionScore}/${total}`;
+    }
+
+    // S-Rank Check
+    if(gameState.missionScore === total && !gameState.user.stickers.includes(gameState.currentMission.sticker)) {
+        gameState.user.stickers.push(gameState.currentMission.sticker);
+        triggerConfetti(); 
+        await showModal("SYNCHRONIZED", `S-Rank achieved! Earned: ${gameState.currentMission.sticker}`, 'success');
+    }
+    
+    saveProgress();
+    updateUI();
+
+    let msg = `Rewards: +${xp} XP | +${gameState.missionScore * 25} Tokens<br><h3 class="text-xl font-bold mt-2">Final Score: ${gameState.missionScore}/${total}</h3>`;
+    msg += "<br><br><b>Mission Complete. Returning to Sector Map...</b>";
+
+    await showModal("Mission End", msg, 'success');
+    
+    // FIX: Re-render the map to show the new score immediately
+    renderMissions(); 
+}
 
         // --- UTILS ---
 function startCalibration() {
-            // FIX: Use 3 diverse existing passages for the diagnostic
-            const diagnosticIds = ['inf-ash-borer', 'rok-lit-confetti', 'lang-editor-desk'];
-            
-            calProg = { 
-                questions: itemBank.filter(i => diagnosticIds.includes(i.id)), 
-                idx: 0, 
-                score: 0 
-            };
-            
-            document.getElementById('calibration-content').classList.remove('hidden');
-            document.getElementById('calibration-results').classList.add('hidden');
-            navigate('calibration-screen');
-            renderCal();
-        }
+    // UPDATED: Randomize the diagnostic passages every time
+    // 1. Get all unique passage IDs from the itemBank
+    const allPassageIds = itemBank.map(i => i.id);
+    
+    // 2. Shuffle the array of IDs
+    const shuffled = allPassageIds.sort(() => 0.5 - Math.random());
+    
+    // 3. Pick the first 3 items
+    const selectedIds = shuffled.slice(0, 3);
+
+    calProg = { 
+        questions: itemBank.filter(i => selectedIds.includes(i.id)), 
+        idx: 0, 
+        score: 0 
+    };
+
+    document.getElementById('calibration-content').classList.remove('hidden');
+    document.getElementById('calibration-results').classList.add('hidden');
+    navigate('calibration-screen');
+    renderCal();
+}
 
 function renderCal() {
             const qSet = calProg.questions[calProg.idx];
@@ -1655,19 +2649,60 @@ function renderCal() {
             calProg.idx++; renderCal();
         }
 
-        function endCal() {
+function endCal() {
             const s = calProg.score;
-            gameState.user.elaLevel = s >= 12 ? 3 : (s >= 6 ? 2 : 1);
-            document.getElementById('ela-level-display').textContent = gameState.user.elaLevel === 3 ? "Legend" : (gameState.user.elaLevel === 2 ? "Scholar" : "Rookie");
+            
+            // 1. Determine Skill Rank (1, 2, or 3)
+            const skillRank = s >= 12 ? 3 : (s >= 6 ? 2 : 1);
+            gameState.user.elaLevel = skillRank;
+
+            // 2. APPLY GAMEPLAY IMPACT (The Fix)
+            let msg = "";
+            
+            if (skillRank === 3) {
+                // Legend: Skip to Level 3, Unlock Sectors 1-3
+                gameState.user.level = 3; 
+                gameState.user.tokens += 500;
+                msg = "<b>Result: LEGEND.</b><br>You demonstrated mastery.<br>Skipping to <b>Level 3</b>.<br>+500 Tokens awarded.";
+            } else if (skillRank === 2) {
+                // Scholar: Skip to Level 2, Unlock Sectors 1-2
+                gameState.user.level = 2;
+                gameState.user.tokens += 250;
+                msg = "<b>Result: SCHOLAR.</b><br>Strong foundation detected.<br>Skipping to <b>Level 2</b>.<br>+250 Tokens awarded.";
+            } else {
+                // Rookie: Standard Start
+                gameState.user.level = 1;
+                gameState.user.tokens += 100;
+                msg = "<b>Result: ROOKIE.</b><br>Baseline established.<br>Starting at <b>Level 1</b>.<br>+100 Tokens awarded.";
+            }
+
+            // 3. UI Cleanup
             document.getElementById('calibration-content').classList.add('hidden');
             document.getElementById('calibration-results').classList.remove('hidden');
-            saveProgress(); updateUI();
+            
+            // Update the display text inside the results div
+            document.getElementById('ela-level-display').textContent = skillRank === 3 ? "LEGEND" : (skillRank === 2 ? "SCHOLAR" : "ROOKIE");
+            
+            // Show the popup explaining the skip
+            showModal("Calibration Complete", msg, 'success');
+
+            saveProgress(); 
+            updateUI();
         }
 
-        function startSurvival() {
+function startSurvival() {
+            // Flatten all items into one giant array
             gameState.survivalQueue = itemBank.flatMap(i => i.items.map(it => ({...it, passage: i.passage}))).sort(() => Math.random() - 0.5);
-            gameState.currentQuestionIndex = 0; gameState.missionScore = 0;
-            navigate('game-play-screen'); renderSurvivalQ();
+            
+            gameState.currentQuestionIndex = 0; 
+            gameState.missionScore = 0;
+            
+            navigate('game-play-screen'); 
+            
+            // NEW: Start the timer for Gauntlet mode
+            startTimer();
+            
+            renderSurvivalQ();
         }
 
         function renderSurvivalQ() {
@@ -1696,18 +2731,67 @@ function renderCal() {
 function renderStickerBook() {
             const grid = document.getElementById('sticker-grid');
             grid.innerHTML = '';
-            // Increased to 50 slots to accommodate the full collection
-            for(let i=0; i<50; i++) {
-                const s = gameState.user.stickers[i];
+            
+            // SECTION 1: MISSION TROPHIES (Generated from allMissions)
+            const trophyHeader = document.createElement('h3');
+            trophyHeader.className = "col-span-full text-xl font-black text-indigo-600 dark:text-indigo-400 mt-2 mb-4 uppercase tracking-widest border-b border-indigo-200 pb-2";
+            trophyHeader.innerHTML = "🏆 Mission Trophies";
+            grid.appendChild(trophyHeader);
+
+            allMissions.forEach(m => {
+                const isUnlocked = gameState.user.stickers.includes(m.sticker);
+                
                 const card = document.createElement('div');
-                card.className = `sticker-card aspect-square rounded-2xl flex items-center justify-center text-5xl shadow-inner border-2 transition-all duration-300 ${s ?
-                'bg-white dark:bg-gray-800 border-indigo-400 shadow-xl scale-100' : 'bg-white/10 border-dashed border-gray-400 opacity-20 scale-95'}`;
-                card.innerHTML = s || '';
+                // Green/Gold style for Trophies
+                const baseClass = isUnlocked 
+                    ? 'bg-gradient-to-br from-yellow-50 to-amber-100 dark:from-slate-800 dark:to-slate-700 border-amber-400 shadow-lg scale-100' 
+                    : 'bg-slate-100 dark:bg-slate-900/50 border-dashed border-slate-300 dark:border-slate-700 opacity-60 scale-95';
+
+                card.className = `sticker-card aspect-square rounded-xl flex flex-col items-center justify-center border-2 transition-all duration-300 relative group ${baseClass}`;
                 
-                if(s) card.title = "Collected!";
+                // Show Sticker if unlocked, otherwise show '?'
+                card.innerHTML = `
+                    <div class="text-4xl mb-1">${isUnlocked ? m.sticker : '<span class="text-slate-300 text-2xl font-bold">?</span>'}</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wide text-center px-1 leading-tight">
+                        ${isUnlocked ? m.title : 'LOCKED'}
+                    </div>
+                `;
                 
+                if(isUnlocked) {
+                    // Shiny effect for earned trophies
+                    card.innerHTML += `<div class="absolute inset-0 bg-white/20 rounded-xl pointer-events-none"></div>`;
+                }
+
                 grid.appendChild(card);
-            }
+            });
+
+            // SECTION 2: SHOP COLLECTION (Generated from shopCatalog)
+            const shopHeader = document.createElement('h3');
+            shopHeader.className = "col-span-full text-xl font-black text-pink-600 dark:text-pink-400 mt-8 mb-4 uppercase tracking-widest border-b border-pink-200 pb-2";
+            shopHeader.innerHTML = "🛍️ Personal Collection";
+            grid.appendChild(shopHeader);
+
+            shopCatalog.stickers.forEach(item => {
+                const isOwned = gameState.user.stickers.includes(item.icon);
+
+                const card = document.createElement('div');
+                // Pink/Purple style for Shop Items
+                const baseClass = isOwned 
+                    ? 'bg-white dark:bg-slate-800 border-pink-400 shadow-md scale-100' 
+                    : 'bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800 grayscale opacity-40';
+
+                card.className = `sticker-card aspect-square rounded-xl flex items-center justify-center text-4xl border-2 transition-all duration-300 ${baseClass}`;
+                
+                card.innerHTML = item.icon;
+                
+                // Tooltip for shop items
+                if(!isOwned) {
+                    card.title = `Buy in Shop: ${item.cost} Tokens`;
+                }
+
+                grid.appendChild(card);
+            });
+
             navigate('sticker-book-screen');
         }
 
@@ -1781,7 +2865,38 @@ function updateUI() {
         }
 
         function saveProgress() { localStorage.setItem('elaLegendsSaveV9', JSON.stringify(gameState.user)); }
-        function loadProgress() { const saved = localStorage.getItem('elaLegendsSaveV9'); if (saved) gameState.user = JSON.parse(saved); updateUI(); }
+function loadProgress() { 
+            const saved = localStorage.getItem('elaLegendsSaveV9'); 
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    
+                    // 1. Load the saved data
+                    gameState.user = parsed;
+
+                    // 2. CRITICAL: Inject missing arrays for old save files
+                    // This prevents the "undefined" error you just saw
+                    if (!gameState.user.avatars) gameState.user.avatars = [];
+                    if (!gameState.user.stickers) gameState.user.stickers = [];
+                    if (!gameState.user.inventory) gameState.user.inventory = {};
+                    if (!gameState.user.completedIds) gameState.user.completedIds = [];
+                    if (!gameState.user.missionBestScores) gameState.user.missionBestScores = {};
+                    if (!gameState.user.standardsReport) gameState.user.standardsReport = {};
+
+                    // 3. Migration: Fix the Boss ID if they played the old version
+                    if (gameState.user.completedIds.includes('inf-ash-borer') && !gameState.user.completedIds.includes('m-boss')) {
+                        gameState.user.completedIds.push('m-boss');
+                    }
+
+                } catch (e) {
+                    console.error("Save file corrupted, resetting.", e);
+                    localStorage.removeItem('elaLegendsSaveV9');
+                }
+            }
+            // Always update UI after loading
+            updateUI(); 
+        }     
+        
         function openArchive() {
             const l = document.getElementById('archive-list'); const msg = document.getElementById('archive-empty-msg'); l.innerHTML = '';
             if (gameState.user.missedQuestions.length === 0) msg.classList.remove('hidden');
